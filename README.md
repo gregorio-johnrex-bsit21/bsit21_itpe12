@@ -1,2 +1,8 @@
 # bsit21_itpe12_2026
-Website project, title: OJT Attendance and Task Monitoring System, members: gregorio_johnrex,lobrigo_lerianne_mae and monarca_roldan
+Website project
+
+Title: Web-Based OJT Monitoring System for BSIT Students of CHMSU
+
+Members: Gregorio_Johnrex
+Lobrigo_Lerianne_Mae
+Monarca_Roldan
