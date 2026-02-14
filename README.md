@@ -3,6 +3,6 @@ Website project
 
 Title: Web-Based OJT Monitoring System for BSIT Students of CHMSU
 
-Members: Gregorio_Johnrex
-Lobrigo_Lerianne_Mae
+Members: Gregorio_Johnrex,
+Lobrigo_Lerianne_Mae,
 Monarca_Roldan
