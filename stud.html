@@ -76,16 +76,15 @@
             <div class="flex items-center gap-2 mt-1">
                 <h1 class="text-3xl font-black text-gray-800">Lebron "the king" James!</h1>
             </div>
-            <p class="text-gray-400 text-xs mt-1 font-medium">Here is what's happening with your OJT progress today.</p>
+            
         </div>
 
-                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         <div class="bg-white p-4 rounded-2xl border border-gray-300 shadow-sm"><p class="text-gray-400 text-[10px] font-bold uppercase">Required</p><p class="text-xl font-black mt-1">500h</p></div>
                         <div class="bg-white p-4 rounded-2xl border border-gray-300 shadow-sm"><p class="text-emerald-500 text-[10px] font-bold uppercase">Accumulated</p><p class="text-xl font-black mt-1 text-emerald-600">124h</p></div>
                         <div class="bg-white p-4 rounded-2xl border border-gray-300 shadow-sm"><p class="text-orange-500 text-[10px] font-bold uppercase">Remaining</p><p class="text-xl font-black mt-1 text-orange-600">376h</p></div>
                         <div class="bg-white p-4 rounded-2xl border border-gray-300 shadow-sm"><p class="text-rose-500 text-[10px] font-bold uppercase">Missed Hours</p><p class="text-xl font-black mt-1 text-rose-600">24h</p></div>
-                        <div class="bg-white p-4 rounded-2xl border border-gray-300 shadow-sm"><p class="text-gray-400 text-[10px] font-bold uppercase">Total Tasks</p><p class="text-xl font-black mt-1">12</p></div>
-                        <div class="bg-white p-4 rounded-2xl border border-gray-300 shadow-sm"><p class="text-emerald-500 text-[10px] font-bold uppercase">Done</p><p class="text-xl font-black mt-1 text-emerald-600">08</p></div>
+                       
                     </div>
 
                     <div class="bg-white p-6 rounded-3xl border border-gray-300 shadow-sm">
@@ -257,22 +256,53 @@
                         <h2 class="text-2xl font-black text-gray-800">Assigned Task</h2>
                         
                     </div>
+
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-3xl border border-gray-300 shadow-sm hover:border-indigo-200 transition group transition-transform hover:scale-105 duration-500 cursor-pointer">
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-[10px] font-bold uppercase">In Progress</span>
-                                <p class="text-xs text-gray-400 font-medium">Due Feb 25</p>
-                            </div>
-                            <h4 class="font-bold text-gray-800 mb-2 group-hover:text-indigo-600">Database Schema Design</h4>
-                            <p class="text-sm text-gray-500 line-clamp-2">Design the ERD for the new monitoring module including attendance and task relations.</p>
-                            <div class="mt-6 pt-6 border-t border-gray-50 flex justify-between items-center">
-                                <div class="flex -space-x-2">
-                                    <img class="w-7 h-7 rounded-full border-2 border-white" src="https://ui-avatars.com/api/?name=Admin&background=random" alt="">
-                                </div>
-                                <button class="text-xs font-bold text-indigo-600">View Details →</button>
-                            </div>
-                        </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="bg-white p-6 rounded-3xl border border-gray-300 shadow-sm hover:border-indigo-200 transition group transition-transform hover:scale-105 duration-500 cursor-pointer">
+
+
+       <div class="flex justify-between items-center mb-4">
+    <div class="flex items-center gap-4 flex-1">
+        <span class="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-full text-[10px] font-bold uppercase whitespace-nowrap">In Progress</span>
+        
+        <div class="flex items-center gap-2 w-full max-w-[100px]">
+            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                <div class="bg-emerald-400 h-1.5 rounded-full" style="width: 100%"></div>
+            </div>
+            <span class="text-[10px] font-bold text-gray-500">100%</span>
+        </div>
+    </div>
+
+    <p class="text-xs text-gray-400 font-medium whitespace-nowrap">Due Feb 25</p>
+</div>
+
+
+
+        <h4 class="font-bold text-gray-800 mb-2 group-hover:text-indigo-600">Database Schema Design</h4>
+        <p class="text-sm text-gray-500 line-clamp-2">Design the ERD for the new monitoring module including attendance and task relations.</p>
+        
+        <div class="mt-6 pt-6 border-t border-gray-50 flex justify-between items-center">
+            
+            <div class="flex items-center justify-between w-full">
+                <button class="text-xs font-bold text-indigo-600">View Details →</button>
+                
+                <span class="flex items-center gap-1.5 px-2 py-1 bg-amber-50 text-amber-700 rounded-md text-[10px] font-bold border border-amber-200 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500">
+                        <path d="M8.21 13.89L7 23L12 20L17 23L15.79 13.88"></path>
+                        <circle cx="12" cy="8" r="7"></circle>
+                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                    </svg>
+                    TOP PERFORMER
+                </span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
                     </div>
                 </div> 
 
