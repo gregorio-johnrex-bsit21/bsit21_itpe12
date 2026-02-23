@@ -21,10 +21,12 @@
             <div class="p-6 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">O</div>
-                    <span class="text-xl font-bold tracking-tight text-gray-900">OJTfolio</span>
+                    <span class="text-xl font-bold tracking-tight text-gray-900">OJT Management System</span>
                 </div>
                 <button @click="sidebarOpen = false" class="lg:hidden text-gray-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
+
+            <!--sidebar-->
             
             <nav class="flex-1 px-4 space-y-1">
                 <button @click="activeTab = 'dashboard'; sidebarOpen = false" 
@@ -45,14 +47,18 @@
                 </a>
             </nav>
 
+            <!--sidebar end-->
+
             <div class="p-4 border-t border-gray-100">
                 <div class="bg-indigo-900 rounded-2xl p-4 text-white relative overflow-hidden">
                     <p class="text-[10px] opacity-60 font-bold tracking-widest uppercase">Company</p>
-                    <p class="text-sm font-bold truncate z-10 relative">TechNexus Solutions</p>
+                    <p class="text-sm font-bold truncate z-10 relative">RRL Tech Solutions</p>
                     <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-white/10 rounded-full"></div>
                 </div>
             </div>
         </aside>
+
+        <!--message and notif-->
 
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
             <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 shrink-0">
@@ -62,22 +68,58 @@
                     </button>
                     <h1 class="text-lg font-bold text-gray-800" x-text="activeTab === 'dashboard' ? 'Overview' : 'My Tasks'"></h1>
                 </div>
-                <div class="flex items-center space-x-3">
-                    <img class="h-9 w-9 rounded-full border border-indigo-100" src="https://ui-avatars.com/api/?name=John+Doe&background=4f46e5&color=fff" alt="User">
-                </div>
+
+
+               <div class="flex items-center space-x-4">
+    <button class="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors" style="background: transparent; border: none; cursor: pointer;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span class="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white"></span>
+    </button>
+
+    <button class="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors" style="background: transparent; border: none; cursor: pointer;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <span class="absolute top-1 right-1.5 block h-2.5 w-2.5 rounded-full bg-indigo-500 border-2 border-white"></span>
+    </button>
+
+    <div class="flex-shrink-0">
+        <img class="h-9 w-9 rounded-full border border-indigo-100" 
+             src="https://ui-avatars.com/api/?name=John+Doe&background=4f46e5&color=fff" 
+             alt="User">
+    </div>
+</div>
+
+<!--their end-->
+
+
+
             </header>
 
             <main class="flex-1 overflow-y-auto p-4 lg:p-8">
                 
                 <div x-show="activeTab === 'dashboard'" class="space-y-6">
 
-                    <div class="mb-8">
+                   <div x-show="activeTab === 'dashboard'" class="space-y-6">
+    <div class="mb-8 flex justify-between items-end">
+        <div>
             <h2 class="text-gray-400 text-xs font-bold uppercase tracking-widest">Welcome back,</h2>
             <div class="flex items-center gap-2 mt-1">
-                <h1 class="text-3xl font-black text-gray-800">Lebron "the king" James!</h1>
+                <h1 class="text-3xl font-black text-gray-800">Charlie Kirk</h1>
             </div>
-            
         </div>
+
+        <div class="text-right pb-1">
+            <p class="text-xs font-bold uppercase tracking-widest text-indigo-500">Today's Date</p>
+            <p class="text-sm font-semibold text-gray-500" x-data="{ date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) }" x-text="date">
+                February 23, 2026
+            </p>
+        </div>
+    </div>
+</div>
 
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         <div class="bg-white p-4 rounded-2xl border border-gray-300 shadow-sm"><p class="text-gray-400 text-[10px] font-bold uppercase">Required</p><p class="text-xl font-black mt-1">500h</p></div>
