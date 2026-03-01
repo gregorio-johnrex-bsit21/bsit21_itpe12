@@ -18,13 +18,24 @@
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
                class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col">
             
-            <div class="p-6 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">O</div>
-                    <span class="text-xl font-bold tracking-tight text-gray-900">OJT Manager</span>
-                </div>
-                <button @click="sidebarOpen = false" class="lg:hidden text-gray-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            </div>
+          <div class="flex items-center justify-between p-6">
+    <div class="flex items-center gap-4">
+        <div class="w-[50px] h-[50px] flex-shrink-0">
+            <img src="harvard.png" 
+                 alt="OJT Manager" 
+                 class="w-full h-full object-contain filter drop-shadow-sm">
+        </div>
+
+        <div class="flex flex-col">
+            <span class="text-xl font-black leading-tight tracking-tighter text-slate-800">Harvard OJT</span>
+            <span class="text-xs font-bold leading-tight text-emerald-600 uppercase tracking-[0.2em]">Manager</span>
+        </div>
+    </div>
+
+    <button @click="sidebarOpen = false" class="lg:hidden text-gray-400 hover:text-gray-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+</div>
 
             <!--sidebar-->
             
@@ -52,13 +63,18 @@
 
             <!--sidebar end-->
 
-            <div class="p-4 border-t border-gray-100">
-                <div class="bg-emerald-700 rounded-2xl p-4 text-white relative overflow-hidden">
-                    <p class="text-[10px] opacity-60 font-bold tracking-widest uppercase">Company</p>
-                    <p class="text-sm font-bold truncate z-10 relative">RRL Tech Solutions</p>
-                    <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-white/10 rounded-full"></div>
-                </div>
-            </div>
+           <div class="p-4 border-t border-gray-100">
+    <div class="relative h-28 w-full rounded-2xl overflow-hidden group">
+        <img src="microsoft.webp" class="absolute inset-0 w-full h-full object-cover">
+        
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+
+        <div class="absolute bottom-3 left-3 right-3">
+            <p class="text-[9px] font-bold text-emerald-400 tracking-widest uppercase">Partner Company</p>
+            <h4 class="text-white font-bold text-sm leading-tight">RRL Tech Solutions</h4>
+        </div>
+    </div>
+</div>
         </aside>
 
         
@@ -287,7 +303,7 @@
     </div>
   </div>
 
-  <div class="group relative overflow-hidden bg-white p-4 rounded-2xl border border-slate-300 shadow-sm hover:shadow-emerald-50 transition-all duration-300">
+  <div class="group relative overflow-hidden bg-white p-4 rounded-2xl border border-slate-300 shadow-sm hover:shadow-md transition-all duration-300">
     <div class="flex items-center justify-between mb-2">
       <span class="text-emerald-500 text-[10px] font-bold uppercase tracking-wider">Accumulated</span>
       <div class="p-1.5 bg-emerald-500 rounded-lg text-white">
@@ -300,7 +316,7 @@
     </div>
   </div>
 
-  <div class="group relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-300 shadow-sm hover:shadow-orange-50 transition-all duration-300">
+  <div class="group relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-300 shadow-sm hover:shadow-md transition-all duration-300">
     <div class="flex items-center justify-between mb-2">
       <span class="text-orange-600 text-[10px] font-bold uppercase tracking-wider">Remaining</span>
       <div class="p-1.5 bg-orange-500 rounded-lg text-white">
@@ -315,7 +331,7 @@
     </div>
   </div>
 
-  <div class="group relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-300 shadow-sm hover:shadow-rose-50 transition-all duration-300">
+  <div class="group relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-300 shadow-sm hover:shadow-md transition-all duration-300">
     <div class="flex items-center justify-between mb-2">
       <span class="text-rose-600 text-[10px] font-bold uppercase tracking-wider">Missed</span>
       <div class="p-1.5 bg-rose-500 rounded-lg text-white">
@@ -349,8 +365,8 @@
     </div>
 
     <div class="flex justify-between mt-4 text-[11px] font-bold text-slate-400 uppercase tracking-tighter">
-        <span>0h</span>
-        <span class="text-slate-300">Target: 600h</span>
+        <span>72h</span>
+        <span class="text-slate-300">Target: 500h</span>
     </div>
 </div>
 
@@ -375,13 +391,38 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-between bg-emerald-50/50 rounded-2xl px-5 py-3.5 border border-emerald-100/50">
-            <div>
-                <p class="text-[9px] font-bold uppercase tracking-widest text-emerald-600/70">Current Date</p>
-                <p class="text-sm font-bold text-slate-700" x-data="{ date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) }" x-text="date">February 24, 2026</p>
-            </div>
-            <div class="size-2 bg-emerald-500 rounded-full animate-pulse"></div>
-        </div>
+       <div class="flex flex-row items-center justify-between bg-emerald-50/50 rounded-2xl px-5 py-3.5 border border-emerald-100/50">
+    
+    <div class="flex flex-col">
+        <p class="text-[9px] font-bold uppercase tracking-widest text-emerald-600/70">Current Date</p>
+        <p class="text-sm font-bold text-slate-700" 
+           x-data="{ date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) }" 
+           x-text="date">
+           March 1, 2026
+        </p>
+    </div>
+
+    <div class="flex flex-col text-right" 
+         x-data="{ 
+            time: '',
+            updateTime() {
+                this.time = new Date().toLocaleTimeString('en-US', { 
+                    hour12: true, 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                });
+            },
+            init() {
+                this.updateTime();
+                setInterval(() => this.updateTime(), 1000);
+            }
+         }">
+        <p class="text-[9px] font-bold uppercase tracking-widest text-emerald-600/70">Local Time</p>
+        <p class="text-sm font-mono font-bold text-slate-700" x-text="time">00:00:00 AM</p>
+    </div>
+
+</div>
     </div>
     
     <div class="overflow-x-auto scrollbar-hide">
