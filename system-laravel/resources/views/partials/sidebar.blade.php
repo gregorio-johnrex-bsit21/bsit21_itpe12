@@ -55,8 +55,8 @@
 </nav>
            
            <div class="p-4 border-t border-gray-100">
-    <div class="relative h-28 w-full rounded-2xl overflow-hidden group">
-       <img src="{{ asset('images/microsoft.webp') }}" alt="Microsoft" class="absolute inset-0 w-full h-full object-cover">
+    <div class="relative h-20 w-full rounded-2xl overflow-hidden group">
+       <img src="{{ asset('images/microsoft.webp') }}" alt="Microsoft" class="absolute inset-0 w-full h-50 object-cover">
         
         <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
 
