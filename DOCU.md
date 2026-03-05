@@ -19,3 +19,9 @@ On the third day, one of our colleagues designed the layout of the supervisor da
 
 Fourth Day – System Improvement and UI/UX Design
 On the fourth day, we continued improving the system. We also worked on storyboarding, sketching, and wireframing to enhance the overall design while simultaneously developing the system.
+
+Date: March 2, 2026 
+-During our classes at school, we collaborate to complete our tasks, including sketching, storyboarding, and wireframing for our project. 
+
+Date: March 5,2026
+-We are currently working together on developing and templating the system to ensure an organized and efficient design process.
