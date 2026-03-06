@@ -29,26 +29,26 @@
          
             
           <nav class="flex-1 px-4 space-y-1">
-    <a href="{{ route('dashboard') }}"
+    <a href="{{ route('students.dashboard') }}"
        @click="sidebarOpen = false"
        class="w-full flex items-center space-x-3 p-3 rounded-xl font-semibold transition
-       {{ request()->routeIs('dashboard') ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:bg-gray-50' }}">
+       {{ request()->routeIs('students.dashboard') ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:bg-gray-50' }}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
         <span>Dashboard</span>
     </a>
 
-    <a href="{{ route('tasks') }}"
+    <a href="{{ route('students.tasks') }}"
        @click="sidebarOpen = false"
        class="w-full flex items-center space-x-3 p-3 rounded-xl font-semibold transition
-       {{ request()->routeIs('tasks') ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:bg-gray-50' }}">
+       {{ request()->routeIs('students.tasks') ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:bg-gray-50' }}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
         <span>Tasks</span>
     </a>
 
-    <a href="{{ route('profile') }}"
+    <a href="{{ route('students.profile') }}"
        @click="sidebarOpen = false"
        class="w-full flex items-center space-x-3 p-3 rounded-xl font-semibold transition
-       {{ request()->routeIs('profile') ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:bg-gray-50' }}">
+       {{ request()->routeIs('students.profile') ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:bg-gray-50' }}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
         <span>Profile</span>
     </a>

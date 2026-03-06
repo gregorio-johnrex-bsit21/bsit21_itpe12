@@ -2,18 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('student')->group(function () {
+// Added ->name('students.') here
+Route::prefix('student')->name('students.')->group(function () {
 
-Route::get('/', function () {
-    return view('dashboard');
-})->name('dashboard');
+    Route::get('/', function () {
+        return view('students.dashboard');
+    })->name('dashboard'); // This is now 'students.dashboard'
 
-Route::get('/tasks', function () {
-    return view('tasks');
-})->name('tasks');
+    Route::get('/tasks', function () {
+        return view('students.tasks');
+    })->name('tasks'); // This is now 'students.tasks'
 
-Route::get('/profile', function () {
-    return view('profile');
-})->name('profile');
+    Route::get('/profile', function () {
+        return view('students.profile');
+    })->name('profile'); // This is now 'students.profile'
 
 });

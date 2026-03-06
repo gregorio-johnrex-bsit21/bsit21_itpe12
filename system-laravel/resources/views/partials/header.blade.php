@@ -141,7 +141,7 @@
                             </div>
                             <div class="py-1.5">
                                 
-                        <a href="{{ route('profile') }}"
+                        <a href="{{ route('students.profile') }}"
                             @click="sidebarOpen = false"
                             class="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 transition">
                             <div class="flex items-center gap-3">
@@ -321,10 +321,13 @@ msgInput.addEventListener('keydown', (e) => {
 });
 
 // Listen for Laravel Echo events
-Echo.channel('chat')
-.listen('MessageSent', (e) => {
-    if (e.sender !== "You") appendMessage(e.message, e.sender);
-});
+if (typeof Echo !== 'undefined') {
+    Echo.channel('chat')
+    .listen('MessageSent', (e) => {
+        if (e.sender !== "You") appendMessage(e.message, e.sender);
+    });
+}
+
 
 
 
