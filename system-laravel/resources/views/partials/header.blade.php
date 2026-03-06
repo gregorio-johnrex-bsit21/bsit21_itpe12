@@ -210,24 +210,18 @@
         </button>
     </div>
 
-    <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-gray-50/50">
+    <div id="messageList" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-gray-50/50">
         <div class="flex items-start gap-2 max-w-[85%]">
             <div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-bl-none text-sm text-gray-700 shadow-sm">
                 Hey! Please review the final Q1 slides when you have a chance.
-            </div>
-        </div>
-
-        <div class="flex items-start gap-2 self-end max-w-[85%]">
-            <div class="bg-emerald-600 p-3 rounded-2xl rounded-br-none text-sm text-white shadow-sm">
-                On it, Sarah! I'll send feedback in 10 mins.
             </div>
         </div>
     </div>
 
     <div class="p-4 border-t border-gray-100 bg-white pb-8 sm:pb-4 shrink-0">
         <div class="flex items-center gap-2">
-            <input type="text" placeholder="Aa" class="flex-1 bg-gray-100 border-none rounded-full px-4 py-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none">
-            <button class="text-emerald-600 p-1 active:scale-90 transition-transform">
+            <input id="msgInput" type="text" placeholder="Aa" class="flex-1 bg-gray-100 border-none rounded-full px-4 py-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none">
+           <button id="sendBtn" class="text-emerald-600 p-1 active:scale-90 transition-transform">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
             </button>
         </div>
@@ -240,6 +234,7 @@
 
       
 <script>
+    
     const msgBtn = document.getElementById('msgBtn');
     const msgModal = document.getElementById('msgModal');
     const notifBtn = document.getElementById('notifBtn');
@@ -281,6 +276,55 @@
             closeAll();
         }
     });
+
+
+    const msgInput = document.getElementById('msgInput');
+const sendBtn = document.getElementById('sendBtn');
+const messageList = document.getElementById('messageList');
+
+// Append messages dynamically
+function appendMessage(message, sender = "You") {
+    const div = document.createElement('div');
+    div.className = sender === "You" 
+        ? "flex items-start gap-2 self-end max-w-[85%]" 
+        : "flex items-start gap-2 max-w-[85%]";
+
+    div.innerHTML = `<div class="${sender === "You" ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700'} p-3 rounded-2xl ${sender === "You" ? 'rounded-br-none' : 'rounded-bl-none'} text-sm shadow-sm">${message}</div>`;
+
+    messageList.appendChild(div);
+    messageList.scrollTop = messageList.scrollHeight;
+}
+
+// Send message
+sendBtn.addEventListener('click', () => {
+    const message = msgInput.value.trim();
+    if (!message) return;
+
+    appendMessage(message, "You"); // show locally
+
+    // Send to backend
+    fetch('/send-message', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ message: message, sender: "You" })
+    });
+
+    msgInput.value = '';
+});
+
+// Enter key sends
+msgInput.addEventListener('keydown', (e) => {
+    if (e.key === "Enter") sendBtn.click();
+});
+
+// Listen for Laravel Echo events
+Echo.channel('chat')
+.listen('MessageSent', (e) => {
+    if (e.sender !== "You") appendMessage(e.message, e.sender);
+});
 
 
 
