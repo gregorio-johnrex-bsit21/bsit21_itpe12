@@ -7,3 +7,4 @@ Route::get('/', function () {
 });
 
 require __DIR__.'/student.php';
+require __DIR__.'/supervisor.php';
