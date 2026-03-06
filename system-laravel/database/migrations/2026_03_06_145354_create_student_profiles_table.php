@@ -11,10 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('student_profiles', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+       Schema::create('student_profiles', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
+    $table->string('school');
+    $table->text('school_address');
+    $table->text('home_address');
+    $table->string('contact_number');
+    $table->timestamps();
+});
     }
 
     /**

@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ojt_progress', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+       Schema::create('ojt_progress', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
+    $table->integer('required_hours');
+    $table->integer('accumulated_hours')->default(0);
+    $table->integer('remaining_hours');
+    $table->string('status');
+});
     }
 
     /**

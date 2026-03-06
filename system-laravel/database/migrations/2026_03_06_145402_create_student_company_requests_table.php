@@ -12,9 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('student_company_requests', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
+    $table->unsignedBigInteger('company_id');
+    $table->string('status')->default('pending');
+    $table->timestamps();
+});
     }
 
     /**
