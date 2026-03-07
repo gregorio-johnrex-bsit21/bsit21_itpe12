@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'OJT Monitoring & Evaluation System')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -109,11 +110,11 @@
 
                 {{-- Messages --}}
                 <div class="relative">
-                    <button @click="msgOpen = !msgOpen; notifOpen = false; profileOpen = false"
-                            class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-500 relative transition-all">
-                        <i class="far fa-comment-alt text-xl"></i>
-                        <span class="absolute top-2 right-2 w-4 h-4 bg-[#2E7D32] border-2 border-white rounded-full text-[10px] text-white font-bold flex items-center justify-center">2</span>
-                    </button>
+                   <button @click="msgOpen = !msgOpen; notifOpen = false; profileOpen = false"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-500 relative transition-all">
+                    <i class="far fa-comment-alt text-xl"></i>
+                     <span id="totalUnreadBadge" class="absolute top-2 right-2 w-4 h-4 bg-[#2E7D32] border-2 border-white rounded-full text-[10px] text-white font-bold items-center justify-center hidden"></span>
+                  </button>
 
                     <div x-show="msgOpen" @click.away="msgOpen = false" x-cloak
                          x-transition:enter="transition ease-out duration-200"
@@ -127,30 +128,38 @@
                         </div>
 
                         <div class="max-h-80 overflow-y-auto custom-scrollbar">
-                            <div @click="chatOpen = true; chatWith = 'Marcus Wright'; chatColor = '2E7D32'; msgOpen = false"
-                                 class="p-4 hover:bg-slate-50 border-b border-slate-50 flex gap-3 cursor-pointer group transition-all">
-                                <img src="https://ui-avatars.com/api/?name=Marcus+Wright&background=2E7D32&color=fff" class="w-10 h-10 rounded-xl group-hover:scale-105 transition-transform shadow-sm">
-                                <div class="flex-1">
-                                    <div class="flex justify-between items-start">
-                                        <p class="text-sm font-bold text-slate-800">Marcus Wright</p>
-                                        <span class="text-[9px] text-slate-400 font-black">10:45 AM</span>
-                                    </div>
-                                    <p class="text-xs text-slate-500 line-clamp-1 font-medium italic">Hi!!!!</p>
-                                </div>
-                            </div>
+    {{-- Marcus Wright --}}
+    <div @click="chatOpen = true; chatWith = 'Marcus Wright'; chatColor = '2E7D32'; msgOpen = false"
+         class="p-4 hover:bg-slate-50 border-b border-slate-50 flex gap-3 cursor-pointer group transition-all">
+        <div class="relative shrink-0">
+            <img src="https://ui-avatars.com/api/?name=Marcus+Wright&background=2E7D32&color=fff" class="w-10 h-10 rounded-xl group-hover:scale-105 transition-transform shadow-sm">
+            <span id="unread-Marcus_Wright" class="absolute -top-1 -right-1 w-4 h-4 bg-[#2E7D32] border-2 border-white rounded-full text-[9px] text-white font-bold items-center justify-center hidden"></span>
+        </div>
+        <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-start">
+                <p class="text-sm font-bold text-slate-800">Marcus Wright</p>
+                <span id="time-Marcus_Wright" class="text-[9px] text-slate-400 font-black"></span>
+            </div>
+            <p id="preview-Marcus_Wright" class="text-xs text-slate-500 line-clamp-1 font-medium italic">No messages yet</p>
+        </div>
+    </div>
 
-                            <div @click="chatOpen = true; chatWith = 'Sarah Jenkins'; chatColor = 'D50000'; msgOpen = false"
-                                 class="p-4 hover:bg-slate-50 border-b border-slate-50 flex gap-3 cursor-pointer group transition-all">
-                                <img src="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=D50000&color=fff" class="w-10 h-10 rounded-xl group-hover:scale-105 transition-transform shadow-sm">
-                                <div class="flex-1">
-                                    <div class="flex justify-between items-start">
-                                        <p class="text-sm font-bold text-slate-800">Sarah Jenkins</p>
-                                        <span class="text-[9px] text-slate-400 font-black">Yesterday</span>
-                                    </div>
-                                    <p class="text-xs text-slate-500 line-clamp-1 font-medium italic">Sent a message...</p>
-                                </div>
-                            </div>
-                        </div>
+    {{-- Sarah Jenkins --}}
+    <div @click="chatOpen = true; chatWith = 'Sarah Jenkins'; chatColor = 'D50000'; msgOpen = false"
+         class="p-4 hover:bg-slate-50 border-b border-slate-50 flex gap-3 cursor-pointer group transition-all">
+        <div class="relative shrink-0">
+            <img src="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=D50000&color=fff" class="w-10 h-10 rounded-xl group-hover:scale-105 transition-transform shadow-sm">
+            <span id="unread-Sarah_Jenkins" class="absolute -top-1 -right-1 w-4 h-4 bg-[#D50000] border-2 border-white rounded-full text-[9px] text-white font-bold items-center justify-center hidden"></span>
+        </div>
+        <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-start">
+                <p class="text-sm font-bold text-slate-800">Sarah Jenkins</p>
+                <span id="time-Sarah_Jenkins" class="text-[9px] text-slate-400 font-black"></span>
+            </div>
+            <p id="preview-Sarah_Jenkins" class="text-xs text-slate-500 line-clamp-1 font-medium italic">No messages yet</p>
+        </div>
+    </div>
+</div>
                     </div>
                 </div>
 
@@ -206,7 +215,7 @@
                         <div class="px-4 py-3 border-b border-slate-50 mb-1">
                             <p class="text-[15px] font-black text-slate-400 uppercase tracking-widest">ACCOUNT</p>
                             <p class="text-[12px] font-bold text-slate-400 truncate">Supervisor Rodriguez</p>
-                            <p class="text-[11px] text-[#2E7D32] font-medium italic">ojt_admin@system.com</p>
+                            <p class="text-[11px] text-[#2E7D32] font-medium italic">supervisor@company.com</p>
                         </div>
                         <a href="#" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-green-50 hover:text-[#2E7D32] transition-all">
                             <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-[#2E7D32]">
@@ -238,13 +247,14 @@
             @yield('content')
         </div>
 
-        {{-- Chat Window --}}
+        {{-- ===================== CHAT WINDOW ===================== --}}
         <div x-show="chatOpen" x-cloak
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 translate-y-full"
              x-transition:enter-end="opacity-100 translate-y-0"
              class="fixed bottom-0 right-8 w-[340px] bg-white shadow-2xl rounded-t-3xl border border-slate-200 z-[60] flex flex-col overflow-hidden">
 
+            {{-- Chat Header --}}
             <div class="p-4 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3">
                     <img :src="`https://ui-avatars.com/api/?name=${chatWith}&background=${chatColor}&color=fff`" class="w-8 h-8 rounded-lg shadow-sm">
@@ -258,27 +268,235 @@
                 </button>
             </div>
 
-            <div class="h-64 overflow-y-auto p-4 space-y-3 bg-slate-50/30 custom-scrollbar flex flex-col">
-                <div class="flex gap-2 items-start max-w-[90%]">
-                    <div class="bg-white border border-slate-100 text-slate-700 p-3 rounded-2xl rounded-bl-none shadow-sm text-[11px] font-medium leading-relaxed">
-                        Hello Sir! Just wanted to follow up on my hours.
-                    </div>
-                </div>
+            {{-- Messages Area --}}
+            <div id="supervisorMessageList"
+                 class="h-64 overflow-y-auto p-4 space-y-3 bg-slate-50/30 custom-scrollbar flex flex-col">
+                {{-- Messages rendered by JS --}}
             </div>
 
+            {{-- Input Area --}}
             <div class="p-3 bg-white border-t border-slate-100">
                 <div class="flex items-center gap-2 p-1.5 rounded-xl border border-transparent focus-within:bg-white focus-within:border-[#2E7D32] transition-all">
-                    <input type="text" placeholder="Type a message..." class="flex-1 bg-transparent border-none focus:ring-0 text-xs text-slate-700 px-2 h-8">
-                    <button class="bg-[#2E7D32] text-white h-8 w-8 rounded-lg shadow-sm hover:bg-[#256629] transition-all flex items-center justify-center">
+                    <input id="supervisorMsgInput"
+                           type="text"
+                           placeholder="Type a message..."
+                           class="flex-1 bg-transparent border-none focus:ring-0 text-xs text-slate-700 px-2 h-8">
+                    <button id="supervisorSendBtn"
+                            class="bg-[#2E7D32] text-white h-8 w-8 rounded-lg shadow-sm hover:bg-[#256629] transition-all flex items-center justify-center">
                         <i class="fas fa-paper-plane text-[10px]"></i>
                     </button>
                 </div>
             </div>
         </div>
-
-        {{-- Modals --}}
-        @stack('modals')
+        {{-- ================== END CHAT WINDOW =================== --}}
 
     </main>
+
+    {{-- ===================== CHAT JAVASCRIPT ===================== --}}
+    <script>
+       const supervisorMsgInput = document.getElementById('supervisorMsgInput');
+    const supervisorSendBtn  = document.getElementById('supervisorSendBtn');
+    const supervisorMsgList  = document.getElementById('supervisorMessageList');
+
+    // The two known conversations (student names as keys)
+    const CONVERSATIONS = ['Marcus_Wright', 'Sarah_Jenkins'];
+
+    let currentConversation = null; // set when a chat is opened
+    let lastMessageIndex    = 0;
+    let pollInterval        = null;
+    let previewInterval     = null;
+
+    // ── Helpers ──────────────────────────────────────────────
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function conversationKey(displayName) {
+        // "Marcus Wright" → "Marcus_Wright"
+        return displayName.replace(/\s+/g, '_');
+    }
+
+    // ── Render a message bubble ──────────────────────────────
+    function appendSupervisorMessage(message, sender) {
+        const isSupervisor = (sender === 'Supervisor');
+        const wrapper = document.createElement('div');
+        wrapper.className = isSupervisor
+            ? 'flex gap-2 items-start max-w-[90%] self-end ml-auto'
+            : 'flex gap-2 items-start max-w-[90%]';
+
+        wrapper.innerHTML = `
+            <div class="${isSupervisor
+                ? 'bg-[#2E7D32] text-white rounded-2xl rounded-br-none'
+                : 'bg-white border border-slate-100 text-slate-700 rounded-2xl rounded-bl-none'
+            } p-3 shadow-sm text-[11px] font-medium leading-relaxed">
+                ${escapeHtml(message)}
+            </div>
+        `;
+
+        supervisorMsgList.appendChild(wrapper);
+        supervisorMsgList.scrollTop = supervisorMsgList.scrollHeight;
+    }
+
+    // ── Poll active chat messages ────────────────────────────
+   function pollMessages() {
+    if (!currentConversation) return;
+
+    fetch(`/get-messages?conversation=${currentConversation}&after=${lastMessageIndex}`)
+        .then(r => r.json())
+        .then(data => {
+
+            data.messages.forEach(msg => {
+                if (msg.sender !== 'Supervisor') {
+                    appendSupervisorMessage(msg.message, msg.sender);
+                }
+            });
+
+            lastMessageIndex = data.total;
+
+            // 🔹 Update unread badges instantly
+            updatePreviews();
+
+        })
+        .catch(() => {});
+}
+
+    // ── Update message previews + unread badges in dropdown ─
+    function updatePreviews() {
+        const params = CONVERSATIONS.map(n => `names[]=${n}`).join('&');
+        fetch(`/get-conversations?${params}`)
+            .then(r => r.json())
+            .then(data => {
+                let totalUnread = 0;
+
+                CONVERSATIONS.forEach(key => {
+                    const info    = data[key];
+                    const preview = document.getElementById(`preview-${key}`);
+                    const timeel  = document.getElementById(`time-${key}`);
+                    const badge   = document.getElementById(`unread-${key}`);
+
+                    if (!info || !info.last) return;
+
+                    if (preview) preview.textContent = info.last.message.length > 35
+                        ? info.last.message.substring(0, 35) + '...'
+                        : info.last.message;
+
+                    if (timeel) timeel.textContent = info.last.time || '';
+
+                    if (badge) {
+                        if (info.unread > 0) {
+                            badge.textContent = info.unread > 9 ? '9+' : info.unread;
+                            badge.classList.remove('hidden');
+                            badge.classList.add('flex');
+                        } else {
+                            badge.classList.add('hidden');
+                            badge.classList.remove('flex');
+                        }
+                    }
+
+                    totalUnread += info.unread || 0;
+                });
+
+                // Update the main icon badge
+                const mainBadge = document.getElementById('totalUnreadBadge');
+                if (mainBadge) {
+                    if (totalUnread > 0) {
+                        mainBadge.textContent = totalUnread > 9 ? '9+' : totalUnread;
+                        mainBadge.classList.remove('hidden');
+                        mainBadge.classList.add('flex');
+                    } else {
+                        mainBadge.classList.add('hidden');
+                        mainBadge.classList.remove('flex');
+                    }
+                }
+            })
+            .catch(() => {});
+    }
+
+    // ── Watch Alpine chatOpen to start/stop chat polling ────
+    const chatWindow = document.querySelector('[x-show="chatOpen"]');
+    const observer = new MutationObserver(() => {
+        const isVisible = chatWindow && chatWindow.style.display !== 'none';
+
+       if (isVisible && !pollInterval) {
+    const alpineEl = document.querySelector('[x-data]');
+    const alpineData = alpineEl ? Alpine.$data(alpineEl) : null;
+    const chatWith = alpineData ? alpineData.chatWith : null;
+    const newConversation = chatWith ? conversationKey(chatWith) : null;
+
+    if (newConversation !== currentConversation) {
+        lastMessageIndex = 0;
+        supervisorMsgList.innerHTML = '';
+    }
+
+    currentConversation = newConversation;
+
+    pollMessages();
+    markSupervisorRead();
+
+    pollInterval = setInterval(pollMessages, 2000);
+} else if (!isVisible && pollInterval) {
+    clearInterval(pollInterval);
+    pollInterval = null;
+}
+    });
+
+    if (chatWindow) {
+        observer.observe(chatWindow, { attributes: true, attributeFilter: ['style'] });
+    }
+
+    // ── Send a message ────────────────────────────────────────
+    function sendSupervisorMessage() {
+        const message = supervisorMsgInput.value.trim();
+        if (!message || !currentConversation) return;
+
+        appendSupervisorMessage(message, 'Supervisor');
+        lastMessageIndex++;
+        supervisorMsgInput.value = '';
+
+        fetch('/send-message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                message:      message,
+                sender:       'Supervisor',
+                conversation: currentConversation
+            })
+        });
+    }
+
+    function markSupervisorRead() {
+    if (!currentConversation) return;
+
+    fetch('/mark-read', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            conversation: currentConversation,
+            role: 'Supervisor'
+        })
+    }).then(() => {
+        updatePreviews(); // refresh badges
+    });
+}
+
+    supervisorSendBtn.addEventListener('click', sendSupervisorMessage);
+    supervisorMsgInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') sendSupervisorMessage();
+    });
+
+    // ── Poll previews every 3s (even when chat is closed) ───
+    updatePreviews();
+    previewInterval = setInterval(updatePreviews, 3000);
+    </script>
+    {{-- ================== END CHAT JAVASCRIPT =================== --}}
+
 </body>
 </html>
