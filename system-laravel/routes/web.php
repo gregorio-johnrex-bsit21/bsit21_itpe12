@@ -10,6 +10,7 @@ Route::get('/', function () {
 
 require __DIR__.'/student.php';
 require __DIR__.'/supervisor.php';
+require __DIR__.'/admin.php';
 
 // ============================================================
 // Chat routes — file-based, read indexes tracked server-side
@@ -49,6 +50,9 @@ Route::post('/send-message', function (Request $request) {
 
     if (count($data['messages']) > 100) {
         $data['messages'] = array_slice($data['messages'], -100);
+        foreach ($data['readBy'] as $role => $index) {
+    $data['readBy'][$role] = max(0, $index - $excess);
+}
     }
 
     // Auto-mark sender as read so their own message doesn't count as unread for them

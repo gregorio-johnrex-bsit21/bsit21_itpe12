@@ -88,11 +88,10 @@ function pollStudentMessages() {
     fetch(`/get-messages?conversation=${STUDENT_CONVERSATION}&after=${lastMessageIndex}&role=${STUDENT_ROLE}`)
         .then(r => r.json())
         .then(data => {
-            data.messages.forEach(msg => {
-                if (lastMessageIndex === 0 || msg.sender !== 'Student') {
-                    appendMessage(msg.message, msg.sender);
-                }
-            });
+            // Fixed:
+data.messages.forEach(msg => {
+    appendMessage(msg.message, msg.sender);
+});
             lastMessageIndex = data.total;
         })
         .catch(() => {});
@@ -127,6 +126,7 @@ function updateStudentPreview() {
     fetch(`/get-messages?conversation=${STUDENT_CONVERSATION}&after=0&role=${STUDENT_ROLE}`)
         .then(r => r.json())
         .then(data => {
+            console.log('unread count:', data.unread); 
             const unread = data.unread ?? 0;
             const msgs   = data.messages;
             const last   = msgs.length > 0 ? msgs[msgs.length - 1] : null;

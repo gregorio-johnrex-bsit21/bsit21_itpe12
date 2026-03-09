@@ -348,16 +348,11 @@
         .then(data => {
 
             data.messages.forEach(msg => {
-                if (msg.sender !== 'Supervisor') {
-                    appendSupervisorMessage(msg.message, msg.sender);
-                }
+                appendSupervisorMessage(msg.message, msg.sender); // ← just render everything
             });
 
             lastMessageIndex = data.total;
-
-            // 🔹 Update unread badges instantly
             updatePreviews();
-
         })
         .catch(() => {});
 }
