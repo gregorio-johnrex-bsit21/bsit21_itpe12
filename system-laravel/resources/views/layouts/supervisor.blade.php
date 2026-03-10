@@ -129,7 +129,7 @@
 
                         <div class="max-h-80 overflow-y-auto custom-scrollbar">
     {{-- Marcus Wright --}}
-    <div @click="chatOpen = true; chatWith = 'Marcus Wright'; chatColor = '2E7D32'; msgOpen = false"
+    <div @click="chatOpen = true; chatWith = 'Marcus Wright'; chatColor = '2E7D32'; msgOpen = false; openSupervisorChat('Marcus Wright')"
          class="p-4 hover:bg-slate-50 border-b border-slate-50 flex gap-3 cursor-pointer group transition-all">
         <div class="relative shrink-0">
             <img src="https://ui-avatars.com/api/?name=Marcus+Wright&background=2E7D32&color=fff" class="w-10 h-10 rounded-xl group-hover:scale-105 transition-transform shadow-sm">
@@ -145,7 +145,7 @@
     </div>
 
     {{-- Sarah Jenkins --}}
-    <div @click="chatOpen = true; chatWith = 'Sarah Jenkins'; chatColor = 'D50000'; msgOpen = false"
+    <div @click="chatOpen = true; chatWith = 'Sarah Jenkins'; chatColor = 'D50000'; msgOpen = false; openSupervisorChat('Sarah Jenkins')"
          class="p-4 hover:bg-slate-50 border-b border-slate-50 flex gap-3 cursor-pointer group transition-all">
         <div class="relative shrink-0">
             <img src="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=D50000&color=fff" class="w-10 h-10 rounded-xl group-hover:scale-105 transition-transform shadow-sm">
@@ -263,7 +263,7 @@
                         <p class="text-[9px] font-bold text-green-500 uppercase tracking-widest">Active Now</p>
                     </div>
                 </div>
-                <button @click="chatOpen = false" class="text-slate-300 hover:text-red-500 transition-colors">
+                <button @click="chatOpen = false; closeSupervisorChat()" class="text-slate-300 hover:text-red-500 transition-colors">
                     <i class="fas fa-times-circle text-lg"></i>
                 </button>
             </div>
@@ -292,21 +292,20 @@
 
     </main>
 
-    {{-- ===================== CHAT JAVASCRIPT ===================== --}}
-    <script>
-       const supervisorMsgInput = document.getElementById('supervisorMsgInput');
+   {{-- ===================== CHAT JAVASCRIPT ===================== --}}
+<script>
+    const supervisorMsgInput = document.getElementById('supervisorMsgInput');
     const supervisorSendBtn  = document.getElementById('supervisorSendBtn');
     const supervisorMsgList  = document.getElementById('supervisorMessageList');
 
-    // The two known conversations (student names as keys)
     const CONVERSATIONS = ['Marcus_Wright', 'Sarah_Jenkins'];
 
-    let currentConversation = null; // set when a chat is opened
+    let currentConversation = null;
     let lastMessageIndex    = 0;
     let pollInterval        = null;
     let previewInterval     = null;
+    let chatIsOpen          = false;
 
-    // ── Helpers ──────────────────────────────────────────────
     function escapeHtml(str) {
         return String(str)
             .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -314,18 +313,15 @@
     }
 
     function conversationKey(displayName) {
-        // "Marcus Wright" → "Marcus_Wright"
         return displayName.replace(/\s+/g, '_');
     }
 
-    // ── Render a message bubble ──────────────────────────────
     function appendSupervisorMessage(message, sender) {
         const isSupervisor = (sender === 'Supervisor');
         const wrapper = document.createElement('div');
         wrapper.className = isSupervisor
             ? 'flex gap-2 items-start max-w-[90%] self-end ml-auto'
             : 'flex gap-2 items-start max-w-[90%]';
-
         wrapper.innerHTML = `
             <div class="${isSupervisor
                 ? 'bg-[#2E7D32] text-white rounded-2xl rounded-br-none'
@@ -334,37 +330,54 @@
                 ${escapeHtml(message)}
             </div>
         `;
-
         supervisorMsgList.appendChild(wrapper);
         supervisorMsgList.scrollTop = supervisorMsgList.scrollHeight;
     }
 
-    // ── Poll active chat messages ────────────────────────────
-   function pollMessages() {
-    if (!currentConversation) return;
+    function openSupervisorChat(displayName) {
+        const newConversation = conversationKey(displayName);
 
-    fetch(`/get-messages?conversation=${currentConversation}&after=${lastMessageIndex}`)
-        .then(r => r.json())
-        .then(data => {
+        if (newConversation !== currentConversation) {
+            currentConversation = newConversation;
+            lastMessageIndex    = 0;
+            supervisorMsgList.innerHTML = '';
+        }
 
-            data.messages.forEach(msg => {
-                appendSupervisorMessage(msg.message, msg.sender); // ← just render everything
-            });
+        clearInterval(pollInterval);
+        pollInterval = null;
+        chatIsOpen   = true;
 
-            lastMessageIndex = data.total;
-            updatePreviews();
-        })
-        .catch(() => {});
-}
+        pollMessages();
+        markSupervisorRead();
+        pollInterval = setInterval(pollMessages, 2000);
+    }
 
-    // ── Update message previews + unread badges in dropdown ─
+    function closeSupervisorChat() {
+        chatIsOpen = false;
+        clearInterval(pollInterval);
+        pollInterval     = null;
+        lastMessageIndex = 0;
+    }
+
+    function pollMessages() {
+        if (!currentConversation) return;
+        fetch(`/get-messages?conversation=${currentConversation}&after=${lastMessageIndex}&role=Supervisor`)
+            .then(r => r.json())
+            .then(data => {
+                data.messages.forEach(msg => {
+                    appendSupervisorMessage(msg.message, msg.sender);
+                });
+                lastMessageIndex = data.total;
+            })
+            .catch(() => {});
+    }
+
     function updatePreviews() {
         const params = CONVERSATIONS.map(n => `names[]=${n}`).join('&');
         fetch(`/get-conversations?${params}`)
             .then(r => r.json())
             .then(data => {
                 let totalUnread = 0;
-
                 CONVERSATIONS.forEach(key => {
                     const info    = data[key];
                     const preview = document.getElementById(`preview-${key}`);
@@ -376,7 +389,6 @@
                     if (preview) preview.textContent = info.last.message.length > 35
                         ? info.last.message.substring(0, 35) + '...'
                         : info.last.message;
-
                     if (timeel) timeel.textContent = info.last.time || '';
 
                     if (badge) {
@@ -389,11 +401,9 @@
                             badge.classList.remove('flex');
                         }
                     }
-
                     totalUnread += info.unread || 0;
                 });
 
-                // Update the main icon badge
                 const mainBadge = document.getElementById('totalUnreadBadge');
                 if (mainBadge) {
                     if (totalUnread > 0) {
@@ -409,89 +419,47 @@
             .catch(() => {});
     }
 
-    // ── Watch Alpine chatOpen to start/stop chat polling ────
-    const chatWindow = document.querySelector('[x-show="chatOpen"]');
-    const observer = new MutationObserver(() => {
-        const isVisible = chatWindow && chatWindow.style.display !== 'none';
-
-       if (isVisible && !pollInterval) {
-    const alpineEl = document.querySelector('[x-data]');
-    const alpineData = alpineEl ? Alpine.$data(alpineEl) : null;
-    const chatWith = alpineData ? alpineData.chatWith : null;
-    const newConversation = chatWith ? conversationKey(chatWith) : null;
-
-    if (newConversation !== currentConversation) {
-        lastMessageIndex = 0;
-        supervisorMsgList.innerHTML = '';
+    function markSupervisorRead() {
+        if (!currentConversation) return;
+        fetch('/mark-read', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ conversation: currentConversation, role: 'Supervisor' })
+        }).then(() => updatePreviews());
     }
 
-    currentConversation = newConversation;
-
-    pollMessages();
-    markSupervisorRead();
-
-    pollInterval = setInterval(pollMessages, 2000);
-} else if (!isVisible && pollInterval) {
-    clearInterval(pollInterval);
-    pollInterval = null;
-}
-    });
-
-    if (chatWindow) {
-        observer.observe(chatWindow, { attributes: true, attributeFilter: ['style'] });
-    }
-
-    // ── Send a message ────────────────────────────────────────
     function sendSupervisorMessage() {
         const message = supervisorMsgInput.value.trim();
         if (!message || !currentConversation) return;
-
         appendSupervisorMessage(message, 'Supervisor');
         lastMessageIndex++;
         supervisorMsgInput.value = '';
-
         fetch('/send-message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             },
             body: JSON.stringify({
-                message:      message,
-                sender:       'Supervisor',
+                message,
+                sender: 'Supervisor',
                 conversation: currentConversation
             })
         });
     }
-
-    function markSupervisorRead() {
-    if (!currentConversation) return;
-
-    fetch('/mark-read', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-            conversation: currentConversation,
-            role: 'Supervisor'
-        })
-    }).then(() => {
-        updatePreviews(); // refresh badges
-    });
-}
 
     supervisorSendBtn.addEventListener('click', sendSupervisorMessage);
     supervisorMsgInput.addEventListener('keydown', e => {
         if (e.key === 'Enter') sendSupervisorMessage();
     });
 
-    // ── Poll previews every 3s (even when chat is closed) ───
     updatePreviews();
     previewInterval = setInterval(updatePreviews, 3000);
-    </script>
-    {{-- ================== END CHAT JAVASCRIPT =================== --}}
+</script>
+{{-- ================== END CHAT JAVASCRIPT =================== --}}
 
 </body>
 </html>

@@ -96,20 +96,19 @@
         <span id="studentNewLabel" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full hidden"></span>
     </div>
     <div class="max-h-[300px] overflow-y-auto">
-        <div onclick="openChat()" class="p-4 flex items-center gap-3 hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100">
-            <div class="relative flex-shrink-0">
-                <img src="https://ui-avatars.com/api/?name=Sarah+Miller&background=0ea5e9&color=fff" class="w-10 h-10 rounded-full">
-                <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-            </div>
-            <div class="flex-1 min-w-0">
-                <div class="flex justify-between items-center">
-                    <span class="text-[10px] font-bold text-emerald-600 uppercase">Supervisor</span>
-                    <span id="studentMsgTime" class="text-[10px] text-gray-400 font-medium"></span>
-                </div>
-                <p class="text-sm font-bold text-gray-900 truncate">Sarah Miller</p>
-                <p id="studentMsgPreview" class="text-xs text-gray-500 truncate font-medium">No messages yet</p>
-            </div>
-        </div>
+       <div onclick="openChat()" class="p-4 flex items-center gap-3 hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100">
+    <div class="relative flex-shrink-0">
+        <img src="https://ui-avatars.com/api/?name=Sarah+Miller&background=0ea5e9&color=fff" class="w-10 h-10 rounded-full">
+        <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+    </div>
+    <div class="flex-1 min-w-0">
+    <p id="supervisorName" class="text-sm font-bold text-gray-900 truncate transition-colors">Sarah Miller</p>
+    <div class="flex items-center gap-1">
+        <p id="studentMsgPreview" class="text-xs text-gray-500 truncate font-medium transition-colors">No messages yet</p>
+        <span id="studentMsgTime" class="text-[11px] text-gray-400 font-medium shrink-0 before:content-['·'] before:mr-1"></span>
+    </div>
+</div>
+</div>
     </div>
     <div class="flex border-t border-gray-100 bg-gray-50/50">
         <button onclick="closeAll()" class="flex-1 p-3 text-xs font-bold text-gray-400 hover:text-gray-600">Close</button>

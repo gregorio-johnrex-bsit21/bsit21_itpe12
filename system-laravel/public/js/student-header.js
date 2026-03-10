@@ -16,6 +16,9 @@ const msgInput    = document.getElementById('msgInput');
 const sendBtn     = document.getElementById('sendBtn');
 const messageList = document.getElementById('messageList');
 
+// ── Flag to prevent document listener from closing a modal we just opened ──
+let justOpenedModal = false;
+
 // ── Modal open/close ──────────────────────────────────────────
 function closeAll() {
     msgModal.classList.add('hidden');
@@ -27,29 +30,47 @@ function openChat() {
     chatBox.classList.remove('hidden');
     startChatPolling();
     markAsRead();
+    markRead(); // ✅ reset the highlight when user opens chat
 }
 
 function closeChat() {
     chatBox.classList.add('hidden');
     stopChatPolling();
+    lastMessageIndex = 0; 
 }
 
+// ── Button listeners ──────────────────────────────────────────
 msgBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     const isHidden = msgModal.classList.contains('hidden');
     closeAll();
-    if (isHidden) msgModal.classList.remove('hidden');
+    if (isHidden) {
+        msgModal.classList.remove('hidden');
+        justOpenedModal = true;
+    }
 });
 
 notifBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     const isHidden = notifModal.classList.contains('hidden');
     closeAll();
-    if (isHidden) notifModal.classList.remove('hidden');
+    if (isHidden) {
+        notifModal.classList.remove('hidden');
+        justOpenedModal = true;
+    }
 });
 
+// ── Close on outside click/tap ────────────────────────────────
 document.addEventListener('click', (e) => {
-    if (!msgModal.contains(e.target) && !notifModal.contains(e.target) && !chatBox.contains(e.target)) {
+    if (justOpenedModal) {
+        justOpenedModal = false;
+        return;
+    }
+    const clickedInsideMsg   = msgModal.contains(e.target)   || msgBtn.contains(e.target);
+    const clickedInsideNotif = notifModal.contains(e.target) || notifBtn.contains(e.target);
+    const clickedInsideChat  = chatBox.contains(e.target);
+
+    if (!clickedInsideMsg && !clickedInsideNotif && !clickedInsideChat) {
         closeAll();
     }
 });
@@ -88,10 +109,9 @@ function pollStudentMessages() {
     fetch(`/get-messages?conversation=${STUDENT_CONVERSATION}&after=${lastMessageIndex}&role=${STUDENT_ROLE}`)
         .then(r => r.json())
         .then(data => {
-            // Fixed:
-data.messages.forEach(msg => {
-    appendMessage(msg.message, msg.sender);
-});
+            data.messages.forEach(msg => {
+                appendMessage(msg.message, msg.sender);
+            });
             lastMessageIndex = data.total;
         })
         .catch(() => {});
@@ -109,7 +129,7 @@ function stopChatPolling() {
     studentPollInterval = null;
 }
 
-// ── Mark as read (server-side) ────────────────────────────────
+// ── Mark as read ──────────────────────────────────────────────
 function markAsRead() {
     fetch('/mark-read', {
         method: 'POST',
@@ -121,12 +141,11 @@ function markAsRead() {
     }).then(() => updateStudentPreview());
 }
 
-// ── Preview + unread badge (server-side unread count) ─────────
+// ── Preview + unread badge ────────────────────────────────────
 function updateStudentPreview() {
     fetch(`/get-messages?conversation=${STUDENT_CONVERSATION}&after=0&role=${STUDENT_ROLE}`)
         .then(r => r.json())
         .then(data => {
-            console.log('unread count:', data.unread); 
             const unread = data.unread ?? 0;
             const msgs   = data.messages;
             const last   = msgs.length > 0 ? msgs[msgs.length - 1] : null;
@@ -148,12 +167,18 @@ function updateStudentPreview() {
                 newLabel.textContent = unread > 0 ? unread + ' New' : '';
                 newLabel.classList.toggle('hidden', unread === 0);
             }
+
+            // ✅ THIS is what was missing — trigger the highlight based on unread count
+            if (unread > 0) {
+                markUnread();
+            } else {
+                markRead();
+            }
         })
         .catch(() => {});
 }
-
 // ── Send message ──────────────────────────────────────────────
-sendBtn.addEventListener('click', () => {
+function sendStudentMessage() {
     const message = msgInput.value.trim();
     if (!message) return;
     appendMessage(message, 'Student');
@@ -167,9 +192,14 @@ sendBtn.addEventListener('click', () => {
         },
         body: JSON.stringify({ message, sender: 'Student', conversation: STUDENT_CONVERSATION })
     });
+}
+
+sendBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sendStudentMessage();
 });
 
-msgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendBtn.click(); });
+msgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendStudentMessage(); });
 
 // ── Notes / Diary ─────────────────────────────────────────────
 const diaryBtn     = document.getElementById('diaryBtn');
@@ -180,17 +210,52 @@ const closeCompose = document.getElementById('closeCompose');
 const addNewBtn    = document.getElementById('addNewBtn');
 const saveNote     = document.getElementById('saveNote');
 
-diaryBtn.onclick     = () => inboxModal.classList.remove('hidden');
-addNewBtn.onclick    = () => composeModal.classList.remove('hidden');
-closeInbox.onclick   = () => inboxModal.classList.add('hidden');
-closeCompose.onclick = () => composeModal.classList.add('hidden');
-saveNote.onclick     = () => { alert('Note saved!'); composeModal.classList.add('hidden'); };
+diaryBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    justOpenedModal = true;
+    inboxModal.classList.remove('hidden');
+});
 
-window.onclick = (e) => {
-    if (e.target === inboxModal)   inboxModal.classList.add('hidden');
-    if (e.target === composeModal) composeModal.classList.add('hidden');
-};
+addNewBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    justOpenedModal = true;
+    composeModal.classList.remove('hidden');
+});
+
+closeInbox.addEventListener('click', (e) => {
+    e.stopPropagation();
+    inboxModal.classList.add('hidden');
+});
+
+closeCompose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    composeModal.classList.add('hidden');
+});
+
+saveNote.addEventListener('click', (e) => {
+    e.stopPropagation();
+    alert('Note saved!');
+    composeModal.classList.add('hidden');
+});
+
+// Close notes modals on backdrop tap
+inboxModal.addEventListener('click',   (e) => { if (e.target === inboxModal)   inboxModal.classList.add('hidden'); });
+composeModal.addEventListener('click', (e) => { if (e.target === composeModal) composeModal.classList.add('hidden'); });
 
 // ── Start preview polling on load ─────────────────────────────
 updateStudentPreview();
 studentPreviewInterval = setInterval(updateStudentPreview, 3000);
+
+function markUnread() {
+    
+    document.getElementById('supervisorName').classList.add('font-black', 'text-blue-600');
+    document.getElementById('studentMsgPreview').classList.add('font-black', 'text-gray-900');
+    document.getElementById('studentMsgPreview').classList.remove('text-gray-500', 'font-medium');
+}
+
+function markRead() {
+   
+    document.getElementById('supervisorName').classList.remove('font-black', 'text-blue-600');
+    document.getElementById('studentMsgPreview').classList.remove('font-black', 'text-gray-900');
+    document.getElementById('studentMsgPreview').classList.add('text-gray-500', 'font-medium');
+}

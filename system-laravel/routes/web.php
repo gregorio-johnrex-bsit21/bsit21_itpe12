@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\ChatController;
 
 Route::get('/', function () {
     return redirect('/student');
@@ -123,3 +124,9 @@ Route::post('/clear-messages', function (Request $request) {
     writeChatData($conversation, ['messages' => [], 'readBy' => []]);
     return response()->json(['status' => 'cleared']);
 });
+
+
+Route::get('/get-messages',  [ChatController::class, 'getMessages']);
+Route::post('/send-message', [ChatController::class, 'sendMessage']);
+Route::post('/mark-read',    [ChatController::class, 'markRead']);
+Route::get('/get-conversations', [ChatController::class, 'getConversations']);
