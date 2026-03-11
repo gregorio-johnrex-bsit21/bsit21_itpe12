@@ -4,11 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SupervisorController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
 Route::get('/admin/students', [StudentController::class, 'index'])->name('admin.students');
 Route::get('/admin/supervisor', [SupervisorController::class, 'index'])->name('admin.supervisor');
+Route::get('/admin/report', [ReportController::class, 'index'])->name('admin.report');
 
 Route::post('/logout', function () {
     Auth::logout();

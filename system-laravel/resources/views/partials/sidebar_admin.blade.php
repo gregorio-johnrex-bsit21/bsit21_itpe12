@@ -11,16 +11,23 @@
 
     <li class="nav-item {{ request()->routeIs('admin.students') ? 'active' : '' }}">
       <a class="nav-link" href="{{ route('admin.students') }}">
-        <i class="menu-icon mdi mdi-floor-plan"></i>
-        <span class="menu-title">Students</span>
+        <i class="menu-icon mdi mdi-office-building"></i>
+        <span class="menu-title">Company</span>
       </a>
     </li>
 
 
     <li class="nav-item {{ request()->routeIs('admin.supervisor') ? 'active' : '' }}">
       <a class="nav-link" href="{{ route('admin.supervisor') }}">
-        <i class="menu-icon mdi mdi-floor-plan"></i>
-        <span class="menu-title">Supervisor</span>
+        <i class="menu-icon mdi mdi-account-group"></i>
+        <span class="menu-title">Student Attendance</span>
+      </a>
+    </li>
+
+        <li class="nav-item {{ request()->routeIs('admin.report') ? 'active' : '' }}">
+      <a class="nav-link" href="{{ route('admin.report') }}">
+        <i class="menu-icon mdi mdi-file-chart"></i>
+        <span class="menu-title">Report</span>
       </a>
     </li>
 
