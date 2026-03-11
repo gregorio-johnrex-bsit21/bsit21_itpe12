@@ -248,14 +248,14 @@ studentPreviewInterval = setInterval(updateStudentPreview, 3000);
 
 function markUnread() {
     
-    document.getElementById('supervisorName').classList.add('font-black', 'text-blue-600');
+    document.getElementById('supervisorName').classList.add('font-black', 'text-green-600');
     document.getElementById('studentMsgPreview').classList.add('font-black', 'text-gray-900');
     document.getElementById('studentMsgPreview').classList.remove('text-gray-500', 'font-medium');
 }
 
 function markRead() {
    
-    document.getElementById('supervisorName').classList.remove('font-black', 'text-blue-600');
+    document.getElementById('supervisorName').classList.remove('font-black', 'text-green-600');
     document.getElementById('studentMsgPreview').classList.remove('font-black', 'text-gray-900');
     document.getElementById('studentMsgPreview').classList.add('text-gray-500', 'font-medium');
 }

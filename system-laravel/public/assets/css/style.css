@@ -30385,6 +30385,22 @@ dl li {
     overflow-y: auto;
 }
 
+
+
+.navbar.default-layout {
+    align-items: flex-start !important;
+}
+
+.navbar.default-layout .navbar-menu-wrapper {
+    height: 90px !important;
+    transition: none !important;
+}
+
+.navbar.default-layout .navbar-brand-wrapper {
+    height: 90px !important;
+    transition: none !important;
+}
+
 .main-panel {
     margin-left: 260px; /* match sidebar width */
     width: calc(100% - 260px);

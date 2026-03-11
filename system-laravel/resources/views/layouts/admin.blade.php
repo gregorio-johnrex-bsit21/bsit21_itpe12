@@ -40,11 +40,6 @@
             {{-- Page Content --}}
             @yield('content')
 
-          </div>
-
-          {{-- Footer --}}
-          @include('partials.footer')
-        </div>
         {{-- main-panel ends --}}
 
       </div>

@@ -44,7 +44,7 @@
             <a href="{{ route('supervisor.dashboard') }}"
                class="{{ request()->routeIs('supervisor.dashboard') ? 'bg-[#2E7D32] text-white shadow-md shadow-green-100' : 'text-slate-500 hover:bg-slate-50' }}
                       w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200">
-                <i class="fas fa-grid-2 w-5 text-center"></i>
+                <i class="fas fa-tachometer-alt w-5 text-center"></i>
                 <span x-show="sidebarOpen" class="font-medium whitespace-nowrap">Dashboard</span>
             </a>
 
