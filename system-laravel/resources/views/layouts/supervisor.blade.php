@@ -317,22 +317,30 @@
     }
 
     function appendSupervisorMessage(message, sender) {
-        const isSupervisor = (sender === 'Supervisor');
-        const wrapper = document.createElement('div');
-        wrapper.className = isSupervisor
-            ? 'flex gap-2 items-start max-w-[90%] self-end ml-auto'
-            : 'flex gap-2 items-start max-w-[90%]';
-        wrapper.innerHTML = `
-            <div class="${isSupervisor
-                ? 'bg-[#2E7D32] text-white rounded-2xl rounded-br-none'
-                : 'bg-white border border-slate-100 text-slate-700 rounded-2xl rounded-bl-none'
-            } p-3 shadow-sm text-[11px] font-medium leading-relaxed">
-                ${escapeHtml(message)}
-            </div>
-        `;
-        supervisorMsgList.appendChild(wrapper);
-        supervisorMsgList.scrollTop = supervisorMsgList.scrollHeight;
+    const isSupervisor = (sender === 'Supervisor');
+    const wrapper = document.createElement('div');
+    wrapper.className = isSupervisor
+        ? 'flex gap-2 items-start max-w-[90%] self-end ml-auto'
+        : 'flex gap-2 items-start max-w-[90%]';
+
+    let content = '';
+    if (message.startsWith('[image]')) {
+        const url = message.replace('[image]', '');
+        content = `<img src="${url}" class="max-w-[200px] max-h-48 rounded-xl object-cover cursor-pointer shadow-sm" onclick="window.open('${url}', '_blank')" />`;
+    } else if (message.startsWith('[video]')) {
+        const url = message.replace('[video]', '');
+        content = `<video src="${url}" controls class="max-w-[200px] max-h-48 rounded-xl shadow-sm"></video>`;
+    } else {
+        content = `<div class="${isSupervisor
+            ? 'bg-[#2E7D32] text-white rounded-2xl rounded-br-none'
+            : 'bg-white border border-slate-100 text-slate-700 rounded-2xl rounded-bl-none'
+        } p-3 shadow-sm text-[11px] font-medium leading-relaxed">${escapeHtml(message)}</div>`;
     }
+
+    wrapper.innerHTML = content;
+    supervisorMsgList.appendChild(wrapper);
+    supervisorMsgList.scrollTop = supervisorMsgList.scrollHeight;
+}
 
     function openSupervisorChat(displayName) {
         const newConversation = conversationKey(displayName);

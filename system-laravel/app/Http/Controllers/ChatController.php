@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ChatController extends Controller
 {
@@ -57,6 +58,18 @@ class ChatController extends Controller
             'unread'   => $unread,
         ]);
     }
+    
+    
+
+    public function uploadMedia(Request $request)
+    {
+         $request->validate(['file' => 'required|file|mimes:jpeg,png,gif,mp4,webm,ogg|max:20480']);
+         $path = $request->file('file')->store('chat-media', 'public');
+         return response()->json(['url' => Storage::url($path)]);
+    }
+
+
+
 
     /**
      * POST /send-message
@@ -151,3 +164,5 @@ public function getConversations(Request $request): JsonResponse
     return response()->json($result);
 }
 }
+
+

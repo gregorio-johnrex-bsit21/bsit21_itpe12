@@ -130,3 +130,5 @@ Route::get('/get-messages',  [ChatController::class, 'getMessages']);
 Route::post('/send-message', [ChatController::class, 'sendMessage']);
 Route::post('/mark-read',    [ChatController::class, 'markRead']);
 Route::get('/get-conversations', [ChatController::class, 'getConversations']);
+
+Route::post('/upload-media', [ChatController::class, 'uploadMedia']);
