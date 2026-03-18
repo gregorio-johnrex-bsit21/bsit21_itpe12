@@ -56,18 +56,6 @@
             </div>
         </div>
         <div class="max-h-80 overflow-y-auto p-6 space-y-2">
-            <div class="p-3 border rounded-lg hover:border-emerald-300 hover:bg-emerald-50 cursor-pointer transition-all">
-                <p class="text-sm font-semibold text-gray-800">Monday Reflections</p>
-                <p class="text-xs text-gray-500">The project is going well...</p>
-            </div>
-            <div class="p-3 border rounded-lg hover:border-emerald-300 hover:bg-emerald-50 cursor-pointer transition-all">
-                <p class="text-sm font-semibold text-gray-800">Debugging</p>
-                <p class="text-xs text-gray-500">There was a bug...</p>
-            </div>
-            <div class="p-3 border rounded-lg hover:border-emerald-300 hover:bg-emerald-50 cursor-pointer transition-all">
-                <p class="text-sm font-semibold text-gray-800">Coding Session</p>
-                <p class="text-xs text-gray-500">We built some website...</p>
-            </div>
         </div>
     </div>
 </div>
@@ -174,12 +162,38 @@
     <div class="p-4 border-t border-gray-100 bg-white pb-8 sm:pb-4 shrink-0">
         <div class="flex items-center gap-2">
             <input id="msgInput" type="text" placeholder="Aa" class="flex-1 bg-gray-100 border-none rounded-full px-4 py-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none">
+            
+            <button id="imageBtn" class="text-gray-500 hover:text-emerald-500 p-1 active:scale-90 transition-transform">
+                <input type="file" id="mediaInput" accept="image/jpeg,image/png,image/gif,video/mp4,video/webm,video/ogg" class="hidden">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </button>
+
             <button id="sendBtn" class="text-emerald-600 p-1 active:scale-90 transition-transform">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
             </button>
         </div>
     </div>
 </div>
+
+
+<div id="mediaPreviewModal" class="fixed inset-0 bg-black/70 z-[999] flex items-center justify-center hidden"
+     style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
+        <div class="p-4 border-b flex justify-between items-center">
+            <h3 class="font-bold text-gray-800">Send Media</h3>
+            <button id="closeMediaPreview" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        <div class="p-4 flex items-center justify-center bg-gray-50 min-h-48">
+            <img id="imagePreview" class="max-h-64 max-w-full rounded-lg object-contain hidden" />
+            <video id="videoPreview" class="max-h-64 max-w-full rounded-lg object-contain hidden" controls></video>
+        </div>
+        <div class="p-4 flex justify-between items-center gap-2">
+            <button id="cancelMediaBtn" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors">Cancel</button>
+            <button id="sendMediaBtn" class="px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium shadow-md hover:bg-emerald-700 transition-colors">Send</button>
+        </div>
+    </div>
+</div>
+
 
 {{-- ============================================================
      SCRIPTS — loads after ALL html above
