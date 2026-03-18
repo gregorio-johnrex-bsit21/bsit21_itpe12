@@ -33,7 +33,12 @@
        @click="sidebarOpen = false"
        class="w-full flex items-center space-x-3 p-3 rounded-xl font-semibold transition
        {{ request()->routeIs('students.dashboard') ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:bg-gray-50' }}">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <rect x="3" y="3" width="7" height="7" rx="1"/>
+    <rect x="14" y="3" width="7" height="7" rx="1"/>
+    <rect x="3" y="14" width="7" height="7" rx="1"/>
+    <rect x="14" y="14" width="7" height="7" rx="1"/>
+</svg>
         <span>Dashboard</span>
     </a>
 
@@ -41,8 +46,26 @@
        @click="sidebarOpen = false"
        class="w-full flex items-center space-x-3 p-3 rounded-xl font-semibold transition
        {{ request()->routeIs('students.tasks') ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:bg-gray-50' }}">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+    <rect x="9" y="3" width="6" height="4" rx="1"/>
+    <polyline points="9 12 11 14 15 10"/>
+</svg>
         <span>Tasks</span>
+    </a>
+
+
+    <a href="{{ route('students.logs') }}"
+       @click="sidebarOpen = false"
+       class="w-full flex items-center space-x-3 p-3 rounded-xl font-semibold transition
+       {{ request()->routeIs('students.logs') ? 'bg-emerald-600 text-white' : 'text-gray-500 hover:bg-gray-50' }}">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <rect x="5" y="3" width="14" height="18" rx="2"/>
+    <line x1="9" y1="8" x2="15" y2="8"/>
+    <line x1="9" y1="12" x2="15" y2="12"/>
+    <line x1="9" y1="16" x2="12" y2="16"/>
+</svg>
+        <span>My Logs</span>
     </a>
 
     <a href="{{ route('students.profile') }}"

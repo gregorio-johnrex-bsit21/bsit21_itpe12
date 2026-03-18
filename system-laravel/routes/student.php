@@ -13,6 +13,10 @@ Route::prefix('student')->name('students.')->group(function () {
         return view('students.tasks');
     })->name('tasks'); // This is now 'students.tasks'
 
+     Route::get('/logs', function () {
+        return view('students.logs');
+    })->name('logs'); 
+
     Route::get('/profile', function () {
         return view('students.profile');
     })->name('profile'); // This is now 'students.profile'

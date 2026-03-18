@@ -138,7 +138,22 @@
             confirm: document.getElementById('confirm-field')
         };
 
-        let isLogin = true;
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        let isLogin = mode !== 'register';
+
+        // Apply correct UI state on page load
+    if (!isLogin) {
+        formTitle.innerText = "Create Account";
+        formSubtitle.innerText = "Register for your student account.";
+        mainBtn.innerText = "Register";
+        promptText.innerText = "Already a member?";
+        toggleBtn.innerText = "Sign In";
+
+         Object.values(fields).forEach(field => {
+         field.classList.remove('hidden');
+        });
+    }
 
         // Show box
         mainBox.classList.remove('opacity-0');

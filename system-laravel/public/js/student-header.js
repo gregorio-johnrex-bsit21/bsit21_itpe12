@@ -248,16 +248,23 @@ function renderNotes() {
         div.className = 'p-3 border rounded-lg hover:border-emerald-300 hover:bg-emerald-50 cursor-pointer transition-all flex justify-between items-start group';
         div.innerHTML = `
             <div class="flex-1 min-w-0" data-id="${note.id}">
-                <p class="text-sm font-semibold text-gray-800 truncate">${note.title || 'Untitled'}</p>
-                <p class="text-xs text-gray-500 truncate">${note.body || ''}</p>
-            </div>
+  <p class="text-sm font-semibold text-gray-800 truncate">${note.title || 'Untitled'}</p>
+  <p class="text-xs text-gray-500 truncate">${note.body || ''}</p>
+</div>
 
-            <div class="delete-idle ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button data-delete="${note.id}" class="text-gray-300 hover:text-red-400 text-lg leading-none">&times;</button>
-            </div>
+<div class="delete-idle ml-2 transition-opacity self-center">
+  <button data-delete="${note.id}" class="text-red-400 hover:text-red-600 active:text-red-600 leading-none">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="3 6 5 6 21 6"/>
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+      <path d="M10 11v6M14 11v6"/>
+      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+    </svg>
+  </button>
+</div>
 
             <div class="delete-confirm ml-2 hidden items-center gap-1">
-                <span class="text-xs text-gray-500">Delete?</span>
+                <span class="text-xs text-gray-500">Delete this note?</span>
                 <button data-confirm="${note.id}" class="text-xs px-2 py-0.5 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">Yes</button>
                 <button data-cancel class="text-xs px-2 py-0.5 bg-gray-200 text-gray-600 rounded hover:bg-gray-300 transition-colors">No</button>
             </div>
@@ -489,3 +496,4 @@ function closePreview() {
 closeMediaPreview.addEventListener('click', closePreview);
 cancelMediaBtn.addEventListener('click', closePreview);
 mediaPreviewModal.addEventListener('click', (e) => { if (e.target === mediaPreviewModal) closePreview(); });
+

@@ -257,4 +257,24 @@
     </div>
 </div>
 
+@push('scripts')
+<script>
+    const openProfileModal = document.getElementById('openProfileModal');
+    const profileModal     = document.getElementById('profileModal');
+    const closeProfile     = document.getElementById('closeProfile');
+
+    openProfileModal.addEventListener('click', () => {
+        profileModal.classList.remove('hidden');
+    });
+
+    closeProfile.addEventListener('click', () => {
+        profileModal.classList.add('hidden');
+    });
+
+    profileModal.addEventListener('click', (e) => {
+        if (e.target === profileModal) profileModal.classList.add('hidden');
+    });
+</script>
+@endpush
+
 @endsection

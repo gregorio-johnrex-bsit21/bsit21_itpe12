@@ -6,12 +6,14 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ChatController;
 
 Route::get('/', function () {
-    return redirect('/student');
+    return redirect('/landing');
 });
 
 require __DIR__.'/student.php';
 require __DIR__.'/supervisor.php';
 require __DIR__.'/admin.php';
+require __DIR__.'/landing.php';
+require __DIR__.'/validation.php';
 
 // ============================================================
 // Chat routes — file-based, read indexes tracked server-side
