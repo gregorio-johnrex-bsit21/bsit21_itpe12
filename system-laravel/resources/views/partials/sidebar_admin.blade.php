@@ -9,16 +9,16 @@
     </li>
 
 
-    <li class="nav-item {{ request()->routeIs('admin.students') ? 'active' : '' }}">
-      <a class="nav-link" href="{{ route('admin.students') }}">
+    <li class="nav-item {{ request()->routeIs('admin.supervisor') ? 'active' : '' }}">
+      <a class="nav-link" href="{{ route('admin.supervisor') }}">
         <i class="menu-icon mdi mdi-office-building"></i>
         <span class="menu-title">Company</span>
       </a>
     </li>
 
 
-    <li class="nav-item {{ request()->routeIs('admin.supervisor') ? 'active' : '' }}">
-      <a class="nav-link" href="{{ route('admin.supervisor') }}">
+    <li class="nav-item {{ request()->routeIs('admin.students') ? 'active' : '' }}">
+      <a class="nav-link" href="{{ route('admin.students') }}">
         <i class="menu-icon mdi mdi-account-group"></i>
         <span class="menu-title">Student Attendance</span>
       </a>

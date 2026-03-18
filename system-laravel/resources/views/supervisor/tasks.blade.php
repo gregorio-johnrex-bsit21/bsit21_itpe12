@@ -44,13 +44,103 @@
                     <span class="text-xs font-bold text-slate-700">M. Wright</span>
                 </div>
                 <div class="flex items-center gap-1">
-                    <button class="p-2 text-slate-400 hover:text-[#2E7D32] hover:bg-white rounded-xl transition-all"><i class="fas fa-chart-pie text-sm"></i></button>
-                    <button class="p-2 text-slate-400 hover:text-[#2E7D32] hover:bg-white rounded-xl transition-all"><i class="fas fa-pen-to-square text-sm"></i></button>
-                    <button class="p-2 text-slate-400 hover:text-[#D50000] hover:bg-white rounded-xl transition-all"><i class="fas fa-trash-can text-sm"></i></button>
+                    {{-- VIEW ICON --}}
+                    <button @click="showViewModal = true" 
+                            class="p-2 text-slate-400 hover:text-[#2E7D32] hover:bg-white rounded-xl transition-all">
+                        <i class="fa-solid fa-eye text-sm"></i>
+                    </button>
+
+                    {{-- EDIT ICON --}}
+                    <button @click="showEditModal = true" 
+                            class="p-2 text-slate-400 hover:text-blue-500 hover:bg-white rounded-xl transition-all">
+                        <i class="fa-solid fa-pen-to-square text-sm"></i>
+                    </button>s
+
+                    {{-- DELETE ICON --}}
+                    <button @click="showDeleteModal = true" 
+                            class="p-2 text-slate-400 hover:text-[#D50000] hover:bg-white rounded-xl transition-all">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+    {{-- View Modal --}}
+<div x-show="showViewModal" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div @click.away="showViewModal = false" class="bg-white w-full max-w-md rounded-[2rem] p-8 shadow-2xl">
+        <h3 class="text-xl font-black text-slate-800 mb-4">Task Details</h3>
+        <p class="text-sm text-slate-600 mb-6">Viewing the full details of the delegated task.</p>
+        <button @click="showViewModal = false" class="w-full py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Close</button>
+    </div>
+</div>
+{{-- EDIT MODAL --}}
+<div x-show="showEditModal" 
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0 scale-95"
+     x-transition:enter-end="opacity-100 scale-100"
+     class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md"
+     x-cloak>
+    <div @click.away="showEditModal = false" class="bg-white w-full max-w-md rounded-[2rem] shadow-2xl overflow-hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-slate-800">Edit Task</h3>
+                <button @click="showEditModal = false" class="text-slate-400 hover:text-slate-600">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 uppercase ml-1 tracking-widest">Task Title</label>
+                    <input type="text" value="Database Schema Design" class="w-full mt-1 bg-slate-50 border-none rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2E7D32]">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[9px] font-black text-slate-400 uppercase ml-1 tracking-widest">Assigned Student</label>
+                        <select class="w-full mt-1 bg-slate-50 border-none rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2E7D32] appearance-none">
+                            <option selected>Marcus Wright</option>
+                            <option>Sarah Jenkins</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-black text-slate-400 uppercase ml-1 tracking-widest">Status</label>
+                        <select class="w-full mt-1 bg-slate-50 border-none rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2E7D32] appearance-none">
+                            <option value="pending">Pending</option>
+                            <option value="ongoing" selected>Ongoing</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 uppercase ml-1 tracking-widest">Supervisor Guidelines</label>
+                    <textarea class="w-full mt-1 bg-slate-50 border-none rounded-xl px-4 py-2 text-sm h-24 outline-none focus:ring-2 focus:ring-[#2E7D32] resize-none">Ensure all foreign keys are indexed and use Crow's Foot notation for the ERD.</textarea>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button @click="showEditModal = false" class="flex-1 px-4 py-3 border border-slate-100 rounded-xl font-bold text-sm text-slate-400 hover:bg-slate-50 transition-colors">Cancel</button>
+                    <button @click="showEditModal = false" class="flex-1 px-4 py-3 bg-[#2E7D32] text-white rounded-xl font-bold text-sm shadow-md shadow-green-100 hover:bg-[#1B5E20] transition-all">Update Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Delete Modal --}}
+<div x-show="showDeleteModal" x-cloak class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div @click.away="showDeleteModal = false" class="bg-white w-full max-w-sm rounded-[2rem] p-8 text-center shadow-2xl">
+        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i class="fa-solid fa-trash-can text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-black text-slate-800">Delete Task?</h3>
+        <p class="text-sm text-slate-500 mt-2">Are you sure? This cannot be undone.</p>
+        <div class="flex gap-3 mt-6">
+            <button @click="showDeleteModal = false" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancel</button>
+            <button @click="showDeleteModal = false" class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold">Delete</button>
+        </div>
+    </div>
+</div>
 
 </div>
 
@@ -110,6 +200,7 @@
         </div>
     </div>
 </div>
+
 @endpush
 
 @endsection

@@ -10,7 +10,7 @@ class DashboardController extends Controller
     {
         return view('admin.dashboard');
     }
-    public function students() { return view('admin.students'); }
+public function students() { return view('admin.students'); }
 public function supervisors() { return view('admin.supervisors'); }
 public function reports() { return view('admin.reports'); }
 public function forms() { return view('admin.forms'); }
