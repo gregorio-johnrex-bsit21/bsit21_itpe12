@@ -58,4 +58,47 @@
                 </div>
             </div>
         </div>
+
+
+        {{-- Logout Modal --}}
+<div id="logoutModal" class="hidden fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm mx-4">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-sign-out-alt text-2xl text-red-500"></i>
+            </div>
+            <h3 class="text-lg font-black text-slate-800">Logout</h3>
+            <p class="text-slate-400 text-sm mt-1">Are you sure you want to logout?</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="document.getElementById('logoutModal').classList.add('hidden')"
+                class="flex-1 py-3 rounded-2xl border border-slate-200 text-slate-600 text-sm font-bold hover:bg-slate-50 transition-all">
+                Cancel
+            </button>
+            <button onclick="logoutSupervisor()"
+                class="flex-1 py-3 rounded-2xl bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-all">
+                Yes, Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+function logoutSupervisor() {
+    fetch("{{ route('supervisor.logout') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = data.redirect;
+        }
+    });
+}
+</script>
     </aside>

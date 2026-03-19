@@ -140,12 +140,12 @@
         <div class="flex-1 bg-white p-8 rounded-3xl border border-gray-300 shadow-sm text-center md:text-left">
             <div class="flex flex-col md:flex-row items-center gap-6">
                 <div class="h-24 w-24 rounded-full bg-emerald-500 flex items-center justify-center text-white text-3xl font-black shadow-lg shadow-emerald-100 border-4 border-white">
-                    CK
+                    {{ strtoupper(substr(explode(' ', session('student')->name)[0], 0, 1)) . strtoupper(substr(explode(' ', session('student')->name)[1] ?? '', 0, 1)) }}
                 </div>
                 <div>
-                    <h2 class="text-2xl font-black text-gray-800">Charlie Kirk</h2>
+                    <h2 class="text-2xl font-black text-gray-800">{{ session('student')->name }}</h2>
                     <p class="text-sm font-bold text-emerald-600 uppercase tracking-widest mt-1">IT Trainee • RRL Tech Solutions</p>
-                    <p class="text-xs text-gray-400 font-medium mt-1">charlie.kirk.@neck.edu</p>
+                    
                 </div>
             </div>
             

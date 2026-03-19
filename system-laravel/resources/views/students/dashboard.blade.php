@@ -10,10 +10,10 @@
     <div class="flex justify-between items-center relative z-10">
         <div class="flex flex-col gap-1">
             <h2 class="text-white/80 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]">
-                Welcome back,
+                Good day,
             </h2>
             <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight">
-                Charlie Kirk
+                {{ session('student')->name }}
             </h1>
         </div>
 

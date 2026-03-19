@@ -103,8 +103,9 @@
                     <button @click="profileOpen = !profileOpen; notifOpen = false; msgOpen = false"
                             class="flex items-center gap-3 group focus:outline-none">
                         <div class="relative">
-                            <img src="https://ui-avatars.com/api/?name=Supervisor&background=2E7D32&color=fff"
-                                 class="w-8 h-8 rounded-2xl ring-2 ring-white shadow-md group-hover:scale-105 transition-transform duration-300">
+                            <button @click="profileOpen = !profileOpen; view = 'main'" class="flex items-center justify-center h-10 w-10 rounded-full bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition-all shadow-sm focus:outline-none">
+                {{ strtoupper(substr(explode(' ', session('supervisor')->name)[0], 0, 1)) . strtoupper(substr(explode(' ', session('supervisor')->name)[1] ?? '', 0, 1)) }}
+            </button>
                             <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                         </div>
                     </button>
@@ -117,8 +118,8 @@
 
                         <div class="px-4 py-3 border-b border-slate-50 mb-1">
                             <p class="text-[15px] font-black text-slate-400 uppercase tracking-widest">ACCOUNT</p>
-                            <p class="text-[12px] font-bold text-slate-400 truncate">Supervisor Rodriguez</p>
-                            <p class="text-[11px] text-[#2E7D32] font-medium italic">supervisor@company.com</p>
+                            <p class="text-[12px] font-bold text-slate-400 truncate">{{ session('supervisor')->name }}</p>
+                            
                         </div>
                         <a href="#" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-green-50 hover:text-[#2E7D32] transition-all">
                             <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-[#2E7D32]">
@@ -133,11 +134,11 @@
                             Account Security
                         </a>
                         <hr class="my-2 border-slate-50">
-                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-[#D50000] hover:bg-red-50 transition-all">
-                            <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-[#D50000]">
-                                <i class="fas fa-sign-out-alt text-sm"></i>
-                            </div>
-                            Logout
+                        <a href="#" onclick="document.getElementById('logoutModal').classList.remove('hidden')" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-[#D50000] hover:bg-red-50 transition-all">
+                           <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-[#D50000]">
+                           <i class="fas fa-sign-out-alt text-sm"></i>
+                           </div>
+                          Logout
                         </a>
                     </div>
                 </div>

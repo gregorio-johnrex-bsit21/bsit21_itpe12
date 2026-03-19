@@ -38,7 +38,7 @@
         {{-- Profile Dropdown (Alpine — no external JS needed) --}}
         <div class="relative" x-data="{ profileOpen: false, view: 'main' }">
             <button @click="profileOpen = !profileOpen; view = 'main'" class="flex items-center justify-center h-10 w-10 rounded-full bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition-all shadow-sm focus:outline-none">
-                CK
+                {{ strtoupper(substr(explode(' ', session('student')->name)[0], 0, 1)) . strtoupper(substr(explode(' ', session('student')->name)[1] ?? '', 0, 1)) }}
             </button>
 
             <div x-show="profileOpen"
@@ -53,8 +53,8 @@
                     <div>
                         <div class="px-4 py-3 border-b border-gray-50">
                             <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Account</p>
-                            <p class="text-sm font-black text-gray-800">Charlie Kirk</p>
-                            <p class="text-[12px] text-gray-500 truncate">charlie.kirk.@neck.edu</p>
+                            <p class="text-sm font-black text-gray-800">{{ session('student')->name }}</p>
+                            
                         </div>
                         <div class="py-1.5">
                             <a href="{{ route('students.profile') }}"

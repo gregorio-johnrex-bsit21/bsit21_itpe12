@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ChatController;
 
+
 Route::get('/', function () {
     return redirect('/landing');
 });
@@ -134,3 +135,6 @@ Route::post('/mark-read',    [ChatController::class, 'markRead']);
 Route::get('/get-conversations', [ChatController::class, 'getConversations']);
 
 Route::post('/upload-media', [ChatController::class, 'uploadMedia']);
+
+
+

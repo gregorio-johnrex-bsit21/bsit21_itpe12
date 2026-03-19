@@ -1,21 +1,23 @@
 @extends('layouts.admin')
 
-<<<<<<< HEAD
 @section('title', 'Company Management')
 
 @section('content')
 <div class="row">
     <div class="col-sm-12">
         <div class="home-tab">
-            {{-- Top Header Section with Add Button --}}
-            <div class="d-sm-flex align-items-center justify-content-between border-bottom mb-3">
-                <h2 class="text-dark fw-bold mb-0" style="font-size: 1.5rem;">Company Management</h2>
-                <div>
-                    <button class="btn btn-primary btn-lg text-white mb-0 me-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
-                        <i class="mdi mdi-plus-circle-outline"></i> Add New Company
-                    </button>
-                </div>
-            </div>
+           {{-- Top Header Section with Add Button --}}
+<div class="d-sm-flex align-items-center justify-content-between border-bottom mb-3">
+    <h2 class="text-dark fw-bold mb-0" style="font-size: 1.5rem;">Company Management</h2>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary btn-lg text-white mb-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#addSupervisorModal">
+            <i class="mdi mdi-account-plus-outline"></i> Add Supervisor
+        </button>
+        <button class="btn btn-primary btn-lg text-white mb-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
+            <i class="mdi mdi-plus-circle-outline"></i> Add New Company
+        </button>
+    </div>
+</div>
 
             <div class="tab-content tab-content-basic">
                 <div class="tab-pane fade show active" id="overview" role="tabpanel">
@@ -45,12 +47,13 @@
 
                                     <div class="mt-4">
                                         <p class="text-small mb-2 text-muted fw-bold text-uppercase" style="font-size: 0.65rem;">PARTNER COMPANY</p>
-                                        <select class="form-select form-select-sm shadow-none border-1" id="companyDropdown" onchange="updateDashboard()"
-                                                style="width: 220px; height: 40px; font-size: 0.85rem; border-radius: 8px;">
-                                            <option value="" selected disabled>Select Company</option>
-                                            <option value="technova">TechNova Solutions</option>
-                                            <option value="globalit">Global IT Hub</option>
-                                        </select>
+                                       <select class="form-select form-select-sm shadow-none border-1" id="companyDropdown" onchange="updateDashboard()"
+                                         style="width: 220px; height: 40px; font-size: 0.85rem; border-radius: 8px;">
+                                         <option value="" selected disabled>Select Company</option>
+                                         @foreach($companies as $company)
+                                         <option value="{{ $company->company_id }}">{{ $company->name }}</option>
+                                         @endforeach
+                                       </select>
                                     </div>
                                 </div>
                             </div>
@@ -135,7 +138,51 @@
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary text-white px-4" onclick="addCompany()">Generate ID</button>
+                <button type="button" class="btn btn-primary text-white px-4" id="generateBtn" onclick="addCompany()">Generate ID</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{-- Add Supervisor Modal --}}
+<div class="modal fade" id="addSupervisorModal" tabindex="-1" aria-labelledby="addSupervisorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="addSupervisorModalLabel">Add Supervisor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group mb-3">
+                    <label class="mb-2 text-muted fw-bold small">SUPERVISOR NAME</label>
+                    <input type="text" id="supervisorName" class="form-control" placeholder="e.g. Juan Dela Cruz" style="height: 45px; border-radius: 8px;">
+                </div>
+                <div class="form-group">
+                    <label class="mb-2 text-muted fw-bold small">ASSIGN TO COMPANY</label>
+                    <select id="supervisorCompany" class="form-select" style="height: 45px; border-radius: 8px;">
+                        <option value="" selected disabled>Select Company</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->company_id }}">{{ $company->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Credentials Display --}}
+                <div id="supervisorCredentials" class="mt-4 p-3" style="display: none; background: #f8f9fa; border-radius: 10px;">
+                    <p class="text-muted mb-2 small fw-bold text-center">SHARE THESE CREDENTIALS WITH SUPERVISOR:</p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small">Supervisor ID:</span>
+                        <h5 id="generatedSupervisorId" class="text-primary fw-bold mb-0" style="letter-spacing: 2px;"></h5>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">Password:</span>
+                        <h5 id="generatedSupervisorPassword" class="text-primary fw-bold mb-0" style="letter-spacing: 2px;"></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary text-white px-4" id="addSupervisorBtn" onclick="addSupervisor()">Add Supervisor</button>
             </div>
         </div>
     </div>
@@ -163,30 +210,138 @@
 
     const TOTAL_OJT_HOURS = 480;
 
-    function addCompany() {
-        const nameInput = document.getElementById('newCompanyName');
+   function addCompany() {
+    const nameInput = document.getElementById('newCompanyName');
+    const idDisplay = document.getElementById('idDisplay');
+    const generatedIdSpan = document.getElementById('generatedId');
+    const generateBtn = document.getElementById('generateBtn'); // add this
+
+    if (generateBtn.disabled) {
+        alert("Company ID has already been generated!");
+        return;
+    }
+
+    if (nameInput.value.trim() === "") {
+        alert("Please enter a company name.");
+        return;
+    }
+
+    fetch("{{ route('company.store') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({ name: nameInput.value.trim() })
+    })
+    .then(res => res.json())
+    .then(data => {
+    if (data.success) {
+        generatedIdSpan.innerText = data.company_id;
+        idDisplay.style.display = 'block';
+
+        // Add new company to dropdown instantly
         const dropdown = document.getElementById('companyDropdown');
-        const idDisplay = document.getElementById('idDisplay');
-        const generatedIdSpan = document.getElementById('generatedId');
-
-        if (nameInput.value.trim() === "") {
-            alert("Please enter a company name.");
-            return;
-        }
-
-        const newId = 'CO-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-        const companyKey = nameInput.value.toLowerCase().replace(/\s+/g, '');
-
-        companyData[companyKey] = { students: [], topIndex: 0 };
-
         const option = document.createElement('option');
-        option.value = companyKey;
-        option.text = nameInput.value;
+        option.value = data.company_id;
+        option.text = nameInput.value.trim();
         dropdown.add(option);
 
-        generatedIdSpan.innerText = newId;
-        idDisplay.style.display = 'block';
+        // Disable button
+        generateBtn.disabled = true;
+        generateBtn.innerText = "ID Generated ✓";
+        generateBtn.classList.remove('btn-primary');
+        generateBtn.classList.add('btn-success');
     }
+})
+    .catch(err => console.error(err));
+}
+
+
+
+//add supervisor 
+function addSupervisor() {
+    const nameInput = document.getElementById('supervisorName');
+    const companyInput = document.getElementById('supervisorCompany');
+    const credentials = document.getElementById('supervisorCredentials');
+    const supervisorIdSpan = document.getElementById('generatedSupervisorId');
+    const supervisorPasswordSpan = document.getElementById('generatedSupervisorPassword');
+    const addBtn = document.getElementById('addSupervisorBtn');
+
+    if (addBtn.disabled) {
+        alert("Supervisor has already been added!");
+        return;
+    }
+
+    if (nameInput.value.trim() === "") {
+        alert("Please enter a supervisor name.");
+        return;
+    }
+
+    if (companyInput.value === "") {
+        alert("Please select a company.");
+        return;
+    }
+
+    fetch("{{ route('supervisor.store') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({
+            name: nameInput.value.trim(),
+            company_id: companyInput.value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            supervisorIdSpan.innerText = data.supervisor_id;
+            supervisorPasswordSpan.innerText = data.password;
+            credentials.style.display = 'block';
+
+            // Disable button
+            addBtn.disabled = true;
+            addBtn.innerText = "Supervisor Added ✓";
+            addBtn.classList.remove('btn-secondary');
+            addBtn.classList.add('btn-success');
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+// Reset supervisor modal on close
+document.getElementById('addSupervisorModal').addEventListener('hidden.bs.modal', function () {
+    const addBtn = document.getElementById('addSupervisorBtn');
+    addBtn.disabled = false;
+    addBtn.innerText = "Add Supervisor";
+    addBtn.classList.remove('btn-success');
+    addBtn.classList.add('btn-primary');
+    document.getElementById('supervisorName').value = '';
+    document.getElementById('supervisorCompany').value = '';
+    document.getElementById('supervisorCredentials').style.display = 'none';
+});
+
+
+
+//add company lock when already generated
+document.getElementById('addCompanyModal').addEventListener('hidden.bs.modal', function () {
+    const generateBtn = document.getElementById('generateBtn');
+    generateBtn.disabled = false;
+    generateBtn.innerText = "Generate ID";
+    generateBtn.classList.remove('btn-success');
+    generateBtn.classList.add('btn-primary');
+    document.getElementById('newCompanyName').value = '';
+    document.getElementById('idDisplay').style.display = 'none';
+});
+
+
+
+
+
+
+
 
     function updateDashboard() {
         const companyKey = document.getElementById('companyDropdown').value;
@@ -237,60 +392,3 @@
     }
 </script>
 @endpush
-=======
-@section('title', 'Supervisor')
-
-@section('content')
-{{-- Removed d-flex and justify-content-center to let it align naturally --}}
-<div class="container">
-    <div class="content-wrapper">
-        <div class="row">
-            
-            <div class="col-md-12 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Line chart</h4>
-                        <canvas id="lineChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-12 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Bar chart</h4>
-                        <canvas id="barChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-12 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Area chart</h4>
-                        <canvas id="areaChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-12 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Doughnut chart</h4>
-                        <div class="doughnutjs-wrapper d-flex justify-content-center">
-                            <canvas id="doughnutChart" style="height: 250px !important;"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div> {{-- End Row --}}
-    </div>
-</div>
-
-@push('scripts')
-    <script src="{{ asset('assets/vendors/chart.js/chart.umd.js') }}"></script>
-    <script src="{{ asset('assets/js/chart.js') }}"></script>
-@endpush
-@endsection
->>>>>>> 5937f7684a03b4827a08e55e2de04b52df5eead7

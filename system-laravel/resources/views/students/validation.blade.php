@@ -66,10 +66,9 @@
                 <span class="text-emerald-500 text-xl tracking-tight">Student</span><span class="text-gray-700 text-xl tracking-tight">Portal</span>
             </div>
 
-            <!-- Error Message -->
-            <div id="error-msg" class="hidden bg-red-50 border border-red-200 text-red-500 text-sm rounded-2xl px-4 py-3 mb-4 text-center">
-                Invalid Student ID or Password.
-            </div>
+            <!-- Message Box -->
+            <div id="error-msg" class="hidden bg-red-50 border border-red-200 text-red-500 text-sm rounded-2xl px-4 py-3 mb-4 text-center"></div>
+            <div id="success-msg" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-500 text-sm rounded-2xl px-4 py-3 mb-4 text-center"></div>
 
             <div id="form-container">
                 <h2 id="form-title" class="text-2xl font-bold text-gray-800 mb-1">Welcome Back</h2>
@@ -77,34 +76,39 @@
 
                 <form id="login-form" class="flex flex-col space-y-4" onsubmit="handleSubmit(event)">
                     @csrf
-                    
+
+                    {{-- Name Field (register only) --}}
                     <div id="name-field" class="hidden input-group bg-gray-50 flex items-center rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-colors">
                         <i class="fa fa-user text-gray-400 ml-4 mt-2 w-4"></i>
-                        <input type="text" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
+                        <input type="text" id="name" name="name" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
                         <label class="floating-label">Full Name</label>
                     </div>
 
+                    {{-- Student ID --}}
                     <div class="input-group bg-gray-50 flex items-center rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-colors">
                         <i class="fa fa-id-card text-gray-400 ml-4 mt-2 w-4"></i>
                         <input type="text" id="student-id" name="student_id" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
                         <label class="floating-label">Student ID</label>
                     </div>
 
+                    {{-- Company ID (register only) --}}
                     <div id="company-field" class="hidden input-group bg-gray-50 flex items-center rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-colors">
                         <i class="fa fa-building text-gray-400 ml-4 mt-2 w-4"></i>
-                        <input type="text" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
+                        <input type="text" id="company-id" name="company_id" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
                         <label class="floating-label">Company ID</label>
                     </div>
 
+                    {{-- Password --}}
                     <div class="input-group bg-gray-50 flex items-center rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-colors">
                         <i class="fa fa-lock text-gray-400 ml-4 mt-2 w-4"></i>
                         <input type="password" id="password" name="password" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
                         <label class="floating-label">Password</label>
                     </div>
 
+                    {{-- Confirm Password (register only) --}}
                     <div id="confirm-field" class="hidden input-group bg-gray-50 flex items-center rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-colors">
                         <i class="fa fa-shield-halved text-gray-400 ml-4 mt-2 w-4"></i>
-                        <input type="password" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
+                        <input type="password" id="password_confirmation" name="password_confirmation" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
                         <label class="floating-label">Confirm Password</label>
                     </div>
 
@@ -131,7 +135,8 @@
         const mainBtn = document.getElementById('main-btn');
         const promptText = document.getElementById('prompt-text');
         const errorMsg = document.getElementById('error-msg');
-        
+        const successMsg = document.getElementById('success-msg');
+
         const fields = {
             name: document.getElementById('name-field'),
             company: document.getElementById('company-field'),
@@ -142,43 +147,93 @@
         const mode = urlParams.get('mode');
         let isLogin = mode !== 'register';
 
-        // Apply correct UI state on page load
-    if (!isLogin) {
-        formTitle.innerText = "Create Account";
-        formSubtitle.innerText = "Register for your student account.";
-        mainBtn.innerText = "Register";
-        promptText.innerText = "Already a member?";
-        toggleBtn.innerText = "Sign In";
+        if (!isLogin) {
+            formTitle.innerText = "Create Account";
+            formSubtitle.innerText = "Register for your student account.";
+            mainBtn.innerText = "Register";
+            promptText.innerText = "Already a member?";
+            toggleBtn.innerText = "Sign In";
+            Object.values(fields).forEach(field => field.classList.remove('hidden'));
+        }
 
-         Object.values(fields).forEach(field => {
-         field.classList.remove('hidden');
-        });
-    }
-
-        // Show box
         mainBox.classList.remove('opacity-0');
         mainBox.classList.add('box-animate-in');
 
-        // Login Handler
-        function handleSubmit(event) {
-            event.preventDefault();
+        function showError(msg) {
+            errorMsg.innerText = msg;
+            errorMsg.classList.remove('hidden');
+            successMsg.classList.add('hidden');
+        }
 
-            if (!isLogin) return; // skip validation on register for now
+        function showSuccess(msg) {
+            successMsg.innerText = msg;
+            successMsg.classList.remove('hidden');
+            errorMsg.classList.add('hidden');
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            errorMsg.classList.add('hidden');
+            successMsg.classList.add('hidden');
 
             const studentId = document.getElementById('student-id').value.trim();
             const password = document.getElementById('password').value.trim();
 
-            if (studentId === '12345' && password === '12345') {
-                // Redirect to student dashboard
-                window.location.href = '/student';
+            if (isLogin) {
+                // LOGIN
+                const res = await fetch("{{ route('students.login') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ student_id: studentId, password: password })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    showError(data.message);
+                }
+
             } else {
-                errorMsg.classList.remove('hidden');
+                // REGISTER
+                const name = document.getElementById('name').value.trim();
+                const companyId = document.getElementById('company-id').value.trim();
+                const passwordConfirmation = document.getElementById('password_confirmation').value.trim();
+
+                const res = await fetch("{{ route('students.register') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        student_id: studentId,
+                        company_id: companyId,
+                        password: password,
+                        password_confirmation: passwordConfirmation
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showSuccess(data.message);
+                    // Reset form
+                    document.getElementById('login-form').reset();
+                } else {
+                    showError(data.message ?? 'Something went wrong.');
+                }
             }
         }
 
-        // Toggle Login/Register
         toggleBtn.addEventListener('click', () => {
             errorMsg.classList.add('hidden');
+            successMsg.classList.add('hidden');
             mainBox.classList.remove('box-animate-in');
             mainBox.classList.add('box-animate-out');
 

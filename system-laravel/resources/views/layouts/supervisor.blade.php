@@ -268,5 +268,7 @@
 </script>
 {{-- ================== END CHAT JAVASCRIPT =================== --}}
 
+@stack('scripts') {{-- add this! --}}
+
 </body>
 </html>
