@@ -85,4 +85,23 @@ class ValidationController extends Controller
             'redirect' => '/student'
         ]);
     }
+
+    public function logout()
+    {
+        session()->forget('student');
+        return response()->json([
+        'success' => true,
+        'redirect' => '/landing'
+        ]);
+    }
+
+    public function getSupervisor()
+{
+    $student = session('student');
+    $supervisor = UserTbl::where('company_id', $student->company_id)
+                         ->where('role', 'supervisor')
+                         ->first();
+
+    return response()->json($supervisor);
+}
 }

@@ -22,3 +22,14 @@ Route::prefix('student')->name('students.')->group(function () {
     })->name('profile'); // This is now 'students.profile'
 
 });
+
+Route::prefix('student')->middleware('student')->group(function () {
+    Route::get('/', function () {
+        return view('students.dashboard');
+    });
+
+    Route::view('/dashboard', 'students.dashboard')->name('students.dashboard');
+    Route::view('/tasks', 'students.tasks')->name('students.tasks');
+    Route::view('/logs', 'students.logs')->name('students.logs');
+    Route::view('/profile', 'students.profile')->name('students.profile');
+});

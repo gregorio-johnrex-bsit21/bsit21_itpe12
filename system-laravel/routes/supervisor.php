@@ -36,3 +36,6 @@ Route::prefix('supervisor')->middleware('supervisor')->group(function () {
 
 
 Route::post('/supervisor/logout', [SupervisorAuthController::class, 'logout'])->name('supervisor.logout');
+
+
+Route::get('/supervisor/chat/students', [SupervisorAuthController::class, 'getStudents'])->name('supervisor.chat.students');

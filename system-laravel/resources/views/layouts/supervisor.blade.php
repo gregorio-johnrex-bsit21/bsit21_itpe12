@@ -97,7 +97,15 @@
     const supervisorSendBtn  = document.getElementById('supervisorSendBtn');
     const supervisorMsgList  = document.getElementById('supervisorMessageList');
 
-    const CONVERSATIONS = ['Marcus_Wright', 'Sarah_Jenkins'];
+    let CONVERSATIONS = [];
+
+// Load students dynamically
+fetch('/supervisor/chat/students')
+    .then(r => r.json())
+    .then(students => {
+        CONVERSATIONS = students.map(s => s.name.replace(/\s+/g, '_'));
+        updatePreviews();
+    });
 
     let currentConversation = null;
     let lastMessageIndex    = 0;

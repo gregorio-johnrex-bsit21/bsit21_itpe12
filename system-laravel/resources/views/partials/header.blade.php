@@ -117,11 +117,11 @@
                 Cancel
             </button>
             <!-- Confirm -->
-            <a 
-                href="/landing" 
-                class="flex-1 px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-medium text-center hover:bg-red-600 transition">
-                Sign Out
-            </a>
+        <button 
+            onclick="logoutStudent()"
+            class="flex-1 px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-medium text-center hover:bg-red-600 transition">
+            Sign Out
+        </button>
         </div>
     </div>
 </div>
@@ -150,4 +150,22 @@
         </div>
 
     </div>
+
+    <script>
+   function logoutStudent() {
+    fetch("{{ route('students.logout') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = data.redirect;
+        }
+    });
+}
+</script>   
 </header>

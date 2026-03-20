@@ -15,10 +15,14 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias([
-            'supervisor' => \App\Http\Middleware\SupervisorMiddleware::class,
-        ]);
-    })
+    $middleware->trustProxies(at: '*');    
+    $middleware->alias([
+        'supervisor' => \App\Http\Middleware\SupervisorMiddleware::class,
+        'student' => \App\Http\Middleware\StudentMiddleware::class,
+    ]);
+})
+    
+    
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

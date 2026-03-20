@@ -88,11 +88,11 @@
     <div class="max-h-[300px] overflow-y-auto">
        <div onclick="openChat()" class="p-4 flex items-center gap-3 hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100">
     <div class="relative flex-shrink-0">
-        <img src="https://ui-avatars.com/api/?name=Sarah+Miller&background=0ea5e9&color=fff" class="w-10 h-10 rounded-full">
+       <img src="https://ui-avatars.com/api/?name=Sarah+Miller&background=0ea5e9&color=fff" class="w-10 h-10 rounded-full supervisor-avatar">
         <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
     </div>
     <div class="flex-1 min-w-0">
-    <p id="supervisorName" class="text-sm font-bold text-gray-900 truncate transition-colors">Sarah Miller</p>
+    <p id="supervisorName" class="text-sm font-bold text-gray-900 truncate transition-colors supervisor-name">Sarah Miller</p>
     <div class="flex items-center gap-1">
         <p id="studentMsgPreview" class="text-xs text-gray-500 truncate font-medium transition-colors">No messages yet</p>
         <span id="studentMsgTime" class="text-[11px] text-gray-400 font-medium shrink-0 before:content-['·'] before:mr-1"></span>
@@ -148,11 +148,11 @@
     <div class="p-4 bg-white border-b border-gray-100 flex items-center justify-between shrink-0 h-16 sm:h-auto">
         <div class="flex items-center gap-3">
             <div class="relative">
-                <img src="https://ui-avatars.com/api/?name=Sarah+Miller&background=0ea5e9&color=fff" class="w-10 h-10 rounded-full">
+                <img src="https://ui-avatars.com/api/?name=Sarah+Miller&background=0ea5e9&color=fff" class="w-10 h-10 rounded-full supervisor-avatar">
                 <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
             </div>
             <div>
-                <p class="text-sm font-black text-gray-900 leading-none">Sarah Miller</p>
+                <p class="text-sm font-black text-gray-900 leading-none supervisor-name">Sarah Miller</p>  
                 <p class="text-[10px] text-green-500 font-bold uppercase mt-1">Active Now</p>
             </div>
         </div>
@@ -202,9 +202,22 @@
      ============================================================ --}}
 @stack('scripts')
 <script>
-    const ChatConfig = {
-        conversation: 'Marcus_Wright' {{-- ← change per student --}}
+    const ChatConfig = { 
+        conversation: '{{ str_replace(" ", "_", session("student")->name) }}' 
     };
+
+    // Load supervisor info dynamically
+    fetch('/student/supervisor')
+        .then(r => r.json())
+        .then(supervisor => {
+            // Update supervisor name in chat
+            const nameEls = document.querySelectorAll('#supervisorName, .supervisor-name');
+            nameEls.forEach(el => el.textContent = supervisor.name);
+
+            // Update avatar
+            const avatarEls = document.querySelectorAll('.supervisor-avatar');
+            avatarEls.forEach(el => el.src = `https://ui-avatars.com/api/?name=${supervisor.name}&background=0ea5e9&color=fff`);
+        });
 </script>
 
  <script src="{{ asset('js/student-header.js') }}"></script> 

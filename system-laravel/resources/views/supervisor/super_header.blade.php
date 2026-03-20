@@ -144,4 +144,24 @@
                 </div>
 
             </div>
+
+
+            
+<script>
+function logoutSupervisor() {
+    fetch("{{ route('supervisor.logout') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = data.redirect;
+        }
+    });
+}
+</script>
         </header>

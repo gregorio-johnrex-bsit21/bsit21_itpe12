@@ -91,4 +91,15 @@ public function logout()
     return response()->json(['success' => true, 'redirect' => '/supervisor/login']);
 }
 
+public function getStudents()
+{
+    $supervisor = session('supervisor');
+    $students = UserTbl::where('company_id', $supervisor->company_id)
+                       ->where('role', 'student')
+                       ->where('status', 'approved')
+                       ->get();
+
+    return response()->json($students);
+}
+
 }
