@@ -6,6 +6,8 @@
 const STUDENT_CONVERSATION = window.ChatConfig?.conversation || 'Marcus_Wright';
 const STUDENT_ROLE = 'Student';
 
+console.log('STUDENT_CONVERSATION:', STUDENT_CONVERSATION);
+
 // ── DOM elements ─────────────────────────────────────────────
 const msgBtn      = document.getElementById('msgBtn');
 const msgModal    = document.getElementById('msgModal');

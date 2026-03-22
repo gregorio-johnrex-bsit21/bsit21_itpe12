@@ -11,3 +11,5 @@ Route::post('/validation/register', [ValidationController::class, 'register'])->
 Route::post('/student/logout', [ValidationController::class, 'logout'])->name('students.logout');
 
 Route::get('/student/supervisor', [ValidationController::class, 'getSupervisor'])->name('students.supervisor');
+
+Route::get('/validation/status', [ValidationController::class, 'checkStatus'])->name('students.status');

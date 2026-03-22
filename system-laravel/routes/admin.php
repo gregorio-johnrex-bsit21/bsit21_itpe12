@@ -19,3 +19,5 @@ Route::post('/logout', function () {
 
 Route::post('/admin/supervisor/store', [CompanyController::class, 'store'])->name('company.store');
 Route::post('/admin/supervisor/store-supervisor', [CompanyController::class, 'storeSupervisor'])->name('supervisor.store');
+
+Route::post('/admin/supervisor/reset-password', [CompanyController::class, 'resetPassword'])->name('supervisor.reset.password');

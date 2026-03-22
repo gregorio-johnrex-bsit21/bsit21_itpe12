@@ -59,6 +59,7 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-6">
 
+    {{-- Login/Register Box --}}
     <div id="main-box" class="opacity-0 bg-white rounded-3xl shadow-2xl w-full max-w-[380px] overflow-hidden">
         <div class="p-8 md:p-10">
             
@@ -66,7 +67,6 @@
                 <span class="text-emerald-500 text-xl tracking-tight">Student</span><span class="text-gray-700 text-xl tracking-tight">Portal</span>
             </div>
 
-            <!-- Message Box -->
             <div id="error-msg" class="hidden bg-red-50 border border-red-200 text-red-500 text-sm rounded-2xl px-4 py-3 mb-4 text-center"></div>
             <div id="success-msg" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-500 text-sm rounded-2xl px-4 py-3 mb-4 text-center"></div>
 
@@ -77,35 +77,30 @@
                 <form id="login-form" class="flex flex-col space-y-4" onsubmit="handleSubmit(event)">
                     @csrf
 
-                    {{-- Name Field (register only) --}}
                     <div id="name-field" class="hidden input-group bg-gray-50 flex items-center rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-colors">
                         <i class="fa fa-user text-gray-400 ml-4 mt-2 w-4"></i>
                         <input type="text" id="name" name="name" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
                         <label class="floating-label">Full Name</label>
                     </div>
 
-                    {{-- Student ID --}}
                     <div class="input-group bg-gray-50 flex items-center rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-colors">
                         <i class="fa fa-id-card text-gray-400 ml-4 mt-2 w-4"></i>
                         <input type="text" id="student-id" name="student_id" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
                         <label class="floating-label">Student ID</label>
                     </div>
 
-                    {{-- Company ID (register only) --}}
                     <div id="company-field" class="hidden input-group bg-gray-50 flex items-center rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-colors">
                         <i class="fa fa-building text-gray-400 ml-4 mt-2 w-4"></i>
                         <input type="text" id="company-id" name="company_id" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
                         <label class="floating-label">Company ID</label>
                     </div>
 
-                    {{-- Password --}}
                     <div class="input-group bg-gray-50 flex items-center rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-colors">
                         <i class="fa fa-lock text-gray-400 ml-4 mt-2 w-4"></i>
                         <input type="password" id="password" name="password" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
                         <label class="floating-label">Password</label>
                     </div>
 
-                    {{-- Confirm Password (register only) --}}
                     <div id="confirm-field" class="hidden input-group bg-gray-50 flex items-center rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-colors">
                         <i class="fa fa-shield-halved text-gray-400 ml-4 mt-2 w-4"></i>
                         <input type="password" id="password_confirmation" name="password_confirmation" placeholder=" " class="floating-input bg-transparent px-3 outline-none text-sm w-full">
@@ -124,6 +119,43 @@
                     </p>
                 </div>
             </div>
+        </div>
+    </div>
+
+    {{-- Pending / Approved Status Box --}}
+    <div id="pendingModal" class="hidden bg-white rounded-3xl shadow-2xl w-full max-w-[380px] overflow-hidden box-animate-in">
+        <div class="p-8 md:p-10 text-center">
+
+            <div class="text-center font-bold mb-8">
+                <span class="text-emerald-500 text-xl tracking-tight">Student</span><span class="text-gray-700 text-xl tracking-tight">Portal</span>
+            </div>
+
+            {{-- Clock Icon (pending) --}}
+            <div id="pendingIcon" class="flex items-center justify-center mb-6">
+                <div class="w-24 h-24 rounded-full bg-emerald-50 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-emerald-500 animate-spin" style="animation-duration: 3s;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            {{-- Check Icon (approved) --}}
+            <div id="approvedIcon" class="hidden flex items-center justify-center mb-6">
+                <div class="w-24 h-24 rounded-full bg-emerald-50 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <h2 id="statusTitle" class="text-2xl font-bold text-gray-800 mb-2">Pending Approval</h2>
+            <p id="statusMessage" class="text-gray-400 text-sm mb-8">Your registration is being reviewed by your supervisor. Please wait.</p>
+
+            <button id="loginNowBtn" class="hidden w-full bg-emerald-500 text-white rounded-2xl py-4 font-bold hover:bg-emerald-600 transition-all shadow-lg active:scale-95"
+                onclick="showLoginForm()">
+                Login Now
+            </button>
+
         </div>
     </div>
 
@@ -180,7 +212,6 @@
             const password = document.getElementById('password').value.trim();
 
             if (isLogin) {
-                // LOGIN
                 const res = await fetch("{{ route('students.login') }}", {
                     method: 'POST',
                     headers: {
@@ -199,7 +230,6 @@
                 }
 
             } else {
-                // REGISTER
                 const name = document.getElementById('name').value.trim();
                 const companyId = document.getElementById('company-id').value.trim();
                 const passwordConfirmation = document.getElementById('password_confirmation').value.trim();
@@ -222,9 +252,10 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    showSuccess(data.message);
-                    // Reset form
-                    document.getElementById('login-form').reset();
+                    // Hide login box show pending box
+                    mainBox.classList.add('hidden');
+                    document.getElementById('pendingModal').classList.remove('hidden');
+                    startPollingStatus(studentId);
                 } else {
                     showError(data.message ?? 'Something went wrong.');
                 }
@@ -254,6 +285,61 @@
                 mainBox.classList.add('box-animate-in');
             }, 400);
         });
+
+        let statusPollInterval = null;
+
+        function startPollingStatus(studentId) {
+            statusPollInterval = setInterval(() => {
+                fetch(`/validation/status?student_id=${studentId}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.status === 'approved') {
+                            clearInterval(statusPollInterval);
+                            showApproved();
+                        } else if (data.status === 'rejected') {
+                            clearInterval(statusPollInterval);
+                            showRejected();
+                        }
+                    })
+                    .catch(() => {});
+            }, 5000);
+        }
+
+        function showApproved() {
+            document.getElementById('pendingIcon').classList.add('hidden');
+            document.getElementById('approvedIcon').classList.remove('hidden');
+            document.getElementById('statusTitle').innerText = 'Request Approved!';
+            document.getElementById('statusMessage').innerText = 'Your registration has been approved. You can now login!';
+            document.getElementById('loginNowBtn').classList.remove('hidden');
+        }
+
+        function showRejected() {
+            document.getElementById('pendingIcon').innerHTML = `
+                <div class="w-24 h-24 rounded-full bg-red-50 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            `;
+            document.getElementById('statusTitle').innerText = 'Request Rejected';
+            document.getElementById('statusMessage').innerText = 'Your registration has been rejected. Please contact your supervisor.';
+        }
+
+        function showLoginForm() {
+    clearInterval(statusPollInterval);
+    document.getElementById('pendingModal').classList.add('hidden');
+    mainBox.classList.remove('hidden');
+    mainBox.classList.add('box-animate-in');
+
+    // Make sure it shows LOGIN not register
+    isLogin = true;
+    formTitle.innerText = "Welcome Back";
+    formSubtitle.innerText = "Enter your credentials to login.";
+    mainBtn.innerText = "Login";
+    promptText.innerText = "Don't have an account?";
+    toggleBtn.innerText = "Sign Up";
+    Object.values(fields).forEach(field => field.classList.add('hidden'));
+}
     </script>
 </body>
 </html>

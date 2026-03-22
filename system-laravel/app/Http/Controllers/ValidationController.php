@@ -14,12 +14,29 @@ class ValidationController extends Controller
 
    public function register(Request $request)
 {
-    $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
-        'name' => 'required|string|max:255',
-        'student_id' => 'required|string|unique:users_tbl,student_id',
-        'company_id' => 'required|string|exists:company_tbl,company_id',
-        'password' => 'required|string|min:6|confirmed',
+    // Check if student_id exists and is approved
+$existingStudent = UserTbl::where('student_id', $request->student_id)
+                          ->where('status', 'approved')
+                          ->first();
+
+if ($existingStudent) {
+    return response()->json([
+        'success' => false,
+        'message' => 'This Student ID is already registered and approved.'
     ]);
+}
+
+// Delete old rejected/pending record so they can re-register
+UserTbl::where('student_id', $request->student_id)
+       ->whereIn('status', ['rejected', 'pending'])
+       ->delete();
+
+$validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+    'name' => 'required|string|max:255',
+    'student_id' => 'required|string',
+    'company_id' => 'required|string|exists:company_tbl,company_id',
+    'password' => 'required|string|min:6|confirmed',
+]);
 
     if ($validator->fails()) {
         return response()->json([
@@ -104,4 +121,25 @@ class ValidationController extends Controller
 
     return response()->json($supervisor);
 }
+
+public function dashboard()
+{
+    $student = session('student');
+    $company = \App\Models\Company::where('company_id', $student->company_id)->first();
+    return view('students.dashboard', compact('company'));
+}
+
+public function checkStatus(Request $request)
+{
+    $student = UserTbl::where('student_id', $request->student_id)
+                      ->where('role', 'student')
+                      ->first();
+
+    if (!$student) {
+        return response()->json(['status' => 'not_found']);
+    }
+
+    return response()->json(['status' => $student->status]);
+}
+
 }

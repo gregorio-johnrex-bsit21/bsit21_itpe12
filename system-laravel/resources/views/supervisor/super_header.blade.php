@@ -31,37 +31,9 @@
                         </div>
 
                         <div class="max-h-80 overflow-y-auto custom-scrollbar">
-    {{-- Marcus Wright --}}
-    <div @click="chatOpen = true; chatWith = 'Marcus Wright'; chatColor = '2E7D32'; msgOpen = false; openSupervisorChat('Marcus Wright')"
-         class="p-4 hover:bg-slate-50 border-b border-slate-50 flex gap-3 cursor-pointer group transition-all">
-        <div class="relative shrink-0">
-            <img src="https://ui-avatars.com/api/?name=Marcus+Wright&background=2E7D32&color=fff" class="w-10 h-10 rounded-xl group-hover:scale-105 transition-transform shadow-sm">
-            <span id="unread-Marcus_Wright" class="absolute -top-1 -right-1 w-4 h-4 bg-[#2E7D32] border-2 border-white rounded-full text-[9px] text-white font-bold items-center justify-center hidden"></span>
-        </div>
-        <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-start">
-                <p class="text-sm font-bold text-slate-800">Marcus Wright</p>
-                <span id="time-Marcus_Wright" class="text-[9px] text-slate-400 font-black"></span>
-            </div>
-            <p id="preview-Marcus_Wright" class="text-xs text-slate-500 line-clamp-1 font-medium italic">No messages yet</p>
-        </div>
-    </div>
-
-    {{-- Sarah Jenkins --}}
-    <div @click="chatOpen = true; chatWith = 'Sarah Jenkins'; chatColor = 'D50000'; msgOpen = false; openSupervisorChat('Sarah Jenkins')"
-         class="p-4 hover:bg-slate-50 border-b border-slate-50 flex gap-3 cursor-pointer group transition-all">
-        <div class="relative shrink-0">
-            <img src="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=D50000&color=fff" class="w-10 h-10 rounded-xl group-hover:scale-105 transition-transform shadow-sm">
-            <span id="unread-Sarah_Jenkins" class="absolute -top-1 -right-1 w-4 h-4 bg-[#D50000] border-2 border-white rounded-full text-[9px] text-white font-bold items-center justify-center hidden"></span>
-        </div>
-        <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-start">
-                <p class="text-sm font-bold text-slate-800">Sarah Jenkins</p>
-                <span id="time-Sarah_Jenkins" class="text-[9px] text-slate-400 font-black"></span>
-            </div>
-            <p id="preview-Sarah_Jenkins" class="text-xs text-slate-500 line-clamp-1 font-medium italic">No messages yet</p>
-        </div>
-    </div>
+   <div class="max-h-80 overflow-y-auto custom-scrollbar" id="conversationList">
+    <p class="text-center text-xs text-slate-400 p-4">Loading...</p>
+   </div>
 </div>
                     </div>
                 </div>
@@ -127,7 +99,7 @@
                             </div>
                             Profile Settings
                         </a>
-                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all">
+                        <a href="#" onclick="document.getElementById('changePasswordModal').classList.remove('hidden')" class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all">
                             <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
                                 <i class="fas fa-cog text-sm"></i>
                             </div>
@@ -143,7 +115,59 @@
                     </div>
                 </div>
 
+                {{-- Change Password Modal --}}
+<div id="changePasswordModal" class="hidden fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm mx-4">
+        
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-black text-slate-800">Change Password</h3>
+            <button onclick="document.getElementById('changePasswordModal').classList.add('hidden')"
+                class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        {{-- Success/Error Message --}}
+        <div id="changePwMsg" class="hidden rounded-2xl px-4 py-3 mb-4 text-sm text-center font-bold"></div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Current Password</label>
+                <input type="password" id="currentPassword" 
+                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:border-[#2E7D32] text-sm transition-colors"
+                    placeholder="Enter current password">
             </div>
+            <div>
+                <label class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">New Password</label>
+                <input type="password" id="newPassword"
+                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:border-[#2E7D32] text-sm transition-colors"
+                    placeholder="Enter new password">
+            </div>
+            <div>
+                <label class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Confirm New Password</label>
+                <input type="password" id="confirmNewPassword"
+                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:border-[#2E7D32] text-sm transition-colors"
+                    placeholder="Confirm new password">
+            </div>
+        </div>
+
+        <div class="flex gap-3 mt-6">
+            <button onclick="document.getElementById('changePasswordModal').classList.add('hidden')"
+                class="flex-1 py-3 rounded-2xl border border-slate-200 text-slate-600 text-sm font-bold hover:bg-slate-50 transition-all">
+                Cancel
+            </button>
+            <button onclick="changePassword()"
+                class="flex-1 py-3 rounded-2xl bg-[#2E7D32] text-white text-sm font-bold hover:bg-[#256629] transition-all">
+                Update Password
+            </button>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
+            
 
 
             
@@ -160,6 +184,62 @@ function logoutSupervisor() {
     .then(data => {
         if (data.success) {
             window.location.href = data.redirect;
+        }
+    });
+}
+
+function changePassword() {
+    const current = document.getElementById('currentPassword').value.trim();
+    const newPass = document.getElementById('newPassword').value.trim();
+    const confirm = document.getElementById('confirmNewPassword').value.trim();
+    const msg = document.getElementById('changePwMsg');
+
+    if (!current || !newPass || !confirm) {
+        msg.className = 'rounded-2xl px-4 py-3 mb-4 text-sm text-center font-bold bg-red-50 text-red-500';
+        msg.innerText = 'Please fill in all fields.';
+        msg.classList.remove('hidden');
+        return;
+    }
+
+    if (newPass !== confirm) {
+        msg.className = 'rounded-2xl px-4 py-3 mb-4 text-sm text-center font-bold bg-red-50 text-red-500';
+        msg.innerText = 'New passwords do not match.';
+        msg.classList.remove('hidden');
+        return;
+    }
+
+    if (newPass.length < 6) {
+        msg.className = 'rounded-2xl px-4 py-3 mb-4 text-sm text-center font-bold bg-red-50 text-red-500';
+        msg.innerText = 'Password must be at least 6 characters.';
+        msg.classList.remove('hidden');
+        return;
+    }
+
+    fetch("{{ route('supervisor.change.password') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            current_password: current,
+            new_password: newPass
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            msg.className = 'rounded-2xl px-4 py-3 mb-4 text-sm text-center font-bold bg-emerald-50 text-emerald-600';
+            msg.innerText = 'Password updated successfully!';
+            msg.classList.remove('hidden');
+            // Clear fields
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+        } else {
+            msg.className = 'rounded-2xl px-4 py-3 mb-4 text-sm text-center font-bold bg-red-50 text-red-500';
+            msg.innerText = data.message;
+            msg.classList.remove('hidden');
         }
     });
 }

@@ -39,3 +39,5 @@ Route::post('/supervisor/logout', [SupervisorAuthController::class, 'logout'])->
 
 
 Route::get('/supervisor/chat/students', [SupervisorAuthController::class, 'getStudents'])->name('supervisor.chat.students');
+
+Route::post('/supervisor/change-password', [SupervisorAuthController::class, 'changePassword'])->name('supervisor.change.password');

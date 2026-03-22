@@ -8,6 +8,11 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        window.ChatConfig = {
+            conversation: "{{ str_replace(' ', '_', session('student') ? session('student')->name : '') }}"
+        };
+    </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -200,27 +205,21 @@
 {{-- ============================================================
      SCRIPTS — loads after ALL html above
      ============================================================ --}}
-@stack('scripts')
+{{-- ChatConfig FIRST --}}
 <script>
-    const ChatConfig = { 
-        conversation: '{{ str_replace(" ", "_", session("student")->name) }}' 
-    };
-
-    // Load supervisor info dynamically
     fetch('/student/supervisor')
         .then(r => r.json())
         .then(supervisor => {
-            // Update supervisor name in chat
             const nameEls = document.querySelectorAll('#supervisorName, .supervisor-name');
             nameEls.forEach(el => el.textContent = supervisor.name);
 
-            // Update avatar
             const avatarEls = document.querySelectorAll('.supervisor-avatar');
             avatarEls.forEach(el => el.src = `https://ui-avatars.com/api/?name=${supervisor.name}&background=0ea5e9&color=fff`);
         });
 </script>
 
- <script src="{{ asset('js/student-header.js') }}"></script> 
+@stack('scripts')
+<script src="{{ asset('js/student-header.js') }}"></script>
 
 </body>
 </html>

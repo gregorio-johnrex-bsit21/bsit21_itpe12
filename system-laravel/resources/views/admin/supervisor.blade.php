@@ -48,7 +48,7 @@
                                     <div class="mt-4">
                                         <p class="text-small mb-2 text-muted fw-bold text-uppercase" style="font-size: 0.65rem;">PARTNER COMPANY</p>
                                        <select class="form-select form-select-sm shadow-none border-1" id="companyDropdown" onchange="updateDashboard()"
-                                         style="width: 220px; height: 40px; font-size: 0.85rem; border-radius: 8px;">
+                                         style="width: 220px; height: 40px; font-size: 0.85rem; border-radius: 8px; color: #000; border-color: #000; background-color: #fff;">
                                          <option value="" selected disabled>Select Company</option>
                                          @foreach($companies as $company)
                                          <option value="{{ $company->company_id }}">{{ $company->name }}</option>
@@ -118,6 +118,78 @@
     </div>
 </div>
 
+{{-- Supervisor List Table --}}
+<div class="row mt-4">
+    <div class="col-lg-12">
+        <div class="card card-rounded shadow-sm border-0">
+            <div class="card-body">
+                <h4 class="card-title card-title-dash mb-4">Supervisor List</h4>
+                <div class="table-responsive">
+                    <table class="table select-table">
+                        <thead>
+                            <tr>
+                                <th>Supervisor Name</th>
+                                <th>Supervisor ID</th>
+                                <th>Company</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($supervisors as $supervisor)
+                            <tr>
+                                <td><h6 class="fw-bold mb-0">{{ $supervisor->name }}</h6></td>
+                                <td><p class="text-muted mb-0">{{ $supervisor->supervisor_id }}</p></td>
+                                <td><p class="text-muted mb-0">{{ $supervisor->company->name ?? 'N/A' }}</p></td>
+                                <td>
+                                    <button onclick="resetPassword('{{ $supervisor->supervisor_id }}')" 
+                                        class="btn btn-warning btn-sm text-white">
+                                        <i class="mdi mdi-lock-reset"></i> Reset Password
+                                    </button>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">No supervisors yet.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Reset Password Modal --}}
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">Reset Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">Are you sure you want to reset this supervisor's password?</p>
+                <div id="newCredentials" class="mt-3 p-3 text-center" style="display: none; background: #f8f9fa; border-radius: 10px;">
+                    <p class="text-muted mb-2 small fw-bold">NEW CREDENTIALS:</p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small">Supervisor ID:</span>
+                        <h5 id="resetSupervisorId" class="text-primary fw-bold mb-0" style="letter-spacing: 2px;"></h5>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">New Password:</span>
+                        <h5 id="resetSupervisorPassword" class="text-primary fw-bold mb-0" style="letter-spacing: 2px;"></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning text-white px-4" id="confirmResetBtn">Confirm Reset</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Add Company Modal --}}
 <div class="modal fade" id="addCompanyModal" tabindex="-1" aria-labelledby="addCompanyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -160,7 +232,7 @@
                 </div>
                 <div class="form-group">
                     <label class="mb-2 text-muted fw-bold small">ASSIGN TO COMPANY</label>
-                    <select id="supervisorCompany" class="form-select" style="height: 45px; border-radius: 8px;">
+                    <select id="supervisorCompany" class="form-select" style="height: 45px; border-radius: 8px; color: #000; border-color: #000; background-color: #fff;">
                         <option value="" selected disabled>Select Company</option>
                         @foreach($companies as $company)
                             <option value="{{ $company->company_id }}">{{ $company->name }}</option>
@@ -296,18 +368,20 @@ function addSupervisor() {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            supervisorIdSpan.innerText = data.supervisor_id;
-            supervisorPasswordSpan.innerText = data.password;
-            credentials.style.display = 'block';
+    if (data.success) {
+        supervisorIdSpan.innerText = data.supervisor_id;
+        supervisorPasswordSpan.innerText = data.password;
+        credentials.style.display = 'block';
 
-            // Disable button
-            addBtn.disabled = true;
-            addBtn.innerText = "Supervisor Added ✓";
-            addBtn.classList.remove('btn-secondary');
-            addBtn.classList.add('btn-success');
-        }
-    })
+        // Disable button
+        addBtn.disabled = true;
+        addBtn.innerText = "Supervisor Added ✓";
+        addBtn.classList.remove('btn-secondary');
+        addBtn.classList.add('btn-success');
+    } else {
+        alert(data.message);
+    }
+})
     .catch(err => console.error(err));
 }
 
@@ -390,5 +464,45 @@ document.getElementById('addCompanyModal').addEventListener('hidden.bs.modal', f
         const rows = document.querySelectorAll('#studentTableBody tr');
         rows.forEach(row => { row.style.display = row.cells[0]?.innerText.toLowerCase().includes(filter) ? '' : 'none'; });
     }
+
+
+    let resetSupervisorId = null;
+
+function resetPassword(supervisorId) {
+    resetSupervisorId = supervisorId;
+    document.getElementById('newCredentials').style.display = 'none';
+    document.getElementById('confirmResetBtn').disabled = false;
+    document.getElementById('confirmResetBtn').innerText = 'Confirm Reset';
+    document.getElementById('confirmResetBtn').classList.remove('btn-success');
+    document.getElementById('confirmResetBtn').classList.add('btn-warning');
+    new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
+}
+
+document.getElementById('confirmResetBtn').addEventListener('click', function() {
+    fetch("{{ route('supervisor.reset.password') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({ supervisor_id: resetSupervisorId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('resetSupervisorId').innerText = data.supervisor_id;
+            document.getElementById('resetSupervisorPassword').innerText = data.password;
+            document.getElementById('newCredentials').style.display = 'block';
+
+            // Disable button
+            this.disabled = true;
+            this.innerText = 'Password Reset ✓';
+            this.classList.remove('btn-warning');
+            this.classList.add('btn-success');
+        }
+    })
+    .catch(err => console.error(err));
+});
+
 </script>
 @endpush

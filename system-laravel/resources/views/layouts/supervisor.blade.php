@@ -99,11 +99,52 @@
 
     let CONVERSATIONS = [];
 
-// Load students dynamically
+const COLORS = ['2E7D32', 'D50000', '1565C0', 'E65100', '6A1B9A'];
+
+function openChat(name, color) {
+    const alpineEl = document.querySelector('[x-data]');
+    const alpine = Alpine.$data(alpineEl);
+    alpine.chatOpen = true;
+    alpine.chatWith = name;
+    alpine.chatColor = color;
+    alpine.msgOpen = false;
+    openSupervisorChat(name);
+}
+
 fetch('/supervisor/chat/students')
     .then(r => r.json())
     .then(students => {
         CONVERSATIONS = students.map(s => s.name.replace(/\s+/g, '_'));
+        
+        const list = document.getElementById('conversationList');
+        
+        if (students.length === 0) {
+            list.innerHTML = '<p class="text-center text-xs text-slate-400 p-4">No students yet.</p>';
+            return;
+        }
+
+        list.innerHTML = students.map((s, i) => {
+            const key   = s.name.replace(/\s+/g, '_');
+            const color = COLORS[i % COLORS.length];
+            return `
+                <div onclick="openChat('${s.name}', '${color}')"
+                     class="p-4 hover:bg-slate-50 border-b border-slate-50 flex gap-3 cursor-pointer group transition-all">
+                    <div class="relative shrink-0">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=${color}&color=fff" 
+                             class="w-10 h-10 rounded-xl group-hover:scale-105 transition-transform shadow-sm">
+                        <span id="unread-${key}" class="absolute -top-1 -right-1 w-4 h-4 bg-[#${color}] border-2 border-white rounded-full text-[9px] text-white font-bold items-center justify-center hidden"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start">
+                            <p class="text-sm font-bold text-slate-800">${s.name}</p>
+                            <span id="time-${key}" class="text-[9px] text-slate-400 font-black"></span>
+                        </div>
+                        <p id="preview-${key}" class="text-xs text-slate-500 line-clamp-1 font-medium italic">No messages yet</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
         updatePreviews();
     });
 

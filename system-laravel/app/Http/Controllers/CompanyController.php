@@ -25,11 +25,13 @@ class CompanyController extends Controller
     }
 
     public function index()
-    {
-        $companies = Company::all();
-        return view('admin.supervisor', compact('companies'));
-    }
-
+{
+    $companies = Company::all();
+    $supervisors = \App\Models\UserTbl::where('role', 'supervisor')
+                                      ->with('company')
+                                      ->get();
+    return view('admin.supervisor', compact('companies', 'supervisors'));
+}
    public function storeSupervisor(Request $request)
 {
     $request->validate([
@@ -37,10 +39,20 @@ class CompanyController extends Controller
         'company_id' => 'required|string',
     ]);
 
+    // Check if company already has a supervisor
+    $existingSupervisor = \App\Models\UserTbl::where('company_id', $request->company_id)
+                                             ->where('role', 'supervisor')
+                                             ->first();
+
+    if ($existingSupervisor) {
+        return response()->json([
+            'success' => false,
+            'message' => 'This company already has a supervisor assigned!'
+        ]);
+    }
+
     // Generate unique supervisor_id
-    do {
-        $supervisorId = strtoupper(str()->random(8));
-    } while (\App\Models\UserTbl::where('supervisor_id', $supervisorId)->exists());
+    $supervisorId = strtoupper(str()->random(8));
 
     // Generate password
     $rawPassword = strtoupper(str()->random(10));
@@ -61,4 +73,19 @@ class CompanyController extends Controller
         'password' => $rawPassword,
     ]);
 }
+
+public function resetPassword(Request $request)
+{
+    $rawPassword = strtoupper(str()->random(10));
+
+    \App\Models\UserTbl::where('supervisor_id', $request->supervisor_id)
+                       ->update(['password' => \Illuminate\Support\Facades\Hash::make($rawPassword)]);
+
+    return response()->json([
+        'success' => true,
+        'supervisor_id' => $request->supervisor_id,
+        'password' => $rawPassword,
+    ]);
+}
+
 }

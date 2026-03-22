@@ -102,4 +102,28 @@ public function getStudents()
     return response()->json($students);
 }
 
+public function changePassword(Request $request)
+{
+    $supervisor = session('supervisor');
+    $user = UserTbl::where('supervisor_id', $supervisor->supervisor_id)->first();
+
+    if (!Hash::check($request->current_password, $user->password)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Current password is incorrect.'
+        ]);
+    }
+
+    $user->password = Hash::make($request->new_password);
+    $user->save();
+
+    // Update session
+    session(['supervisor' => $user]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Password updated successfully!'
+    ]);
+}
+
 }

@@ -52,9 +52,9 @@
                 <template x-if="view === 'main'">
                     <div>
                         <div class="px-4 py-3 border-b border-gray-50">
-                            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Account</p>
-                            <p class="text-sm font-black text-gray-800">{{ session('student')->name }}</p>
-                            
+                           <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Account</p>
+                           <p class="text-sm font-black text-gray-800">{{ session('student')->name }}</p>
+                           <p class="text-[11px] font-medium text-gray-400 tracking-wide">ID: {{ session('student')->student_id }}</p>
                         </div>
                         <div class="py-1.5">
                             <a href="{{ route('students.profile') }}"

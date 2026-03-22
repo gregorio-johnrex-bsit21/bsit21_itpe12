@@ -153,7 +153,7 @@
     <div class="grid grid-cols-2 gap-3">
         <div class="bg-gray-50/50 p-3 rounded-2xl border border-gray-200 text-center hover:border-emerald-200 transition-colors">
             <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none">Student ID</p>
-            <p class="text-[13px] font-black text-gray-700 mt-1.5">2021-0452-A</p>
+            <p class="text-[13px] font-black text-gray-700 mt-1.5">{{ session('student')->student_id }}</p>
         </div>
 
         <div class="bg-gray-50/50 p-3 rounded-2xl border border-gray-200 text-center hover:border-emerald-200 transition-colors">

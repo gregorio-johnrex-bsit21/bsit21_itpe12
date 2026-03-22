@@ -84,9 +84,10 @@
         <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
 
         <div class="absolute bottom-3 left-3 right-3">
-            <p class="text-[9px] font-bold text-emerald-400 tracking-widest uppercase">Partner Company</p>
-            <h4 class="text-white font-bold text-sm leading-tight">RRL Tech Solutions</h4>
-        </div>
+        <div class="absolute bottom-3 left-3 right-3">
+    <p class="text-[9px] font-bold text-emerald-400 tracking-widest uppercase">Partner Company</p>
+    <h4 class="text-white font-bold text-sm leading-tight">{{ $company->name ?? 'No Company' }}</h4>
+</div>
     </div>
 </div>
 
