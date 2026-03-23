@@ -26,3 +26,16 @@ Date: March 2, 2026
 Date: March 5,2026
 -We are currently working together on developing and templating the system to ensure an organized and efficient design process.
 
+Date: March 9-13, 2026
+-We started working on our GitHub branch so that our main branch remains unaffected and we can develop freely.
+
+-We have finished the layout and design for the student/client interface.
+
+-In collaboration with the team, we have also completed the front-end layout for the Supervisor module.
+
+Date: March 16-19, 2026
+-We implemented a hardcoded chat interface to evaluate the UI layout and test its visual integration within the system.
+
+-We have initialized the database schema and implemented initial models and tables for testing and data validation.
+
+-We have developed the Admin module template and implemented core features for the dashboard, company management, student attendance tracking, and report generation.
