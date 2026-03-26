@@ -1,4 +1,4 @@
-<header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 shrink-0">
+<header class="h-16 bg-white border-b border-gray-300 flex items-center justify-between px-4 lg:px-8 shrink-0">
     
     <div class="flex items-center">
         <button @click="sidebarOpen = true" class="p-2 mr-3 lg:hidden hover:bg-slate-100 rounded-xl active:scale-90">
@@ -22,13 +22,13 @@
             {{-- Messages Button --}}
             <button id="msgBtn" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                <span id="studentUnreadBadge" class="absolute top-2 right-2 w-4 h-4 bg-[#D50000] border-2 border-white rounded-full text-[10px] text-white font-bold items-center justify-center hidden"></span>
+                <span id="studentUnreadBadge" class="absolute top-1 right-1 w-5 h-5 bg-[#D50000] border-2 border-white rounded-full text-[12px] text-white font-bold items-center justify-center hidden"></span>
             </button>
 
             {{-- Notifications Button --}}
             <button id="notifBtn" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                <span class="absolute top-2 right-2 w-4 h-4 bg-[#D50000] border-2 border-white rounded-full text-[10px] text-white font-bold flex items-center justify-center">3</span>
+                <span class="absolute top-1 right-1 w-5 h-5 bg-[#D50000] border-2 border-white rounded-full text-[12px] text-white font-bold flex items-center justify-center">1</span>
             </button>
 
         </div>
@@ -81,7 +81,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
         </svg>
-        Sign Out
+        Logout
     </button>
 </div>
 
@@ -105,8 +105,8 @@
         </div>
 
         <!-- Text -->
-        <h3 class="text-center text-gray-800 font-semibold text-lg">Sign Out</h3>
-        <p class="text-center text-gray-500 text-sm mt-1">Are you sure you want to sign out?</p>
+        <h3 class="text-center text-gray-800 font-semibold text-lg">Log Out</h3>
+        <p class="text-center text-gray-500 text-sm mt-1">Are you sure you want to logout?</p>
 
         <!-- Actions -->
         <div class="flex gap-3 mt-6">
@@ -120,7 +120,7 @@
         <button 
             onclick="logoutStudent()"
             class="flex-1 px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-medium text-center hover:bg-red-600 transition">
-            Sign Out
+            Yes, Logout
         </button>
         </div>
     </div>

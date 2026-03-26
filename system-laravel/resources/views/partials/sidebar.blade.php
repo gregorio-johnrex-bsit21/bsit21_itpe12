@@ -77,7 +77,7 @@
     </a>
 </nav>
            
-           <div class="p-4 border-t border-gray-100">
+           <div class="p-4 border-t border-gray-300">
     <div class="relative h-20 w-full rounded-2xl overflow-hidden group">
        <img src="{{ asset('images/microsoft.webp') }}" alt="Microsoft" class="absolute inset-0 w-full h-50 object-cover">
         
