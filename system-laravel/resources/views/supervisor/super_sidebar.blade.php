@@ -2,10 +2,8 @@
            class="fixed left-0 top-0 h-screen bg-white border-r border-slate-200 transition-all duration-300 z-50 overflow-hidden hidden md:flex flex-col">
 
         <div class="p-6 flex items-center gap-3 border-b border-slate-200 shrink-0">
-            <div class="bg-[#2E7D32] p-2 rounded-xl shadow-lg shadow-green-200">
-                <i class="fas fa-shield-halved text-white"></i>
-            </div>
-            <span x-show="sidebarOpen" class="font-bold text-lg tracking-tight whitespace-nowrap">CHMSU<span class="text-[#2E7D32]">Supervison</span></span>
+           
+            <span x-show="sidebarOpen" class="font-bold text-lg tracking-tight whitespace-nowrap">COMPANY<span class="text-[#2E7D32]">Supervisor</span></span>
         </div>
 
         <nav class="mt-8 px-4 space-y-2 flex-grow overflow-y-auto custom-scrollbar">

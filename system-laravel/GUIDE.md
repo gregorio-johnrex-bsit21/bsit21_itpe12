@@ -2,6 +2,11 @@
 
 Welcome! This guide will walk you through everything you need to get the project running on your local machine. Please follow each step carefully and in order.
 
+For better student dashboard experience make it on mobile view!!
+
+
+skip this if already done and proceed to account setup line 103
+
 ---
 
 ## Requirements
@@ -107,7 +112,7 @@ Navigate to:
 ```
 http://127.0.0.1:8000/admin
 ```
-Log in using the admin credentials.
+Since there's no login, you can just directly go to admin
 
 ---
 
@@ -182,8 +187,15 @@ Once approved by the supervisor, the student may return to:
 http://127.0.0.1:8000/student
 ```
 
+Sometimes it redirects to login and it auto fill the id and pass
+
+If not then go and
+
 Select **Login**, enter their credentials, and they will have full access to the system — including the ability to communicate with their assigned supervisor.
 
+That's it!
+
+If symptoms persist follow what my brother claude has to offer XD, see below
 ---
 
 ## Troubleshooting
