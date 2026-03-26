@@ -1,0 +1,501 @@
+/**
+ * student-header.js — public/js/student-header.js
+ * Requires: <script>const ChatConfig = { conversation: 'Marcus_Wright' };</script>
+ */
+
+const STUDENT_CONVERSATION = window.ChatConfig?.conversation || 'Marcus_Wright';
+const STUDENT_ROLE = 'Student';
+
+console.log('STUDENT_CONVERSATION:', STUDENT_CONVERSATION);
+
+// ── DOM elements ─────────────────────────────────────────────
+const msgBtn      = document.getElementById('msgBtn');
+const msgModal    = document.getElementById('msgModal');
+const notifBtn    = document.getElementById('notifBtn');
+const notifModal  = document.getElementById('notifModal');
+const chatBox     = document.getElementById('chatBox');
+const msgInput    = document.getElementById('msgInput');
+const sendBtn     = document.getElementById('sendBtn');
+const messageList = document.getElementById('messageList');
+
+// ── Flag to prevent document listener from closing a modal we just opened ──
+let justOpenedModal = false;
+
+// ── Modal open/close ──────────────────────────────────────────
+function closeAll() {
+    msgModal.classList.add('hidden');
+    notifModal.classList.add('hidden');
+}
+
+function openChat() {
+    msgModal.classList.add('hidden');
+    chatBox.classList.remove('hidden');
+    startChatPolling();
+    markAsRead();
+    markRead(); // ✅ reset the highlight when user opens chat
+}
+
+function closeChat() {
+    chatBox.classList.add('hidden');
+    stopChatPolling();
+    lastMessageIndex = 0; 
+}
+
+// ── Button listeners ──────────────────────────────────────────
+msgBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isHidden = msgModal.classList.contains('hidden');
+    closeAll();
+    if (isHidden) {
+        msgModal.classList.remove('hidden');
+        justOpenedModal = true;
+    }
+});
+
+notifBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isHidden = notifModal.classList.contains('hidden');
+    closeAll();
+    if (isHidden) {
+        notifModal.classList.remove('hidden');
+        justOpenedModal = true;
+    }
+});
+
+// ── Close on outside click/tap ────────────────────────────────
+document.addEventListener('click', (e) => {
+    if (justOpenedModal) {
+        justOpenedModal = false;
+        return;
+    }
+    const clickedInsideMsg   = msgModal.contains(e.target)   || msgBtn.contains(e.target);
+    const clickedInsideNotif = notifModal.contains(e.target) || notifBtn.contains(e.target);
+    const clickedInsideChat  = chatBox.contains(e.target);
+
+    if (!clickedInsideMsg && !clickedInsideNotif && !clickedInsideChat) {
+        closeAll();
+    }
+});
+
+// ── Chat state ────────────────────────────────────────────────
+let lastMessageIndex       = 0;
+let studentPollInterval    = null;
+let studentPreviewInterval = null;
+
+// ── Helpers ───────────────────────────────────────────────────
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ── Render a message bubble ───────────────────────────────────
+function appendMessage(message, sender) {
+    const isStudent = (sender === 'Student');
+    const wrapper = document.createElement('div');
+    wrapper.className = isStudent
+        ? 'flex items-start gap-2 self-end max-w-[85%] ml-auto'
+        : 'flex items-start gap-2 max-w-[85%]';
+
+    let content = '';
+    if (message.startsWith('[image]')) {
+        const url = message.replace('[image]', '');
+        content = `<img src="${url}" class="max-w-[200px] max-h-48 rounded-xl object-cover cursor-pointer shadow-sm" onclick="window.open('${url}', '_blank')" />`;
+    } else if (message.startsWith('[video]')) {
+        const url = message.replace('[video]', '');
+        content = `<video src="${url}" controls class="max-w-[200px] max-h-48 rounded-xl shadow-sm"></video>`;
+    } else {
+        content = `<div class="${isStudent
+            ? 'bg-emerald-600 text-white rounded-2xl rounded-br-none'
+            : 'bg-white border border-gray-200 text-gray-700 rounded-2xl rounded-bl-none shadow-sm'
+        } p-3 text-sm">${escapeHtml(message)}</div>`;
+    }
+
+    wrapper.innerHTML = content;
+    messageList.appendChild(wrapper);
+    messageList.scrollTop = messageList.scrollHeight;
+}
+
+// ── Poll messages ─────────────────────────────────────────────
+function pollStudentMessages() {
+    fetch(`/get-messages?conversation=${STUDENT_CONVERSATION}&after=${lastMessageIndex}&role=${STUDENT_ROLE}`)
+        .then(r => r.json())
+        .then(data => {
+            data.messages.forEach(msg => {
+                appendMessage(msg.message, msg.sender);
+            });
+            lastMessageIndex = data.total;
+        })
+        .catch(() => {});
+}
+
+function startChatPolling() {
+    lastMessageIndex = 0;
+    messageList.innerHTML = '';
+    pollStudentMessages();
+    if (!studentPollInterval) studentPollInterval = setInterval(pollStudentMessages, 2000);
+}
+
+function stopChatPolling() {
+    clearInterval(studentPollInterval);
+    studentPollInterval = null;
+}
+
+// ── Mark as read ──────────────────────────────────────────────
+function markAsRead() {
+    fetch('/mark-read', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ conversation: STUDENT_CONVERSATION, role: STUDENT_ROLE })
+    }).then(() => updateStudentPreview());
+}
+
+// ── Preview + unread badge ────────────────────────────────────
+function updateStudentPreview() {
+    fetch(`/get-messages?conversation=${STUDENT_CONVERSATION}&after=0&role=${STUDENT_ROLE}`)
+        .then(r => r.json())
+        .then(data => {
+            const unread = data.unread ?? 0;
+            const msgs   = data.messages;
+            const last   = msgs.length > 0 ? msgs[msgs.length - 1] : null;
+
+            const preview  = document.getElementById('studentMsgPreview');
+            const timeEl   = document.getElementById('studentMsgTime');
+            const badge    = document.getElementById('studentUnreadBadge');
+            const newLabel = document.getElementById('studentNewLabel');
+
+            if (last && preview) preview.textContent = last.message.length > 35 ? last.message.substring(0, 35) + '...' : last.message;
+            if (last && timeEl)  timeEl.textContent  = last.time || '';
+
+            if (badge) {
+                badge.textContent = unread > 9 ? '9+' : unread;
+                badge.classList.toggle('hidden', unread === 0);
+                badge.classList.toggle('flex',   unread > 0);
+            }
+            if (newLabel) {
+                newLabel.textContent = unread > 0 ? unread + ' New' : '';
+                newLabel.classList.toggle('hidden', unread === 0);
+            }
+
+            // ✅ THIS is what was missing — trigger the highlight based on unread count
+            if (unread > 0) {
+                markUnread();
+            } else {
+                markRead();
+            }
+        })
+        .catch(() => {});
+}
+// ── Send message ──────────────────────────────────────────────
+function sendStudentMessage() {
+    const message = msgInput.value.trim();
+    if (!message) return;
+    appendMessage(message, 'Student');
+    lastMessageIndex++;
+    msgInput.value = '';
+    fetch('/send-message', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ message, sender: 'Student', conversation: STUDENT_CONVERSATION })
+    });
+}
+
+sendBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sendStudentMessage();
+});
+
+msgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendStudentMessage(); });
+
+// ── Notes / Diary ─────────────────────────────────────────────
+const diaryBtn     = document.getElementById('diaryBtn');
+const inboxModal   = document.getElementById('inboxModal');
+const composeModal = document.getElementById('composeModal');
+const closeInbox   = document.getElementById('closeInbox');
+const closeCompose = document.getElementById('closeCompose');
+const addNewBtn    = document.getElementById('addNewBtn');
+const saveNoteBtn  = document.getElementById('saveNote');
+const notesList    = document.querySelector('#inboxModal .space-y-2');
+const titleInput   = document.querySelector('#composeModal input');
+const bodyInput    = document.querySelector('#composeModal textarea');
+
+let editingId = null;
+
+// --- Storage Helpers ---
+function getNotes() {
+    return JSON.parse(localStorage.getItem('my_notes') || '[]');
+}
+function saveNotes(notes) {
+    localStorage.setItem('my_notes', JSON.stringify(notes));
+}
+
+// --- Render Notes List ---
+function renderNotes() {
+    const notes = getNotes();
+    notesList.innerHTML = '';
+
+    if (notes.length === 0) {
+        notesList.innerHTML = `<p class="text-center text-sm text-gray-400 py-6">No notes yet. Hit + to add one!</p>`;
+        return;
+    }
+
+    notes.forEach(note => {
+        const div = document.createElement('div');
+        div.className = 'p-3 border rounded-lg hover:border-emerald-300 hover:bg-emerald-50 cursor-pointer transition-all flex justify-between items-start group';
+        div.innerHTML = `
+            <div class="flex-1 min-w-0" data-id="${note.id}">
+  <p class="text-sm font-semibold text-gray-800 truncate">${note.title || 'Untitled'}</p>
+  <p class="text-xs text-gray-500 truncate">${note.body || ''}</p>
+</div>
+
+<div class="delete-idle ml-2 transition-opacity self-center">
+  <button data-delete="${note.id}" class="text-red-400 hover:text-red-600 active:text-red-600 leading-none">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="3 6 5 6 21 6"/>
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+      <path d="M10 11v6M14 11v6"/>
+      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+    </svg>
+  </button>
+</div>
+
+            <div class="delete-confirm ml-2 hidden items-center gap-1">
+                <span class="text-xs text-gray-500">Delete this note?</span>
+                <button data-confirm="${note.id}" class="text-xs px-2 py-0.5 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">Yes</button>
+                <button data-cancel class="text-xs px-2 py-0.5 bg-gray-200 text-gray-600 rounded hover:bg-gray-300 transition-colors">No</button>
+            </div>
+        `;
+
+        const idleEl   = div.querySelector('.delete-idle');
+        const confirmEl = div.querySelector('.delete-confirm');
+
+        // Open note to edit
+        div.querySelector('[data-id]').addEventListener('click', () => openNote(note.id));
+
+        // Show inline confirmation
+        div.querySelector('[data-delete]').addEventListener('click', (e) => {
+            e.stopPropagation();
+            idleEl.classList.add('hidden');
+            confirmEl.classList.remove('hidden');
+            confirmEl.classList.add('flex');
+        });
+
+        // Confirm delete
+        div.querySelector('[data-confirm]').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const notes = getNotes().filter(n => n.id !== note.id);
+            saveNotes(notes);
+            renderNotes();
+        });
+
+        // Cancel delete
+        div.querySelector('[data-cancel]').addEventListener('click', (e) => {
+            e.stopPropagation();
+            confirmEl.classList.add('hidden');
+            confirmEl.classList.remove('flex');
+            idleEl.classList.remove('hidden');
+        });
+
+        notesList.appendChild(div);
+    });
+}
+
+// --- Open Note for Editing ---
+function openNote(id) {
+    const note = getNotes().find(n => n.id === id);
+    if (!note) return;
+    editingId = id;
+    titleInput.value = note.title;
+    bodyInput.value = note.body;
+    document.querySelector('#composeModal h3').textContent = 'Edit Note';
+    composeModal.classList.remove('hidden');
+}
+
+// --- Delete Note ---
+// --- Delete Note with Confirmation ---
+function deleteNote(id) {
+    const note = getNotes().find(n => n.id === id);
+    if (!note) return;
+
+    const confirmed = confirm(`Delete "${note.title || 'Untitled'}"?`);
+    if (!confirmed) return;
+
+    const notes = getNotes().filter(n => n.id !== id);
+    saveNotes(notes);
+    renderNotes();
+}
+
+// --- Save / Update Note ---
+saveNoteBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const title = titleInput.value.trim();
+    const body  = bodyInput.value.trim();
+    if (!title && !body) return;
+
+    const notes = getNotes();
+
+    if (editingId) {
+        const idx = notes.findIndex(n => n.id === editingId);
+        if (idx > -1) { notes[idx].title = title; notes[idx].body = body; }
+    } else {
+        notes.unshift({ id: Date.now(), title, body, createdAt: new Date().toISOString() });
+    }
+
+    saveNotes(notes);
+    renderNotes();
+    resetCompose();
+    composeModal.classList.add('hidden');
+});
+
+function resetCompose() {
+    editingId = null;
+    titleInput.value = '';
+    bodyInput.value = '';
+    document.querySelector('#composeModal h3').textContent = 'New Note';
+}
+
+// --- Modal Controls ---
+diaryBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    justOpenedModal = true;
+    renderNotes();
+    inboxModal.classList.remove('hidden');
+});
+
+addNewBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    justOpenedModal = true;
+    resetCompose();
+    composeModal.classList.remove('hidden');
+});
+
+closeInbox.addEventListener('click', (e) => {
+    e.stopPropagation();
+    inboxModal.classList.add('hidden');
+});
+
+closeCompose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    resetCompose();
+    composeModal.classList.add('hidden');
+});
+
+inboxModal.addEventListener('click',   (e) => { if (e.target === inboxModal)   inboxModal.classList.add('hidden'); });
+composeModal.addEventListener('click', (e) => { if (e.target === composeModal) { resetCompose(); composeModal.classList.add('hidden'); } });
+
+// ── Start preview polling on load ─────────────────────────────
+updateStudentPreview();
+studentPreviewInterval = setInterval(updateStudentPreview, 3000);
+
+function markUnread() {
+    
+    document.getElementById('supervisorName').classList.add('font-black', 'text-green-600');
+    document.getElementById('studentMsgPreview').classList.add('font-black', 'text-gray-900');
+    document.getElementById('studentMsgPreview').classList.remove('text-gray-500', 'font-medium');
+}
+
+function markRead() {
+   
+    document.getElementById('supervisorName').classList.remove('font-black', 'text-green-600');
+    document.getElementById('studentMsgPreview').classList.remove('font-black', 'text-gray-900');
+    document.getElementById('studentMsgPreview').classList.add('text-gray-500', 'font-medium');
+}
+
+
+const imageBtn          = document.getElementById('imageBtn');
+const mediaInput        = document.getElementById('mediaInput');
+const mediaPreviewModal = document.getElementById('mediaPreviewModal');
+const imagePreview      = document.getElementById('imagePreview');
+const videoPreview      = document.getElementById('videoPreview');
+const closeMediaPreview = document.getElementById('closeMediaPreview');
+const cancelMediaBtn    = document.getElementById('cancelMediaBtn');
+const sendMediaBtn      = document.getElementById('sendMediaBtn');
+
+let selectedMediaFile = null;
+
+// Trigger file picker
+imageBtn.addEventListener('click', () => mediaInput.click());
+
+// On file selected
+mediaInput.addEventListener('change', () => {
+    const file = mediaInput.files[0];
+    if (!file) return;
+
+    selectedMediaFile = file;
+    const url = URL.createObjectURL(file);
+    const isVideo = file.type.startsWith('video/');
+
+    // Show correct preview
+    imagePreview.classList.add('hidden');
+    videoPreview.classList.add('hidden');
+
+    if (isVideo) {
+        videoPreview.src = url;
+        videoPreview.classList.remove('hidden');
+    } else {
+        imagePreview.src = url;
+        imagePreview.classList.remove('hidden');
+    }
+
+    mediaPreviewModal.classList.remove('hidden');
+    mediaInput.value = ''; // reset so same file can be re-selected
+});
+
+// Send media as a chat bubble
+sendMediaBtn.addEventListener('click', async () => {
+    if (!selectedMediaFile) return;
+
+    const formData = new FormData();
+    formData.append('file', selectedMediaFile);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+    sendMediaBtn.disabled = true;
+    sendMediaBtn.textContent = 'Sending...';
+
+    try {
+        const res = await fetch('/upload-media', { method: 'POST', body: formData });
+        const data = await res.json();
+        const url = data.url;
+        const isVideo = selectedMediaFile.type.startsWith('video/');
+        const mediaMessage = isVideo ? `[video]${url}` : `[image]${url}`;
+
+        await fetch('/send-message', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+    },
+    body: JSON.stringify({
+        message: mediaMessage,
+        sender: 'Student',
+        conversation: STUDENT_CONVERSATION
+    })
+});
+
+        closePreview();
+    } catch (err) {
+        console.error('Full error:', err);
+        alert('Upload failed. Try again.');
+    } finally {
+        sendMediaBtn.disabled = false;
+        sendMediaBtn.textContent = 'Send';
+    }
+});
+
+function closePreview() {
+    mediaPreviewModal.classList.add('hidden');
+    imagePreview.src = '';
+    videoPreview.src = '';
+    selectedMediaFile = null;
+}
+
+closeMediaPreview.addEventListener('click', closePreview);
+cancelMediaBtn.addEventListener('click', closePreview);
+mediaPreviewModal.addEventListener('click', (e) => { if (e.target === mediaPreviewModal) closePreview(); });
+
