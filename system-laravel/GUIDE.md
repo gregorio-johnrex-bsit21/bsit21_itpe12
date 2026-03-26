@@ -2,10 +2,12 @@
 
 Welcome! This guide will walk you through everything you need to get the project running on your local machine. Please follow each step carefully and in order.
 
-For better student dashboard experience make it on mobile view!!
+For better experince, turn the student dashboard into a mobile view using the inspect option, choose either iphone se or microsoft lumia 950, since our student dashboard is solely focused on mobile view.
 
 
-skip this if already done and proceed to account setup line 103
+
+
+skip this if already done and proceed to account setup after the step 10
 
 ---
 
@@ -25,8 +27,8 @@ Please make sure the following are installed on your machine before proceeding:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/gregorio-johnrex-bsit21/bsit21_itpe12.git
+cd bsit21_itpe12
 ```
 
 ### 2. Install PHP Dependencies
