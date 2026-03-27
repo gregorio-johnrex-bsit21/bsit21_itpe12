@@ -7,7 +7,7 @@ For better experince, turn the student dashboard into a mobile view using the in
 
 
 
-skip this if already done and proceed to account setup after the step 10
+skip the installation process if already done and proceed to account setup. see below after step 10
 
 ---
 
