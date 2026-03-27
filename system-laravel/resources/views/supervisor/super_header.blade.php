@@ -112,65 +112,10 @@
                            </div>
                           Logout
                         </a>
-                    </div>
+                    </div>   
                 </div>
-
-                {{-- Change Password Modal --}}
-<div id="changePasswordModal" class="hidden fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm mx-4">
-        
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="text-lg font-black text-slate-800">Change Password</h3>
-            <button onclick="document.getElementById('changePasswordModal').classList.add('hidden')"
-                class="text-slate-400 hover:text-slate-600 transition-colors">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        {{-- Success/Error Message --}}
-        <div id="changePwMsg" class="hidden rounded-2xl px-4 py-3 mb-4 text-sm text-center font-bold"></div>
-
-        <div class="space-y-4">
-            <div>
-                <label class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Current Password</label>
-                <input type="password" id="currentPassword" 
-                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:border-[#2E7D32] text-sm transition-colors"
-                    placeholder="Enter current password">
-            </div>
-            <div>
-                <label class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">New Password</label>
-                <input type="password" id="newPassword"
-                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:border-[#2E7D32] text-sm transition-colors"
-                    placeholder="Enter new password">
-            </div>
-            <div>
-                <label class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Confirm New Password</label>
-                <input type="password" id="confirmNewPassword"
-                    class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:border-[#2E7D32] text-sm transition-colors"
-                    placeholder="Confirm new password">
-            </div>
-        </div>
-
-        <div class="flex gap-3 mt-6">
-            <button onclick="document.getElementById('changePasswordModal').classList.add('hidden')"
-                class="flex-1 py-3 rounded-2xl border border-slate-200 text-slate-600 text-sm font-bold hover:bg-slate-50 transition-all">
-                Cancel
-            </button>
-            <button onclick="changePassword()"
-                class="flex-1 py-3 rounded-2xl bg-[#2E7D32] text-white text-sm font-bold hover:bg-[#256629] transition-all">
-                Update Password
-            </button>
-        </div>
-    </div>
-</div>
-
-</div>
-
-
-            
-
-
-            
+           </div>
+       
 <script>
 function logoutSupervisor() {
     fetch("{{ route('supervisor.logout') }}", {
@@ -244,4 +189,6 @@ function changePassword() {
     });
 }
 </script>
+
+
         </header>

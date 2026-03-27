@@ -131,6 +131,7 @@
                                 <th>Supervisor Name</th>
                                 <th>Supervisor ID</th>
                                 <th>Company</th>
+                                <th>Company ID</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -140,6 +141,7 @@
                                 <td><h6 class="fw-bold mb-0">{{ $supervisor->name }}</h6></td>
                                 <td><p class="text-muted mb-0">{{ $supervisor->supervisor_id }}</p></td>
                                 <td><p class="text-muted mb-0">{{ $supervisor->company->name ?? 'N/A' }}</p></td>
+                                <td><p class="text-muted mb-0">{{ $supervisor->company->company_id ?? 'N/A' }}</p></td>
                                 <td>
                                     <button onclick="resetPassword('{{ $supervisor->supervisor_id }}')" 
                                         class="btn btn-warning btn-sm text-white">
@@ -149,7 +151,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">No supervisors yet.</td>
+                                <td colspan="5" class="text-center py-4 text-muted">No supervisors yet.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -159,6 +161,8 @@
         </div>
     </div>
 </div>
+
+
 
 {{-- Reset Password Modal --}}
 <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-hidden="true">

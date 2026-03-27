@@ -2,12 +2,12 @@
 
 Welcome! This guide will walk you through everything you need to get the project running on your local machine. Please follow each step carefully and in order.
 
-For better experince, turn the student dashboard into a mobile view using the inspect option, choose either iphone se or microsoft lumia 950, since our student dashboard is solely focused on mobile view.
+For better experince, turn the student dashboard into a mobile view using the inspect option, choose either Iphone SE or Microsoft Lumia 950, since our student dashboard is solely focused on mobile view.
 
 
 
 
-skip this if already done and proceed to account setup after the step 10
+skip the installation process if already done and proceed to account setup after the step 10
 
 ---
 
@@ -121,19 +121,23 @@ Since there's no login, you can just directly go to admin
 ### Step 2 — Create a Company
 
 1. Go to the **Company** page from the admin dashboard.
-2. Click **Add Company** and fill in the required details.
+2. Click **Add New Company** and fill in the required details.
 3. After saving, the system will generate a **Company Code**.
 4. Please **take note of this code** — it will be needed during student registration.
+
+If you ever forgot about the supervisor id, you can just check the table for references, and if you didnt save the temporary password, you can just reset and regenerate a new one and make sure you save it. You can also check the company id on the table if you have not saved it, just make sure you have assigned a supervisor to that company first so that it appears on the table. It is always required to have a supervisor on each company since they will be the one to accept the student's registration later. To create a supervisor and assign it to a company, see Step 3.
 
 ---
 
 ### Step 3 — Create a Supervisor
 
-1. From the admin panel, create a **Supervisor** account and assign them to the company created in Step 2.
+1. Still on the company page find the **Add Supervisor**, create a **Supervisor** account and assign them to the company created in Step 2.
 2. Upon saving, the system will display:
    - **Supervisor ID**
-   - **Temporary Password**
+   - **Generated Temporary Password**
 3. Please **save these credentials** — they will be used to log in as the supervisor.
+
+Take note: you can only assign one supervisor per company.
 
 ---
 
@@ -143,7 +147,9 @@ Navigate to:
 ```
 http://127.0.0.1:8000/supervisor
 ```
-Log in using the **Supervisor ID** and **Temporary Password** from Step 3.
+Log in using the **Supervisor ID** and **Generated Temporary Password** from Step 3.
+
+You can also set a new password to replace your temporary password on the account security on the profile icon on the right just click and a modal will show up, click account security and fill in the requirements such as previous password and new password. 
 
 ---
 
@@ -191,13 +197,13 @@ http://127.0.0.1:8000/student
 
 Sometimes it redirects to login and it auto fill the id and pass
 
-If not then go and
+If not then go and,
 
 Select **Login**, enter their credentials, and they will have full access to the system — including the ability to communicate with their assigned supervisor.
 
 That's it!
 
-If symptoms persist follow what my brother claude has to offer XD, see below
+
 ---
 
 ## Troubleshooting
