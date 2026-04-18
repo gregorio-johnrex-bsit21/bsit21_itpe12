@@ -8,7 +8,7 @@ Route::post('/validation/login', [ValidationController::class, 'login'])->name('
 Route::post('/validation/register', [ValidationController::class, 'register'])->name('students.register');
 
 
-Route::post('/student/logout', [ValidationController::class, 'logout'])->name('students.logout');
+Route::post('/logout', [ValidationController::class, 'logout'])->name('logout');
 
 Route::get('/student/supervisor', [ValidationController::class, 'getSupervisor'])->name('students.supervisor');
 

@@ -1,37 +1,47 @@
 <header class="h-16 bg-white border-b border-gray-300 flex items-center justify-between px-4 lg:px-8 shrink-0">
     
     <div class="flex items-center">
-        <button @click="sidebarOpen = true" class="p-2 mr-3 lg:hidden hover:bg-slate-100 rounded-xl active:scale-90">
-            <svg class="size-6 text-slate-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </button>
+        {{-- Mobile-only branding (hidden on lg and above) --}}
+        <div class="flex items-center gap-2 lg:hidden">
+            <img src="{{ asset('images/logo.png') }}" alt="CHMSU Logo" class="h-9 w-9 object-contain">
+            <div class="leading-tight">
+                <p class="text-sm font-black text-gray-800 tracking-wide">CHMSU</p>
+                <p class="text-[10px] font-semibold text-emerald-600 uppercase tracking-widest">
+                    <span class="xs:inline">OJT Manager</span>
+                </p>
+            </div>
+        </div>
     </div>
 
     <div class="flex items-center gap-1">
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-1 lg:gap-0.5">
 
-            {{-- Notes Button --}}
-            <button id="diaryBtn" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
-                <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-            </button>
+    {{-- Notes Button (Hidden on mobile, visible on desktop) --}}
+    <button class="diaryBtn hidden lg:block p-1 lg:p-1.5 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="lg:w-[23px] lg:h-[23px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+    </button>
 
-            {{-- Messages Button --}}
-            <button id="msgBtn" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                <span id="studentUnreadBadge" class="absolute top-1 right-1 w-5 h-5 bg-[#D50000] border-2 border-white rounded-full text-[12px] text-white font-bold items-center justify-center hidden"></span>
-            </button>
+    {{-- Messages Button (Always visible) --}}
+    <button id="msgBtn" class="p-1 lg:p-1.5 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="lg:w-6 lg:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span id="studentUnreadBadge" class="absolute top-0 right-0 w-4 h-4 lg:w-5 lg:h-5 bg-[#D50000] border-2 border-white rounded-full text-[9px] lg:text-[12px] text-white font-bold items-center justify-center hidden"></span>
+    </button>
 
-            {{-- Notifications Button --}}
-            <button id="notifBtn" class="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                <span class="absolute top-1 right-1 w-5 h-5 bg-[#D50000] border-2 border-white rounded-full text-[12px] text-white font-bold flex items-center justify-center">1</span>
-            </button>
+    {{-- Notifications Button (Always visible) --}}
+    <button id="notifBtn" class="p-1 lg:p-1.5 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="lg:w-6 lg:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <span class="absolute top-0 right-0 w-4 h-4 lg:w-5 lg:h-5 bg-[#D50000] border-2 border-white rounded-full text-[9px] lg:text-[12px] text-white font-bold flex items-center justify-center">1</span>
+    </button>
 
-        </div>
+</div>
 
         <div class="h-8 w-[1px] bg-gray-200 mx-2"></div>
 
@@ -118,7 +128,7 @@
             </button>
             <!-- Confirm -->
         <button 
-            onclick="logoutStudent()"
+            onclick="logoutUser()"
             class="flex-1 px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-medium text-center hover:bg-red-600 transition">
             Yes, Logout
         </button>
@@ -152,20 +162,42 @@
     </div>
 
     <script>
-   function logoutStudent() {
-    fetch("{{ route('students.logout') }}", {
+function logoutUser() {
+    fetch("{{ route('logout') }}", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'  // Add this
+        },
+        redirect: 'manual'  // Add this - don't follow redirects
+    })
+    .then(async res => {
+        console.log('Status:', res.status, 'Type:', res.type);
+        if (res.type === 'opaqueredirect') {
+            // Handle manual redirect
+            window.location.href = '/landing';
+            return;
+        }
+        const text = await res.text();
+        console.log('Response:', text.substring(0, 200));
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            throw new Error('Not JSON: ' + text.substring(0, 100));
         }
     })
-    .then(res => res.json())
     .then(data => {
-        if (data.success) {
+        if (data && data.success) {
             window.location.href = data.redirect;
         }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        // Force redirect anyway
+        window.location.href = '/landing';
     });
 }
-</script>   
+</script>
 </header>

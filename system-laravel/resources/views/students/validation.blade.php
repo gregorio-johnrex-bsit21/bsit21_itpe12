@@ -63,8 +63,11 @@
     <div id="main-box" class="opacity-0 bg-white rounded-3xl shadow-2xl w-full max-w-[380px] overflow-hidden">
         <div class="p-8 md:p-10">
             
-            <div class="text-center font-bold mb-8">
-                <span class="text-emerald-500 text-xl tracking-tight">Student</span><span class="text-gray-700 text-xl tracking-tight">Portal</span>
+            <div class="text-center font-bold mb-8 flex flex-col items-center gap-2">
+                <img src="images/logo.png" class="w-20 h-20 object-contain">
+                <div>
+                    <span class="text-emerald-500 text-xl tracking-tight">Student</span><span class="text-gray-700 text-xl tracking-tight">Portal</span>
+                </div>
             </div>
 
             <div id="error-msg" class="hidden bg-red-50 border border-red-200 text-red-500 text-sm rounded-2xl px-4 py-3 mb-4 text-center"></div>

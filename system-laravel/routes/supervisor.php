@@ -12,30 +12,28 @@ Route::post('/supervisor/students/reject', [SupervisorAuthController::class, 're
 Route::get('/supervisor/students', [SupervisorAuthController::class, 'students'])->name('supervisor.students');
 
 Route::prefix('supervisor')->group(function () {
+
+    // 🔥 ENTRY POINT (only place without middleware)
     Route::get('/', function () {
-        return view('supervisor.dashboard');
+        return session('supervisor')
+            ? redirect('/supervisor/dashboard')
+            : redirect('/login');
     });
 
-    Route::view('/dashboard', 'supervisor.dashboard')->name('supervisor.dashboard');
-    Route::view('/attendance', 'supervisor.attendance')->name('supervisor.attendance');
-    Route::view('/tasks', 'supervisor.tasks')->name('supervisor.tasks');
-    Route::view('/evaluation', 'supervisor.evaluation')->name('supervisor.evaluation');
+    // 🔐 PROTECTED ROUTES
+    Route::middleware('supervisor')->group(function () {
+
+        Route::view('/dashboard', 'supervisor.dashboard')->name('supervisor.dashboard');
+        Route::view('/attendance', 'supervisor.attendance')->name('supervisor.attendance');
+        Route::view('/tasks', 'supervisor.tasks')->name('supervisor.tasks');
+        Route::view('/evaluation', 'supervisor.evaluation')->name('supervisor.evaluation');
+
+    });
+
 });
 
 
-Route::prefix('supervisor')->middleware('supervisor')->group(function () {
-    Route::get('/', function () {
-        return view('supervisor.dashboard');
-    });
 
-    Route::view('/dashboard', 'supervisor.dashboard')->name('supervisor.dashboard');
-    Route::view('/attendance', 'supervisor.attendance')->name('supervisor.attendance');
-    Route::view('/tasks', 'supervisor.tasks')->name('supervisor.tasks');
-    Route::view('/evaluation', 'supervisor.evaluation')->name('supervisor.evaluation');
-});
-
-
-Route::post('/supervisor/logout', [SupervisorAuthController::class, 'logout'])->name('supervisor.logout');
 
 
 Route::get('/supervisor/chat/students', [SupervisorAuthController::class, 'getStudents'])->name('supervisor.chat.students');

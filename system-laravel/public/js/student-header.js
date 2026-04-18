@@ -213,8 +213,9 @@ sendBtn.addEventListener('click', (e) => {
 
 msgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendStudentMessage(); });
 
+
 // ── Notes / Diary ─────────────────────────────────────────────
-const diaryBtn     = document.getElementById('diaryBtn');
+const diaryButtons = document.querySelectorAll('.diaryBtn');
 const inboxModal   = document.getElementById('inboxModal');
 const composeModal = document.getElementById('composeModal');
 const closeInbox   = document.getElementById('closeInbox');
@@ -224,6 +225,16 @@ const saveNoteBtn  = document.getElementById('saveNote');
 const notesList    = document.querySelector('#inboxModal .space-y-2');
 const titleInput   = document.querySelector('#composeModal input');
 const bodyInput    = document.querySelector('#composeModal textarea');
+
+// 2. Opening Logic (The part we just fixed)
+diaryButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        inboxModal.classList.remove('hidden');
+        renderNotes();
+    });
+});
+
+
 
 let editingId = null;
 
@@ -360,13 +371,7 @@ function resetCompose() {
     document.querySelector('#composeModal h3').textContent = 'New Note';
 }
 
-// --- Modal Controls ---
-diaryBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    justOpenedModal = true;
-    renderNotes();
-    inboxModal.classList.remove('hidden');
-});
+
 
 addNewBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -498,4 +503,3 @@ function closePreview() {
 closeMediaPreview.addEventListener('click', closePreview);
 cancelMediaBtn.addEventListener('click', closePreview);
 mediaPreviewModal.addEventListener('click', (e) => { if (e.target === mediaPreviewModal) closePreview(); });
-

@@ -114,13 +114,9 @@
           <a class="dropdown-item" href="#"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
           <a class="dropdown-item" href="#"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
           <a class="dropdown-item" href="#"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>
-          <a class="dropdown-item" href="{{ route('logout') }}"
-             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            <i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i> Sign Out
-          </a>
-          <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-            @csrf
-          </form>
+          <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+    <i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i> Sign Out
+</a>
         </div>
       </li>
 
@@ -131,3 +127,46 @@
     </button>
   </div>
 </nav>
+
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm"> <div class="modal-content" style="border-radius: 15px;">
+      <div class="modal-body text-center p-4">
+        <div class="mb-3">
+          <i class="mdi mdi-logout-variant text-danger" style="font-size: 50px;"></i>
+        </div>
+        <h4 class="fw-bold">Confirm Logout</h4>
+        <p class="text-muted">Are you sure you want to logout?</p>
+        
+        <div class="d-flex gap-2 mt-4">
+          <button type="button" class="btn btn-light w-100" data-bs-dismiss="modal" style="border-radius: 10px;">No</button>
+          <button type="button" onclick="logoutUser()" class="btn btn-danger w-100" style="border-radius: 10px;">Yes, Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function logoutUser() {
+    // Look for the token
+    const tokenTag = document.querySelector('meta[name="csrf-token"]');
+    const token = tokenTag ? tokenTag.content : '';
+
+    fetch("{{ route('logout') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token, // Uses the token if found
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(() => {
+        window.location.href = '/login';
+    })
+    .catch(() => {
+        // If it fails (like a 419 error), we still redirect
+        window.location.href = '/login';
+    });
+}
+</script>

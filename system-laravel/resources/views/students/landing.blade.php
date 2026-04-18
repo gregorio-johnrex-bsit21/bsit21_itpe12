@@ -22,7 +22,7 @@
 
         <div class="relative z-10 text-center px-6">
             <div class="mb-6 flex justify-center">
-                <img src="images/harvard.png" alt="Harvard Logo" class="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-2xl">
+                <img src="images/logo_2.0.png" alt="Harvard Logo" class="w-32 h-32 md:w-32 md:h-32 object-contain drop-shadow-2xl">
             </div>
 
             <h1 class="text-white text-4xl md:text-6xl font-black tracking-tighter mb-4">
@@ -33,17 +33,20 @@
             </p>
 
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mx-auto">
-                <a href="/validation?mode=login" class="w-full sm:w-48 bg-emerald-600 hover:bg-emerald-500 text-white text-center font-bold py-4 rounded-2xl transition-all transform hover:scale-105 shadow-xl shadow-emerald-900/20">
-                Login
-                </a>
-                <a href="/validation?mode=register" class="w-full sm:w-48 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white text-center border border-white/30 font-bold py-4 rounded-2xl transition-all transform hover:scale-105">
-                Register
-                </a>
-            </div>
+    <a href="/login?mode=login"
+       class="w-full sm:w-48 bg-emerald-600 hover:bg-emerald-500 text-white text-center font-bold py-4 rounded-2xl transition-all transform hover:scale-105 shadow-xl shadow-emerald-900/20">
+        Login
+    </a>
+
+    <a href="/login?mode=register"
+       class="w-full sm:w-48 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white text-center border border-white/30 font-bold py-4 rounded-2xl transition-all transform hover:scale-105">
+        Register
+    </a>
+</div>
         </div>
 
       
-        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce opacity-50">
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2  opacity-50">
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
             </svg>
@@ -89,8 +92,8 @@
             <div class="flex flex-col md:flex-row justify-between items-start gap-12">
                 <div class="max-w-xs">
                     <div class="flex items-center gap-3 mb-6">
-                        <img src="images/harvard.png" class="w-8 h-8 object-contain">
-                        <span class="text-xl font-black tracking-tighter">HARVARD OJT</span>
+                        <img src="images/logo.png" class="w-8 h-8 object-contain">
+                        <span class="text-xl font-black tracking-tighter">CHMSU OJT</span>
                     </div>
                     <p class="text-slate-500 text-sm leading-relaxed">
                         Official internship management platform for the Faculty of Engineering and Applied Sciences.

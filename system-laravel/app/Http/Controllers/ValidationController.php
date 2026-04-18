@@ -103,14 +103,38 @@ $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
         ]);
     }
 
-    public function logout()
-    {
-        session()->forget('student');
-        return response()->json([
-        'success' => true,
-        'redirect' => '/landing'
-        ]);
+  public function logout(Request $request)
+{
+    // 🔥 Capture role BEFORE clearing session
+    $role = null;
+
+    if (session()->has('student')) {
+        $role = 'student';
+    } elseif (session()->has('supervisor')) {
+        $role = 'supervisor';
+    } elseif (session()->has('admin')) {
+        $role = 'admin';
     }
+
+    // 🧹 Clear session
+    session()->forget(['student', 'supervisor', 'admin']);
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    // 🎯 Decide redirect based on role
+    if ($role === 'student') {
+        $redirect = '/landing';
+    } else {
+        // supervisor + admin
+        $redirect = '/login';
+        // OR '/supervisor/login' if you want separate
+    }
+
+    return response()->json([
+        'success'  => true,
+        'redirect' => $redirect,
+    ]);
+}
 
     public function getSupervisor()
 {

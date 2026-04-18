@@ -118,21 +118,47 @@
        
 <script>
 function logoutSupervisor() {
-    fetch("{{ route('supervisor.logout') }}", {
+    fetch("{{ route('logout') }}", {
         method: 'POST',
+        credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        redirect: 'manual'
+    })
+    .then(async (res) => {
+        console.log('Status:', res.status, 'Type:', res.type);
+
+        // 🚨 If Laravel forces redirect (HTML), just handle it manually
+        if (res.type === 'opaqueredirect' || res.status === 302) {
+            window.location.href = '/landing';
+            return;
+        }
+
+        const text = await res.text();
+        console.log('Response:', text.substring(0, 200));
+
+        try {
+            const data = JSON.parse(text);
+
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                window.location.href = '/landing';
+            }
+        } catch (e) {
+            console.error('Not JSON:', text);
+            window.location.href = '/landing';
         }
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            window.location.href = data.redirect;
-        }
+    .catch((err) => {
+        console.error('Error:', err);
+        window.location.href = '/landing';
     });
 }
-
 function changePassword() {
     const current = document.getElementById('currentPassword').value.trim();
     const newPass = document.getElementById('newPassword').value.trim();
@@ -177,7 +203,6 @@ function changePassword() {
             msg.className = 'rounded-2xl px-4 py-3 mb-4 text-sm text-center font-bold bg-emerald-50 text-emerald-600';
             msg.innerText = 'Password updated successfully!';
             msg.classList.remove('hidden');
-            // Clear fields
             document.getElementById('currentPassword').value = '';
             document.getElementById('newPassword').value = '';
             document.getElementById('confirmNewPassword').value = '';

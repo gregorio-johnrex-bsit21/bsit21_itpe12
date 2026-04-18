@@ -4,11 +4,18 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ValidationController;
 
 
 Route::get('/', function () {
     return redirect('/landing');
 });
+
+Route::get('/login',  [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/register', [ValidationController::class, 'register'])->name('students.register');
+Route::post('/logout', [ValidationController::class, 'logout'])->name('logout');
 
 require __DIR__.'/student.php';
 require __DIR__.'/supervisor.php';

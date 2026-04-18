@@ -23,7 +23,7 @@
     </style>
 </head>
 
-<body class="bg-gray-50" x-data="{ sidebarOpen: false, activeTab: 'dashboard', taskModal: false }">
+<body class="bg-gray-50" x-data="{ activeTab: 'dashboard', taskModal: false }">
 
 <div class="flex h-screen overflow-hidden">
 
@@ -36,7 +36,7 @@
         @include('partials.header')
 
         {{-- Main Content --}}
-        <main class="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main class="lg:ml-64 pb-20 lg:pb-0 flex-1 overflow-y-auto p-4 lg:p-6">
             <div class="space-y-6">
                 @yield('content')
             </div>
