@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'OJT Manager')</title>
-
+    
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
@@ -14,13 +15,77 @@
         };
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-    font-family: 'Poppins', sans-serif;
+   <style>
+    [x-cloak] { display: none !important; }
+    body { font-family: 'Inter', sans-serif; }
+
+/* ── Modal Animations ─────────────────────────── */
+
+/* Mobile: Bottom sheet slide-up */
+.modal-enter {
+    opacity: 0;
+    transform: translateY(100%);
 }
-    </style>
+.modal-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease-out;
+}
+
+.modal-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+.modal-exit-active {
+    opacity: 0;
+    transform: translateY(100%);
+    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease-in;
+}
+
+/* Desktop: Pop up (scale + fade) */
+@media (min-width: 640px) {
+    .modal-enter {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    .modal-enter-active {
+        opacity: 1;
+        transform: scale(1);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease-out;
+    }
+
+    .modal-exit {
+        opacity: 1;
+        transform: scale(1);
+    }
+    .modal-exit-active {
+        opacity: 0;
+        transform: scale(0.95);
+        transition: transform 0.2s ease-in, opacity 0.2s ease-in;
+    }
+}
+
+/* Backdrop — same both */
+.backdrop-enter {
+    opacity: 0;
+}
+.backdrop-enter-active {
+    opacity: 1;
+    transition: opacity 0.35s ease-out;
+}
+.backdrop-exit {
+    opacity: 1;
+}
+.backdrop-exit-active {
+    opacity: 0;
+    transition: opacity 0.25s ease-in;
+} 
+
+</style>
 </head>
 
 <body class="bg-gray-50" x-data="{ activeTab: 'dashboard', taskModal: false }">
@@ -51,38 +116,67 @@
      ============================================================ --}}
 
 {{-- Notes Inbox Modal --}}
-<div id="inboxModal" class="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center hidden">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
+<div id="inboxModal" class="fixed inset-0 bg-black/50 z-[60] flex items-end sm:items-center justify-center hidden">
+    <div id="inboxInner" class="bg-white w-full h-full sm:h-auto sm:max-w-sm sm:mx-4 sm:rounded-xl shadow-2xl overflow-hidden flex flex-col">
+        
         <div class="p-4 border-b flex justify-between items-center bg-gray-50">
             <h3 class="font-bold text-gray-700">My Notes</h3>
-            <div class="flex gap-2">
-                <button id="addNewBtn" class="bg-emerald-600 text-white p-1.5 rounded-full hover:bg-emerald-700 transition-transform active:scale-95">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                </button>
-                <button id="closeInbox" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-            </div>
+            <button id="closeInbox" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
         </div>
-        <div class="max-h-80 overflow-y-auto p-6 space-y-2">
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-2 pb-24 sm:pb-6">
+             {{-- Your list items stay exactly in this container --}}
+        </div>
+
+        <div class="p-4 border-t bg-white sm:bg-gray-50">
+            <div class="flex items-center gap-3">
+                <div class="relative flex-1">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </span>
+                    <input type="text" id="noteSearch" 
+                        class="w-full pl-10 pr-4 py-2.5 bg-gray-100 sm:bg-white border border-transparent sm:border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all" 
+                        placeholder="Search notes...">
+                </div>
+
+                <button id="addNewBtn" class="bg-emerald-600 text-white p-3 rounded-xl hover:bg-emerald-700 shadow-lg shadow-emerald-100 active:scale-95 transition-all flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
+
 {{-- Compose Note Modal --}}
-<div id="composeModal" class="fixed inset-0 bg-black/60 z-[70] flex items-center justify-center hidden">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+<div id="composeModal" class="fixed inset-0 bg-black/60 z-[70] flex items-end sm:items-center justify-center hidden">
+    <div id="composeInner" class="bg-white w-full h-full sm:h-auto sm:max-w-md sm:mx-4 sm:rounded-xl shadow-2xl overflow-hidden flex flex-col">
+        
         <div class="p-4 border-b flex justify-between items-center">
             <h3 class="font-bold text-gray-800">New Note</h3>
-            <button id="closeCompose" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            <button id="closeCompose" class="text-gray-400 hover:text-gray-600 text-3xl leading-none px-2">&times;</button>
         </div>
-        <div class="p-4">
+        
+        <div class="p-4 flex-1 flex flex-col">
             <input type="text" placeholder="Title..." class="w-full mb-3 p-2 border-b font-semibold focus:outline-none focus:border-blue-500">
-            <textarea class="w-full h-48 p-2 text-gray-600 outline-none resize-none" placeholder="Start writing..."></textarea>
+            
+            <textarea class="w-full flex-1 p-2 text-gray-600 outline-none resize-none" placeholder="Start writing..."></textarea>
         </div>
+        
         <div class="p-4 bg-gray-50 flex justify-end">
-            <button id="saveNote" class="px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium shadow-md hover:bg-emerald-700 transition-colors">Save Note</button>
+            <button id="saveNote" class="w-full sm:w-auto px-6 py-3 sm:py-2 bg-emerald-600 text-white rounded-lg font-medium shadow-md hover:bg-emerald-700 transition-colors">
+                Save Note
+            </button>
         </div>
     </div>
 </div>
+
+
 
 {{-- Messages Dropdown --}}
 <div id="msgModal" class="hidden fixed top-16 right-4 w-80 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 z-[999] overflow-hidden">
@@ -168,7 +262,7 @@
     <div id="messageList" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-gray-50/50"></div>
     <div class="p-4 border-t border-gray-100 bg-white pb-8 sm:pb-4 shrink-0">
     <div class="flex items-center gap-2">
-        <input id="msgInput" type="text" placeholder="Aa" class="flex-1 min-w-0 bg-gray-100 border-none rounded-full px-4 py-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none">
+        <input id="msgInput" type="text" placeholder="Type a message..." class="flex-1 min-w-0 bg-gray-100 border-none rounded-full px-4 py-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none">
         
         <button id="imageBtn" class="text-gray-500 hover:text-emerald-500 p-1 active:scale-90 transition-transform shrink-0">
             <input type="file" id="mediaInput" accept="image/jpeg,image/png,image/gif,video/mp4,video/webm,video/ogg" class="hidden">
@@ -210,13 +304,19 @@
     fetch('/student/supervisor')
         .then(r => r.json())
         .then(supervisor => {
+            if (!supervisor) return;
+
+            const name = supervisor.name || 'Unknown';
+            
             const nameEls = document.querySelectorAll('#supervisorName, .supervisor-name');
-            nameEls.forEach(el => el.textContent = supervisor.name);
+            nameEls.forEach(el => el.textContent = name);
 
             const avatarEls = document.querySelectorAll('.supervisor-avatar');
-            avatarEls.forEach(el => el.src = `https://ui-avatars.com/api/?name=${supervisor.name}&background=0ea5e9&color=fff`);
-        });
+            avatarEls.forEach(el => el.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0ea5e9&color=fff`);
+        })
+        .catch(err => console.error('Failed to load supervisor:', err));
 </script>
+
 
 @stack('scripts')
 <script src="{{ asset('js/student-header.js') }}"></script>

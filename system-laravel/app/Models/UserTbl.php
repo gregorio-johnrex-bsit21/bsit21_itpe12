@@ -3,26 +3,35 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Hash;
 
 class UserTbl extends Model
 {
     protected $table = 'users_tbl';
-
-    protected $fillable = [
-        'supervisor_id',
-        'student_id',
-        'company_id',
-        'name',
-        'password',
-        'role',
-        'status',
-    ];
-
+    protected $fillable = ['name', 'password', 'role', 'status'];
     protected $hidden = ['password'];
 
-    public function company()
+    public function admin()
     {
-        return $this->belongsTo(Company::class, 'company_id', 'company_id');
+        return $this->hasOne(Admin::class, 'user_id');
+    }
+
+    public function supervisor()
+    {
+        return $this->hasOne(Supervisor::class, 'user_id');
+    }
+
+    public function student()
+    {
+        return $this->hasOne(Student::class, 'user_id');
+    }
+
+    public function profile()
+    {
+        return match($this->role) {
+            'admin'      => $this->admin,
+            'supervisor' => $this->supervisor,
+            'student'    => $this->student,
+            default      => null,
+        };
     }
 }

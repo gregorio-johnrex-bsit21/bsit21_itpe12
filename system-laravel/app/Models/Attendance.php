@@ -1,28 +1,33 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Models;
 
-return new class extends Migration
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Attendance extends Model
 {
-    public function up(): void
-    {
-        Schema::create('attendance', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
-            $table->date('date');
-            $table->time('am_time_in')->nullable();
-            $table->time('am_time_out')->nullable();
-            $table->time('pm_time_in')->nullable();
-            $table->time('pm_time_out')->nullable();
-            $table->decimal('total_hours', 5, 2)->nullable();
-            $table->timestamps();
-        });
-    }
+    use HasFactory;
 
-    public function down(): void
+    protected $table = 'attendance';
+
+    protected $fillable = [
+        'student_id',
+        'date',
+        'am_time_in',
+        'am_time_out',
+        'pm_time_in',
+        'pm_time_out',
+        'total_hours',
+    ];
+
+    protected $casts = [
+        'date' => 'date',
+        'total_hours' => 'decimal:2',
+    ];
+
+    public function student()
     {
-        Schema::dropIfExists('attendance');
+        return $this->belongsTo(Student::class);
     }
-};
+}

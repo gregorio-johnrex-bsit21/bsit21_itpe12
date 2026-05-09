@@ -1,26 +1,37 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Models;
 
-return new class extends Migration
+use Illuminate\Database\Eloquent\Model;
+
+class Student extends Model
 {
-    public function up(): void
+    protected $table = 'students';
+    protected $fillable = ['user_id', 'student_id', 'company_id'];
+
+    public function user()
     {
-        Schema::create('students', function (Blueprint $table) {
-            $table->id();
-            $table->string('student_id')->unique();
-            $table->string('name');
-            $table->foreignId('company_id')->nullable();
-            $table->string('password');
-            $table->string('status')->default('active');
-            $table->timestamps();
-        });
+        return $this->belongsTo(UserTbl::class, 'user_id');
     }
 
-    public function down(): void
+    public function company()
     {
-        Schema::dropIfExists('students');
+        return $this->belongsTo(Company::class, 'company_id', 'company_id');
     }
-};
+
+    
+    public function getNameAttribute()
+{
+    return $this->user->name ?? null;
+}
+
+public function getStatusAttribute()
+{
+    return $this->user->status ?? null;
+}
+
+public function getAvatarAttribute()
+{
+    return $this->user->avatar ?? null;
+}        
+}

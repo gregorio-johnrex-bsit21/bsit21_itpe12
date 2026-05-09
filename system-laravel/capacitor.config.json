@@ -1,0 +1,12 @@
+{
+  "appId": "com.bsit21.systemlaravel",
+  "appName": "system-laravel",
+  "webDir": "www",
+  "server": {
+    "url": "https://unwhisperable-mariano-uninfectable.ngrok-free.dev",
+    "cleartext": true,
+    "allowNavigation": [
+      "*.ngrok-free.app"
+    ]
+  }
+}

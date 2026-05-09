@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SupervisorAuthController;
+use App\Http\Controllers\AttendanceController;
+
 
 // Supervisor Login routes
 Route::get('/supervisor/login', [SupervisorAuthController::class, 'showLogin'])->name('supervisor.login');
@@ -23,12 +25,12 @@ Route::prefix('supervisor')->group(function () {
     // 🔐 PROTECTED ROUTES
     Route::middleware('supervisor')->group(function () {
 
-        Route::view('/dashboard', 'supervisor.dashboard')->name('supervisor.dashboard');
-        Route::view('/attendance', 'supervisor.attendance')->name('supervisor.attendance');
-        Route::view('/tasks', 'supervisor.tasks')->name('supervisor.tasks');
-        Route::view('/evaluation', 'supervisor.evaluation')->name('supervisor.evaluation');
+    Route::get('/dashboard', [AttendanceController::class, 'showTodayAttendance'])->name('supervisor.dashboard');
+    Route::get('/attendance', [AttendanceController::class, 'showAttendanceLogs'])->name('supervisor.attendance'); // ← fix this
+    Route::view('/tasks', 'supervisor.tasks')->name('supervisor.tasks');
+    Route::view('/evaluation', 'supervisor.evaluation')->name('supervisor.evaluation');
 
-    });
+});
 
 });
 
@@ -36,6 +38,9 @@ Route::prefix('supervisor')->group(function () {
 
 
 
-Route::get('/supervisor/chat/students', [SupervisorAuthController::class, 'getStudents'])->name('supervisor.chat.students');
+Route::get('/supervisor/chat/students', [SupervisorAuthController::class, 'getStudents']);
 
 Route::post('/supervisor/change-password', [SupervisorAuthController::class, 'changePassword'])->name('supervisor.change.password');
+
+
+

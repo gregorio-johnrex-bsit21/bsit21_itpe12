@@ -94,9 +94,9 @@
                         <td class="px-6 py-4 rounded-l-2xl border-y border-l border-slate-100">
                             <div class="flex items-center gap-3">
                                 <div class="w-11 h-11 rounded-full bg-slate-50 border-2 border-white shadow-inner flex items-center justify-center font-bold text-orange-500">
-                                    {{ strtoupper(substr($student->name, 0, 2)) }}
+                                    {{ strtoupper(substr($student->user->name, 0, 2)) }}
                                 </div>
-                                <span class="font-bold text-slate-700">{{ $student->name }}</span>
+                                <span class="font-bold text-slate-700">{{ $student->user->name }}</span>
                             </div>
                         </td>
                         <td class="px-6 py-4 border-y border-slate-100">

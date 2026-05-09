@@ -78,7 +78,8 @@ document.addEventListener('click', (e) => {
 });
 
 // ── Chat state ────────────────────────────────────────────────
-let lastMessageIndex       = 0;
+let lastMessageIndex = 0;
+const renderedIds = new Set();
 let studentPollInterval    = null;
 let studentPreviewInterval = null;
 
@@ -90,7 +91,11 @@ function escapeHtml(str) {
 }
 
 // ── Render a message bubble ───────────────────────────────────
-function appendMessage(message, sender) {
+function appendMessage(message, sender, id = null) {
+    if (id !== null) {
+        if (renderedIds.has(id)) return; // ← skip duplicates
+        renderedIds.add(id);
+    }
     const isStudent = (sender === 'Student');
     const wrapper = document.createElement('div');
     wrapper.className = isStudent
@@ -122,7 +127,7 @@ function pollStudentMessages() {
         .then(r => r.json())
         .then(data => {
             data.messages.forEach(msg => {
-                appendMessage(msg.message, msg.sender);
+                appendMessage(msg.message, msg.sender, msg.id); // ← pass id
             });
             lastMessageIndex = data.total;
         })
@@ -131,6 +136,7 @@ function pollStudentMessages() {
 
 function startChatPolling() {
     lastMessageIndex = 0;
+    renderedIds.clear(); // ← add this
     messageList.innerHTML = '';
     pollStudentMessages();
     if (!studentPollInterval) studentPollInterval = setInterval(pollStudentMessages, 2000);
@@ -139,6 +145,13 @@ function startChatPolling() {
 function stopChatPolling() {
     clearInterval(studentPollInterval);
     studentPollInterval = null;
+}
+
+function closeChat() {
+    chatBox.classList.add('hidden');
+    stopChatPolling();
+    lastMessageIndex = 0;
+    renderedIds.clear(); // ← add this
 }
 
 // ── Mark as read ──────────────────────────────────────────────
@@ -193,8 +206,8 @@ function updateStudentPreview() {
 function sendStudentMessage() {
     const message = msgInput.value.trim();
     if (!message) return;
-    appendMessage(message, 'Student');
-    lastMessageIndex++;
+    const tempId = 'temp_' + Date.now();
+    appendMessage(message, 'Student', tempId); // ← temp id for optimistic bubble
     msgInput.value = '';
     fetch('/send-message', {
         method: 'POST',
@@ -203,6 +216,10 @@ function sendStudentMessage() {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify({ message, sender: 'Student', conversation: STUDENT_CONVERSATION })
+    }).then(r => r.json()).then(data => {
+        // Replace temp id with real id so poller skips it
+        renderedIds.delete(tempId);
+        renderedIds.add(data.id);
     });
 }
 
@@ -217,7 +234,9 @@ msgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendStudent
 // ── Notes / Diary ─────────────────────────────────────────────
 const diaryButtons = document.querySelectorAll('.diaryBtn');
 const inboxModal   = document.getElementById('inboxModal');
+const inboxInner   = document.getElementById('inboxInner');
 const composeModal = document.getElementById('composeModal');
+const composeInner = document.getElementById('composeInner');
 const closeInbox   = document.getElementById('closeInbox');
 const closeCompose = document.getElementById('closeCompose');
 const addNewBtn    = document.getElementById('addNewBtn');
@@ -226,17 +245,44 @@ const notesList    = document.querySelector('#inboxModal .space-y-2');
 const titleInput   = document.querySelector('#composeModal input');
 const bodyInput    = document.querySelector('#composeModal textarea');
 
-// 2. Opening Logic (The part we just fixed)
+let editingId = null;
+
+// --- Animation Helpers ---
+function openModal(modal, inner) {
+    modal.classList.remove('hidden');
+    void modal.offsetWidth;
+    modal.classList.add('backdrop-enter-active');
+    inner.classList.add('modal-enter');
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            inner.classList.remove('modal-enter');
+            inner.classList.add('modal-enter-active');
+        });
+    });
+    setTimeout(() => {
+        modal.classList.remove('backdrop-enter-active');
+        inner.classList.remove('modal-enter-active');
+    }, 300);  // ← must match CSS enter duration (0.3s = 300ms)
+}
+
+function closeModal(modal, inner, callback) {
+    modal.classList.add('backdrop-exit-active');
+    inner.classList.add('modal-exit-active');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('backdrop-exit-active');
+        inner.classList.remove('modal-exit-active');
+        if (callback) callback();
+    }, 400);  // ← must match CSS exit duration (0.2s = 200ms)
+}
+
+// --- Opening Logic ---
 diaryButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-        inboxModal.classList.remove('hidden');
+        openModal(inboxModal, inboxInner);
         renderNotes();
     });
 });
-
-
-
-let editingId = null;
 
 // --- Storage Helpers ---
 function getNotes() {
@@ -250,69 +296,55 @@ function saveNotes(notes) {
 function renderNotes() {
     const notes = getNotes();
     notesList.innerHTML = '';
-
     if (notes.length === 0) {
         notesList.innerHTML = `<p class="text-center text-sm text-gray-400 py-6">No notes yet. Hit + to add one!</p>`;
         return;
     }
-
     notes.forEach(note => {
         const div = document.createElement('div');
         div.className = 'p-3 border rounded-lg hover:border-emerald-300 hover:bg-emerald-50 cursor-pointer transition-all flex justify-between items-start group';
         div.innerHTML = `
             <div class="flex-1 min-w-0" data-id="${note.id}">
-  <p class="text-sm font-semibold text-gray-800 truncate">${note.title || 'Untitled'}</p>
-  <p class="text-xs text-gray-500 truncate">${note.body || ''}</p>
-</div>
-
-<div class="delete-idle ml-2 transition-opacity self-center">
-  <button data-delete="${note.id}" class="text-red-400 hover:text-red-600 active:text-red-600 leading-none">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="3 6 5 6 21 6"/>
-      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-      <path d="M10 11v6M14 11v6"/>
-      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-    </svg>
-  </button>
-</div>
-
+                <p class="text-sm font-semibold text-gray-800 truncate">${note.title || 'Untitled'}</p>
+                <p class="text-xs text-gray-500 truncate">${note.body || ''}</p>
+            </div>
+            <div class="delete-idle ml-2 transition-opacity self-center">
+                <button data-delete="${note.id}" class="text-red-400 hover:text-red-600 active:text-red-600 leading-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                        <path d="M10 11v6M14 11v6"/>
+                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                    </svg>
+                </button>
+            </div>
             <div class="delete-confirm ml-2 hidden items-center gap-1">
                 <span class="text-xs text-gray-500">Delete this note?</span>
                 <button data-confirm="${note.id}" class="text-xs px-2 py-0.5 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">Yes</button>
                 <button data-cancel class="text-xs px-2 py-0.5 bg-gray-200 text-gray-600 rounded hover:bg-gray-300 transition-colors">No</button>
             </div>
         `;
-
-        const idleEl   = div.querySelector('.delete-idle');
+        const idleEl = div.querySelector('.delete-idle');
         const confirmEl = div.querySelector('.delete-confirm');
-
-        // Open note to edit
         div.querySelector('[data-id]').addEventListener('click', () => openNote(note.id));
-
-        // Show inline confirmation
         div.querySelector('[data-delete]').addEventListener('click', (e) => {
             e.stopPropagation();
             idleEl.classList.add('hidden');
             confirmEl.classList.remove('hidden');
             confirmEl.classList.add('flex');
         });
-
-        // Confirm delete
         div.querySelector('[data-confirm]').addEventListener('click', (e) => {
             e.stopPropagation();
             const notes = getNotes().filter(n => n.id !== note.id);
             saveNotes(notes);
             renderNotes();
         });
-
-        // Cancel delete
         div.querySelector('[data-cancel]').addEventListener('click', (e) => {
             e.stopPropagation();
             confirmEl.classList.add('hidden');
             confirmEl.classList.remove('flex');
             idleEl.classList.remove('hidden');
         });
-
         notesList.appendChild(div);
     });
 }
@@ -325,43 +357,26 @@ function openNote(id) {
     titleInput.value = note.title;
     bodyInput.value = note.body;
     document.querySelector('#composeModal h3').textContent = 'Edit Note';
-    composeModal.classList.remove('hidden');
-}
-
-// --- Delete Note ---
-// --- Delete Note with Confirmation ---
-function deleteNote(id) {
-    const note = getNotes().find(n => n.id === id);
-    if (!note) return;
-
-    const confirmed = confirm(`Delete "${note.title || 'Untitled'}"?`);
-    if (!confirmed) return;
-
-    const notes = getNotes().filter(n => n.id !== id);
-    saveNotes(notes);
-    renderNotes();
+    openModal(composeModal, composeInner);
 }
 
 // --- Save / Update Note ---
 saveNoteBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     const title = titleInput.value.trim();
-    const body  = bodyInput.value.trim();
+    const body = bodyInput.value.trim();
     if (!title && !body) return;
-
     const notes = getNotes();
-
     if (editingId) {
         const idx = notes.findIndex(n => n.id === editingId);
         if (idx > -1) { notes[idx].title = title; notes[idx].body = body; }
     } else {
         notes.unshift({ id: Date.now(), title, body, createdAt: new Date().toISOString() });
     }
-
     saveNotes(notes);
     renderNotes();
     resetCompose();
-    composeModal.classList.add('hidden');
+    closeModal(composeModal, composeInner);
 });
 
 function resetCompose() {
@@ -371,28 +386,36 @@ function resetCompose() {
     document.querySelector('#composeModal h3').textContent = 'New Note';
 }
 
-
-
+// --- Event Listeners ---
 addNewBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    justOpenedModal = true;
     resetCompose();
-    composeModal.classList.remove('hidden');
+    openModal(composeModal, composeInner);
 });
 
 closeInbox.addEventListener('click', (e) => {
     e.stopPropagation();
-    inboxModal.classList.add('hidden');
+    closeModal(inboxModal, inboxInner);
 });
 
 closeCompose.addEventListener('click', (e) => {
     e.stopPropagation();
     resetCompose();
-    composeModal.classList.add('hidden');
+    closeModal(composeModal, composeInner);
 });
 
-inboxModal.addEventListener('click',   (e) => { if (e.target === inboxModal)   inboxModal.classList.add('hidden'); });
-composeModal.addEventListener('click', (e) => { if (e.target === composeModal) { resetCompose(); composeModal.classList.add('hidden'); } });
+inboxModal.addEventListener('click', (e) => {
+    if (e.target === inboxModal) closeModal(inboxModal, inboxInner);
+});
+
+composeModal.addEventListener('click', (e) => {
+    if (e.target === composeModal) {
+        resetCompose();
+        closeModal(composeModal, composeInner);
+    }
+});
+
+
 
 // ── Start preview polling on load ─────────────────────────────
 updateStudentPreview();

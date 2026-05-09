@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ValidationController;
+use App\Http\Controllers\AttendanceController;
+
+
 
 
 Route::get('/', function () {
@@ -143,5 +146,12 @@ Route::get('/get-conversations', [ChatController::class, 'getConversations']);
 
 Route::post('/upload-media', [ChatController::class, 'uploadMedia']);
 
+
+Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clock-in');
+Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])->name('attendance.clock-out');
+Route::get('/attendance/today', [AttendanceController::class, 'getTodayAttendance'])->name('attendance.today');
+
+
+Route::get('/student/logs', [AttendanceController::class, 'getStudentLogs'])->name('students.logs');
 
 

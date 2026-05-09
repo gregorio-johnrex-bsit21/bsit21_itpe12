@@ -1,5 +1,5 @@
 {{-- MOBILE BOTTOM BAR (lg:hidden) --}}
-<nav class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 flex items-center justify-around px-2 py-2 lg:hidden">
+<nav class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-gray-200 flex items-center justify-around px-2 py-2 lg:hidden">
 
     {{-- Dashboard --}}
     <a href="{{ route('students.dashboard') }}"
@@ -28,7 +28,7 @@
 
     {{-- NEW: Floating Plus Button (Diary/Notes) --}}
     <div class="flex flex-col items-center -mt-8"> {{-- Pulls the button upward slightly --}}
-        <button class="diaryBtn flex items-center justify-center w-14 h-14 bg-emerald-600 text-white rounded-full shadow-lg border-4 border-white active:scale-95 transition-transform">
+        <button class="diaryBtn flex items-center justify-center w-14 h-14 bg-emerald-600 text-white rounded-full shadow-lg active:scale-95 transition-transform">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>

@@ -4,61 +4,85 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\UserTbl;
+use App\Models\Student;
+use App\Models\Supervisor;
+use App\Models\Company;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class ValidationController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         return view('students.validation');
     }
 
-   public function register(Request $request)
-{
-    // Check if student_id exists and is approved
-$existingStudent = UserTbl::where('student_id', $request->student_id)
-                          ->where('status', 'approved')
-                          ->first();
+    public function register(Request $request)
+    {
+        // Check if student_id exists and is approved (Active)
+        $existingStudent = Student::where('student_id', $request->student_id)
+            ->whereHas('user', function ($q) {
+                $q->where('status', 'Active');
+            })
+            ->first();
 
-if ($existingStudent) {
-    return response()->json([
-        'success' => false,
-        'message' => 'This Student ID is already registered and approved.'
-    ]);
-}
+        if ($existingStudent) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This Student ID is already registered and approved.'
+            ]);
+        }
 
-// Delete old rejected/pending record so they can re-register
-UserTbl::where('student_id', $request->student_id)
-       ->whereIn('status', ['rejected', 'pending'])
-       ->delete();
+        // Delete old rejected/pending records (Inactive) so they can re-register
+        $oldStudents = Student::where('student_id', $request->student_id)
+            ->whereHas('user', function ($q) {
+                $q->where('status', 'Inactive');
+            })
+            ->with('user')
+            ->get();
 
-$validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
-    'name' => 'required|string|max:255',
-    'student_id' => 'required|string',
-    'company_id' => 'required|string|exists:company_tbl,company_id',
-    'password' => 'required|string|min:6|confirmed',
-]);
+        foreach ($oldStudents as $old) {
+            if ($old->user) {
+                $old->user->delete();
+            }
+            $old->delete();
+        }
 
-    if ($validator->fails()) {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'student_id' => 'required|string|unique:students,student_id',
+            'company_id' => 'required|string|exists:company_tbl,company_id',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ]);
+        }
+
+        DB::transaction(function () use ($request) {
+            $user = UserTbl::create([
+                'name' => $request->name,
+                'password' => Hash::make($request->password),
+                'role' => 'student',
+                'status' => 'Inactive',
+            ]);
+
+            Student::create([
+                'user_id' => $user->id,
+                'student_id' => $request->student_id,
+                'company_id' => $request->company_id,
+            ]);
+        });
+
         return response()->json([
-            'success' => false,
-            'message' => $validator->errors()->first()
+            'success' => true,
+            'message' => 'Registration submitted! Please wait for supervisor approval.'
         ]);
     }
-
-    UserTbl::create([
-        'name' => $request->name,
-        'student_id' => $request->student_id,
-        'company_id' => $request->company_id,
-        'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-        'role' => 'student',
-        'status' => 'pending',
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Registration submitted! Please wait for supervisor approval.'
-    ]);
-}
 
     public function login(Request $request)
     {
@@ -67,35 +91,34 @@ $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'password' => 'required|string',
         ]);
 
-        $user = UserTbl::where('student_id', $request->student_id)
-                       ->where('role', 'student')
-                       ->first();
+        $student = Student::where('student_id', $request->student_id)
+            ->with('user')
+            ->first();
 
-        // Check if user exists
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$student || !$student->user) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid Student ID or Password.'
             ]);
         }
 
-        // Check if approved
-        if ($user->status === 'pending') {
+        $user = $student->user;
+
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid Student ID or Password.'
+            ]);
+        }
+
+        if ($user->status === 'Inactive') {
             return response()->json([
                 'success' => false,
                 'message' => 'Your account is still pending approval.'
             ]);
         }
 
-        if ($user->status === 'rejected') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Your account has been rejected.'
-            ]);
-        }
-
-        // Store in session
-        session(['student' => $user]);
+        session(['student' => $student]);
 
         return response()->json([
             'success' => true,
@@ -103,67 +126,82 @@ $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
         ]);
     }
 
-  public function logout(Request $request)
-{
-    // 🔥 Capture role BEFORE clearing session
-    $role = null;
+    public function logout(Request $request)
+    {
+        $role = null;
 
-    if (session()->has('student')) {
-        $role = 'student';
-    } elseif (session()->has('supervisor')) {
-        $role = 'supervisor';
-    } elseif (session()->has('admin')) {
-        $role = 'admin';
+        if (session()->has('student')) {
+            $role = 'student';
+        } elseif (session()->has('supervisor')) {
+            $role = 'supervisor';
+        } elseif (session()->has('admin')) {
+            $role = 'admin';
+        }
+
+        session()->forget(['student', 'supervisor', 'admin']);
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        if ($role === 'student') {
+            $redirect = '/landing';
+        } else {
+            $redirect = '/login';
+        }
+
+        return response()->json([
+            'success' => true,
+            'redirect' => $redirect,
+        ]);
     }
-
-    // 🧹 Clear session
-    session()->forget(['student', 'supervisor', 'admin']);
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    // 🎯 Decide redirect based on role
-    if ($role === 'student') {
-        $redirect = '/landing';
-    } else {
-        // supervisor + admin
-        $redirect = '/login';
-        // OR '/supervisor/login' if you want separate
-    }
-
-    return response()->json([
-        'success'  => true,
-        'redirect' => $redirect,
-    ]);
-}
 
     public function getSupervisor()
-{
-    $student = session('student');
-    $supervisor = UserTbl::where('company_id', $student->company_id)
-                         ->where('role', 'supervisor')
-                         ->first();
+    {
+        $student = session('student');
 
-    return response()->json($supervisor);
-}
+        if (!$student) {
+            return response()->json(null);
+        }
 
-public function dashboard()
-{
-    $student = session('student');
-    $company = \App\Models\Company::where('company_id', $student->company_id)->first();
-    return view('students.dashboard', compact('company'));
-}
+        $supervisor = Supervisor::where('company_id', $student->company_id)
+            ->with('user')
+            ->first();
 
-public function checkStatus(Request $request)
-{
-    $student = UserTbl::where('student_id', $request->student_id)
-                      ->where('role', 'student')
-                      ->first();
+        if (!$supervisor || !$supervisor->user) {
+            return response()->json(null);
+        }
 
-    if (!$student) {
-        return response()->json(['status' => 'not_found']);
+        // Return flat structure for JS compatibility
+        return response()->json([
+            'name' => $supervisor->user->name,
+            'supervisor_id' => $supervisor->supervisor_id,
+            'company_id' => $supervisor->company_id,
+            'avatar' => $supervisor->user->avatar ?? null,
+        ]);
     }
 
-    return response()->json(['status' => $student->status]);
-}
+    public function dashboard()
+    {
+        $student = session('student');
 
+        if (!$student) {
+            return redirect('/landing');
+        }
+
+        $company = Company::where('company_id', $student->company_id)->first();
+
+        return view('students.dashboard', compact('company'));
+    }
+
+    public function checkStatus(Request $request)
+    {
+        $student = Student::where('student_id', $request->student_id)
+            ->with('user')
+            ->first();
+
+        if (!$student || !$student->user) {
+            return response()->json(['status' => 'not_found']);
+        }
+
+        return response()->json(['status' => $student->user->status]);
+    }
 }

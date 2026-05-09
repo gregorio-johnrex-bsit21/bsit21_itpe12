@@ -147,16 +147,16 @@ function logoutSupervisor() {
             if (data.success) {
                 window.location.href = data.redirect;
             } else {
-                window.location.href = '/landing';
+                window.location.href = '/login';
             }
         } catch (e) {
             console.error('Not JSON:', text);
-            window.location.href = '/landing';
+            window.location.href = '/login';
         }
     })
     .catch((err) => {
         console.error('Error:', err);
-        window.location.href = '/landing';
+        window.location.href = '/login';
     });
 }
 function changePassword() {

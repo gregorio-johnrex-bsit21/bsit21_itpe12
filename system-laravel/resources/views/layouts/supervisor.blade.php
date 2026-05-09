@@ -153,6 +153,7 @@ fetch('/supervisor/chat/students')
     let pollInterval        = null;
     let previewInterval     = null;
     let chatIsOpen          = false;
+    const supervisorRenderedIds = new Set(); // ← add this  
 
     function escapeHtml(str) {
         return String(str)
@@ -164,7 +165,11 @@ fetch('/supervisor/chat/students')
         return displayName.replace(/\s+/g, '_');
     }
 
-    function appendSupervisorMessage(message, sender) {
+    function appendSupervisorMessage(message, sender, id = null) {
+    if (id !== null) {
+        if (supervisorRenderedIds.has(id)) return;
+        supervisorRenderedIds.add(id);
+    }    
     const isSupervisor = (sender === 'Supervisor');
     const wrapper = document.createElement('div');
     wrapper.className = isSupervisor
@@ -191,41 +196,40 @@ fetch('/supervisor/chat/students')
 }
 
     function openSupervisorChat(displayName) {
-        const newConversation = conversationKey(displayName);
-
-        if (newConversation !== currentConversation) {
-            currentConversation = newConversation;
-            lastMessageIndex    = 0;
-            supervisorMsgList.innerHTML = '';
-        }
-
-        clearInterval(pollInterval);
-        pollInterval = null;
-        chatIsOpen   = true;
-
-        pollMessages();
-        markSupervisorRead();
-        pollInterval = setInterval(pollMessages, 2000);
+    const newConversation = conversationKey(displayName);
+    if (newConversation !== currentConversation) {
+        currentConversation = newConversation;
+        lastMessageIndex = 0;
+        supervisorMsgList.innerHTML = '';
+        supervisorRenderedIds.clear(); // ← add this
     }
+    clearInterval(pollInterval);
+    pollInterval = null;
+    chatIsOpen = true;
+    pollMessages();
+    markSupervisorRead();
+    pollInterval = setInterval(pollMessages, 2000);
+}
 
     function closeSupervisorChat() {
-        chatIsOpen = false;
-        clearInterval(pollInterval);
-        pollInterval     = null;
-        lastMessageIndex = 0;
-    }
+    chatIsOpen = false;
+    clearInterval(pollInterval);
+    pollInterval = null;
+    lastMessageIndex = 0;
+    supervisorRenderedIds.clear(); // ← add this
+}
 
     function pollMessages() {
-        if (!currentConversation) return;
-        fetch(`/get-messages?conversation=${currentConversation}&after=${lastMessageIndex}&role=Supervisor`)
-            .then(r => r.json())
-            .then(data => {
-                data.messages.forEach(msg => {
-                    appendSupervisorMessage(msg.message, msg.sender);
-                });
-                lastMessageIndex = data.total;
-            })
-            .catch(() => {});
+    if (!currentConversation) return;
+    fetch(`/get-messages?conversation=${currentConversation}&after=${lastMessageIndex}&role=Supervisor`)
+        .then(r => r.json())
+        .then(data => {
+            data.messages.forEach(msg => {
+                appendSupervisorMessage(msg.message, msg.sender, msg.id); // ← add msg.id
+            });
+            lastMessageIndex = data.total;
+        })
+        .catch(() => {});
     }
 
     function updatePreviews() {
@@ -288,24 +292,23 @@ fetch('/supervisor/chat/students')
     }
 
     function sendSupervisorMessage() {
-        const message = supervisorMsgInput.value.trim();
-        if (!message || !currentConversation) return;
-        appendSupervisorMessage(message, 'Supervisor');
-        lastMessageIndex++;
-        supervisorMsgInput.value = '';
-        fetch('/send-message', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                message,
-                sender: 'Supervisor',
-                conversation: currentConversation
-            })
-        });
-    }
+    const message = supervisorMsgInput.value.trim();
+    if (!message || !currentConversation) return;
+    const tempId = 'temp_' + Date.now();
+    appendSupervisorMessage(message, 'Supervisor', tempId);
+    supervisorMsgInput.value = '';
+    fetch('/send-message', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ message, sender: 'Supervisor', conversation: currentConversation })
+    }).then(r => r.json()).then(data => {
+        supervisorRenderedIds.delete(tempId);
+        supervisorRenderedIds.add(data.id);
+    });
+}
 
     supervisorSendBtn.addEventListener('click', sendSupervisorMessage);
     supervisorMsgInput.addEventListener('keydown', e => {

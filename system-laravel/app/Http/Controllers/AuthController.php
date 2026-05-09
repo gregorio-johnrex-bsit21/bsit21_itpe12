@@ -4,33 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\UserTbl;
+use App\Models\Student;
+use App\Models\Supervisor;
+use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
-    /**
-     * Show the unified login page.
-     */
-
-
     public function showLogin()
     {
-        return view('login'); // resources/views/login.blade.php
+        return view('login');
     }
 
-    /**
-     * Unified login — detects role from users_tbl and redirects accordingly.
-     *
-     * How role detection works:
-     *   - If user_id matches a row where supervisor_id = user_id  → role: supervisor
-     *   - If user_id matches a row where student_id   = user_id  → role: student
-     *   - If user_id matches a row where role = 'admin'           → role: admin
-     *
-     * The explicit `role` column on users_tbl is the source of truth.
-     * We also check supervisor_id / student_id columns as the identifier.
-     */
     public function login(Request $request)
     {
         $request->validate([
@@ -39,21 +24,22 @@ class AuthController extends Controller
         ]);
 
         $userId = $request->user_id;
+        $password = $request->password;
 
         // ── 1. Try supervisor ────────────────────────────────────────────────
-        $user = UserTbl::where('supervisor_id', $userId)
-                       ->where('role', 'supervisor')
-                       ->first();
+        $supervisor = Supervisor::where('supervisor_id', $userId)
+            ->with('user')
+            ->first();
 
-        if ($user) {
-            if (!Hash::check($request->password, $user->password)) {
+        if ($supervisor && $supervisor->user) {
+            if (!Hash::check($password, $supervisor->user->password)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid User ID or Password.',
                 ]);
             }
 
-            session(['supervisor' => $user]);
+            session(['supervisor' => $supervisor]);
 
             return response()->json([
                 'success'  => true,
@@ -62,12 +48,14 @@ class AuthController extends Controller
         }
 
         // ── 2. Try student ───────────────────────────────────────────────────
-        $user = UserTbl::where('student_id', $userId)
-                       ->where('role', 'student')
-                       ->first();
+        $student = Student::where('student_id', $userId)
+            ->with('user')
+            ->first();
 
-        if ($user) {
-            if (!Hash::check($request->password, $user->password)) {
+        if ($student && $student->user) {
+            $user = $student->user;
+
+            if (!Hash::check($password, $user->password)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid User ID or Password.',
@@ -88,7 +76,7 @@ class AuthController extends Controller
                 ]);
             }
 
-            session(['student' => $user]);
+            session(['student' => $student]);
 
             return response()->json([
                 'success'  => true,
@@ -97,24 +85,19 @@ class AuthController extends Controller
         }
 
         // ── 3. Try admin ─────────────────────────────────────────────────────
-        // Admin rows have role = 'admin'. Use the `student_id` or `supervisor_id`
-        // column as their login identifier — whichever is filled.
-        $user = UserTbl::where('role', 'admin')
-                       ->where(function ($q) use ($userId) {
-                           $q->where('student_id',    $userId)
-                             ->orWhere('supervisor_id', $userId);
-                       })
-                       ->first();
+        $admin = Admin::where('admin_code', $userId)
+            ->with('user')
+            ->first();
 
-        if ($user) {
-            if (!Hash::check($request->password, $user->password)) {
+        if ($admin && $admin->user) {
+            if (!Hash::check($password, $admin->user->password)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid User ID or Password.',
                 ]);
             }
 
-            session(['admin' => $user]);
+            session(['admin' => $admin]);
 
             return response()->json([
                 'success'  => true,
@@ -128,7 +111,4 @@ class AuthController extends Controller
             'message' => 'Invalid User ID or Password.',
         ]);
     }
-
-
-    
 }
