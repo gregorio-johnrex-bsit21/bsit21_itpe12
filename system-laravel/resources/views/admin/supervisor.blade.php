@@ -6,36 +6,127 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="home-tab">
-           {{-- Top Header Section with Add Button --}}
-<div class="d-sm-flex align-items-center justify-content-between border-bottom mb-3">
-    <h2 class="text-dark fw-bold mb-0" style="font-size: 1.5rem;">Company Management</h2>
-    <div class="d-flex gap-2">
-        <button class="btn btn-primary btn-lg text-white mb-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#addSupervisorModal">
-            <i class="mdi mdi-account-plus-outline"></i> Add Supervisor
-        </button>
-        <button class="btn btn-primary btn-lg text-white mb-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
-            <i class="mdi mdi-plus-circle-outline"></i> Add New Company
-        </button>
+            {{-- Top Header Section --}}
+            <div class="d-sm-flex align-items-center justify-content-between border-bottom mb-3 pb-3">
+                <h2 class="text-dark fw-bold mb-0" style="font-size: 1.5rem;">Company Management</h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-lg text-white mb-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#addSupervisorModal" style="background-color: #2E7D32; border-color: #2E7D32;">
+                        <i class="mdi mdi-account-plus-outline"></i> Add Supervisor
+                    </button>
+                    <button class="btn btn-lg text-white mb-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#addCompanyModal" style="background-color: #2E7D32; border-color: #2E7D32;">
+                        <i class="mdi mdi-plus-circle-outline"></i> Add New Company
+                    </button>
+                </div>
+                {{-- Updated Button: Now Green (#2E7D32) --}}
+<button class="btn btn-lg text-white mb-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#setHoursModal" style="background-color: #2E7D32; border-color: #2E7D32;">
+    <i class="mdi mdi-clock-outline"></i> OJT Requirements
+</button>
+
+{{-- Modal remains the same, but the Save button is now Orange (#ff9800) --}}
+<div class="modal fade" id="setHoursModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="modal-header border-0 px-4 pt-4">
+                <h4 class="modal-title fw-bold" style="color: #2E7D32; margin: 0;">OJT Requirements</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body px-4">
+                {{-- Company Dropdown --}}
+                <div class="form-group mb-3">
+                    <label class="mb-2 text-muted fw-bold small">PARTNER COMPANY</label>
+                    <select id="ojtCompany" class="form-select shadow-none" style="height: 45px; border-radius: 10px; border: 1.5px solid #eee; font-size: 14px;">
+                        <option value="" selected disabled>Select Company...</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->name }}">{{ $company->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Shift Schedule Section --}}
+                <div class="p-3 mb-3" style="background-color: #f8f9fa; border-radius: 15px; border: 1px solid #f1f1f1;">
+                    <label class="mb-3 text-dark fw-bold small text-uppercase d-block" style="letter-spacing: 0.5px;">
+                        <i class="mdi mdi-calendar-clock me-1"></i> Shift Schedule
+                    </label>
+                    
+                    <div class="row g-2">
+                        {{-- AM Session --}}
+                        <div class="col-md-6">
+                            <label class="mb-1 text-muted fw-bold" style="font-size: 10px; display: block;">AM SESSION</label>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <input type="time" id="amStartTime" class="form-control form-control-sm shadow-none" 
+                                    style="width: 43%; height: 38px; padding: 5px 8px; font-size: 12px; border-radius: 8px; border: 1.5px solid #eee;">
+                                
+                                <span style="font-size: 11px; color: #6c757d; font-weight: bold;">to</span>
+                                
+                                <input type="time" id="amEndTime" class="form-control form-control-sm shadow-none" 
+                                    style="width: 43%; height: 38px; padding: 5px 8px; font-size: 12px; border-radius: 8px; border: 1.5px solid #eee;">
+                            </div>
+                        </div>
+
+                        {{-- PM Session --}}
+                        <div class="col-md-6 mt-3 mt-md-0">
+                            <label class="mb-1 text-muted fw-bold" style="font-size: 10px; display: block;">PM SESSION</label>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <input type="time" id="pmStartTime" class="form-control form-control-sm shadow-none" 
+                                    style="width: 43%; height: 38px; padding: 5px 8px; font-size: 12px; border-radius: 8px; border: 1.5px solid #eee;">
+                                
+                                <span style="font-size: 11px; color: #6c757d; font-weight: bold;">to</span>
+                                
+                                <input type="time" id="pmEndTime" class="form-control form-control-sm shadow-none" 
+                                    style="width: 43%; height: 38px; padding: 5px 8px; font-size: 12px; border-radius: 8px; border: 1.5px solid #eee;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Total Hours --}}
+                <div class="form-group mb-3">
+                    <label class="mb-2 text-muted fw-bold small">REQUIRED TOTAL HOURS</label>
+                    <input type="number" id="requiredHours" class="form-control shadow-none" placeholder="e.g. 480" style="height: 45px; border-radius: 10px; border: 1.5px solid #eee; font-size: 14px;">
+                </div>
+
+                {{-- Dates --}}
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="mb-2 text-muted fw-bold small">START DATE</label>
+                        <input type="date" id="startDate" class="form-control shadow-none" style="height: 45px; border-radius: 10px; border: 1.5px solid #eee; font-size: 13px;">
+                    </div>
+                    <div class="col-6">
+                        <label class="mb-2 text-muted fw-bold small">END DATE</label>
+                        <input type="date" id="endDate" class="form-control shadow-none" style="height: 45px; border-radius: 10px; border: 1.5px solid #eee; font-size: 13px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 pb-4 mt-2 justify-content-center">
+                <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal" style="border-radius: 10px; padding: 10px 25px; font-size: 14px;">Cancel</button>
+                <button type="button" class="btn text-white fw-bold shadow-sm" onclick="saveOjtRequirements()" style="background-color: #ff9800; border: none; border-radius: 10px; padding: 10px 25px; font-size: 14px;">
+                    Save Requirements
+                </button>
+            </div>
+        </div>
     </div>
 </div>
+            </div>
+            
 
             <div class="tab-content tab-content-basic">
                 <div class="tab-pane fade show active" id="overview" role="tabpanel">
-                    
                     <div class="row">
-                        {{-- Left Side: Company Management --}}
-                        <div class="col-lg-8 d-flex flex-column">
+                        {{-- Partner Selection Card --}}
+                        <div class="col-lg-12 d-flex flex-column">
                             <div class="card card-rounded shadow-sm border-0">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h4 class="card-title card-title-dash mb-0">Company Management</h4>
+                                        <h4 class="card-title card-title-dash mb-0">Partner Selection</h4>
                                         
                                         {{-- Modern Search --}}
                                         <div id="searchWrapper" class="d-flex align-items-center" style="position: relative;">
                                             <div id="searchContainer" class="d-flex align-items-center" 
                                                  style="transition: all 0.4s; background: transparent; border-radius: 12px; padding: 4px 8px; width: 40px; height: 40px; justify-content: flex-end;">
                                                 <input type="text" id="searchInput" class="form-control form-control-sm border-0 bg-transparent p-0 shadow-none" 
-                                                       placeholder="Search students..." onkeyup="filterTable(this)"
+                                                       placeholder="Search supervisors..." onkeyup="filterTable(this)"
                                                        style="width: 0; opacity: 0; transition: all 0.3s; font-size: 0.85rem; font-weight: 500; color: #1F283E;">
                                                 <button class="btn btn-link text-dark p-0 shadow-none d-flex align-items-center justify-content-center" 
                                                         onclick="toggleSearch()" style="width: 24px; height: 24px;">
@@ -46,96 +137,42 @@
                                     </div>
 
                                     <div class="mt-4">
-                                        <p class="text-small mb-2 text-muted fw-bold text-uppercase" style="font-size: 0.65rem;">PARTNER COMPANY</p>
-                                       <select class="form-select form-select-sm shadow-none border-1" id="companyDropdown" onchange="updateDashboard()"
-                                         style="width: 220px; height: 40px; font-size: 0.85rem; border-radius: 8px; color: #000; border-color: #000; background-color: #fff;">
-                                         <option value="" selected disabled>Select Company</option>
-                                         @foreach($companies as $company)
-                                         <option value="{{ $company->company_id }}">{{ $company->name }}</option>
-                                         @endforeach
-                                       </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Right Side Corner: Performance Spotlight --}}
-                        <div class="col-lg-4 d-flex flex-column">
-                            <div class="card card-rounded bg-primary shadow-sm border-0">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <h4 class="card-title card-title-dash text-white">Performance Spotlight</h4>
-                                        <i class="mdi mdi-account-star text-white fs-4"></i>
-                                    </div>
-                                    <div class="d-flex align-items-center mt-3">
-                                        <div class="ms-0">
-                                            <h3 id="topName" class="mb-0 text-white fw-bold">---</h3>
-                                            <p id="topCourse" class="text-white opacity-75 small mb-0">N/A</p>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-between mt-4 text-white text-center">
-                                        <div>
-                                            <p class="opacity-75 mb-0 small">Hours</p>
-                                            <h4 id="topHours" class="mb-0 fw-bold">0</h4>
-                                        </div>
-                                        <div>
-                                            <p class="opacity-75 mb-0 small">Rating</p>
-                                            <h4 id="topRating" class="mb-0 fw-bold">0.0</h4>
-                                        </div>
+                                        <p class="text-small mb-2 text-muted fw-bold text-uppercase" style="font-size: 0.65rem;">FILTER BY COMPANY</p>
+                                        <select class="form-select form-select-sm shadow-none" id="companyDropdown" onchange="filterByCompany()"
+                                                style="width: 240px; height: 45px; font-size: 0.85rem; border-radius: 8px; color: #000; border: 1.5px solid #2E7D32; background-color: #fff;">
+                                            <option value="all" selected>All Companies</option>
+                                            @foreach($companies as $company)
+                                                <option value="{{ $company->name }}">{{ $company->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    {{-- Bottom Section: Full Width Table --}}
-                    <div id="dashboardContent" class="row mt-4" style="display: none;">
-                        <div class="col-lg-12">
-                            <div class="card card-rounded shadow-sm border-0">
-                                <div class="card-body">
-                                    <h4 class="card-title card-title-dash mb-4">Active OJT Assignments</h4>
-                                    <div class="table-responsive">
-                                        <table class="table select-table" id="studentTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Student Name</th>
-                                                    <th>Course</th>
-                                                    <th>OJT Progress</th>
-                                                    <th>Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="studentTableBody"></tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- Supervisor List Table --}}
+{{-- Supervisor List --}}
 <div class="row mt-4">
     <div class="col-lg-12">
         <div class="card card-rounded shadow-sm border-0">
             <div class="card-body">
                 <h4 class="card-title card-title-dash mb-4">Supervisor List</h4>
                 <div class="table-responsive">
-                    <table class="table select-table">
+                    <table class="table select-table" id="supervisorTable">
                         <thead>
                             <tr>
                                 <th>Supervisor Name</th>
                                 <th>Supervisor ID</th>
                                 <th>Company</th>
-                                <th>Company ID</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="supervisorTableBody">
                             @forelse($supervisors as $supervisor)
 <tr>
     <td><h6 class="fw-bold mb-0">{{ $supervisor->user->name ?? 'N/A' }}</h6></td>
@@ -162,28 +199,16 @@
     </div>
 </div>
 
-
-
-{{-- Reset Password Modal --}}
+{{-- Modals --}}
 <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 15px;">
-            <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold">Reset Password</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+            <div class="modal-header border-0"><h5 class="modal-title fw-bold">Reset Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
-                <p class="text-muted">Are you sure you want to reset this supervisor's password?</p>
+                <p class="text-muted">Reset supervisor password?</p>
                 <div id="newCredentials" class="mt-3 p-3 text-center" style="display: none; background: #f8f9fa; border-radius: 10px;">
-                    <p class="text-muted mb-2 small fw-bold">NEW CREDENTIALS:</p>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted small">Supervisor ID:</span>
-                        <h5 id="resetSupervisorId" class="text-primary fw-bold mb-0" style="letter-spacing: 2px;"></h5>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted small">New Password:</span>
-                        <h5 id="resetSupervisorPassword" class="text-primary fw-bold mb-0" style="letter-spacing: 2px;"></h5>
-                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2"><span class="text-muted small">ID:</span><h5 id="resetSupervisorId" class="fw-bold mb-0" style="color: #2E7D32;"></h5></div>
+                    <div class="d-flex justify-content-between align-items-center"><span class="text-muted small">Pass:</span><h5 id="resetSupervisorPassword" class="fw-bold mb-0" style="color: #2E7D32;"></h5></div>
                 </div>
             </div>
             <div class="modal-footer border-0">
@@ -194,319 +219,157 @@
     </div>
 </div>
 
-{{-- Add Company Modal --}}
-<div class="modal fade" id="addCompanyModal" tabindex="-1" aria-labelledby="addCompanyModalLabel" aria-hidden="true">
+<div class="modal fade" id="addCompanyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 15px;">
-            <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold" id="addCompanyModalLabel">Register New Company</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+            <div class="modal-header border-0"><h5 class="modal-title fw-bold">Register Company</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="mb-2 text-muted fw-bold small">COMPANY NAME</label>
-                    <input type="text" id="newCompanyName" class="form-control" placeholder="e.g. Nexus Tech Bacolod" style="height: 45px; border-radius: 8px;">
-                </div>
-                <div id="idDisplay" class="mt-4 p-3 text-center" style="display: none; background: #f8f9fa; border-radius: 10px;">
-                    <p class="text-muted mb-1 small">SHARE THIS CODE WITH STUDENTS:</p>
-                    <h3 id="generatedId" class="text-primary fw-bold mb-0" style="letter-spacing: 2px;"></h3>
-                </div>
+                <div class="form-group"><label class="mb-2 text-muted fw-bold small">COMPANY NAME</label><input type="text" id="newCompanyName" class="form-control" style="height: 45px; border-radius: 8px;"></div>
+                <div id="idDisplay" class="mt-4 p-3 text-center" style="display: none; background: #f8f9fa; border-radius: 10px;"><h3 id="generatedId" class="fw-bold mb-0" style="color: #2E7D32;"></h3></div>
             </div>
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary text-white px-4" id="generateBtn" onclick="addCompany()">Generate ID</button>
-            </div>
+            <div class="modal-footer border-0"><button type="button" class="btn text-white px-4" onclick="addCompany()" style="background-color: #2E7D32;">Generate ID</button></div>
         </div>
     </div>
 </div>
 
 
-{{-- Add Supervisor Modal --}}
-<div class="modal fade" id="addSupervisorModal" tabindex="-1" aria-labelledby="addSupervisorModalLabel" aria-hidden="true">
+<div class="modal fade" id="addSupervisorModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 15px;">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold" id="addSupervisorModalLabel">Add Supervisor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title fw-bold">Add Supervisor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="location.reload()"></button>
             </div>
             <div class="modal-body">
                 <div class="form-group mb-3">
                     <label class="mb-2 text-muted fw-bold small">SUPERVISOR NAME</label>
-                    <input type="text" id="supervisorName" class="form-control" placeholder="e.g. Juan Dela Cruz" style="height: 45px; border-radius: 8px;">
+                    <input type="text" id="supervisorName" class="form-control" style="height: 45px; border-radius: 8px;">
                 </div>
                 <div class="form-group">
                     <label class="mb-2 text-muted fw-bold small">ASSIGN TO COMPANY</label>
-                    <select id="supervisorCompany" class="form-select" style="height: 45px; border-radius: 8px; color: #000; border-color: #000; background-color: #fff;">
+                    <select id="supervisorCompany" class="form-select" style="height: 45px; border-radius: 8px; border: 1px solid #2E7D32;">
                         <option value="" selected disabled>Select Company</option>
                         @foreach($companies as $company)
                             <option value="{{ $company->company_id }}">{{ $company->name }}</option>
                         @endforeach
                     </select>
                 </div>
-                {{-- Credentials Display --}}
                 <div id="supervisorCredentials" class="mt-4 p-3" style="display: none; background: #f8f9fa; border-radius: 10px;">
-                    <p class="text-muted mb-2 small fw-bold text-center">SHARE THESE CREDENTIALS WITH SUPERVISOR:</p>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted small">Supervisor ID:</span>
-                        <h5 id="generatedSupervisorId" class="text-primary fw-bold mb-0" style="letter-spacing: 2px;"></h5>
+                        <span class="text-muted small">ID:</span>
+                        <h5 id="genSupId" class="fw-bold mb-0" style="color: #2E7D32;"></h5>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted small">Password:</span>
-                        <h5 id="generatedSupervisorPassword" class="text-primary fw-bold mb-0" style="letter-spacing: 2px;"></h5>
+                        <span class="text-muted small">Temporary Password:</span>
+                        <h5 id="genSupPass" class="fw-bold mb-0" style="color: #2E7D32;"></h5>
                     </div>
                 </div>
             </div>
             <div class="modal-footer border-0">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary text-white px-4" id="addSupervisorBtn" onclick="addSupervisor()">Add Supervisor</button>
+                <button type="button" class="btn text-white px-4" id="addSupBtn" onclick="addSupervisor()" style="background-color: #2E7D32;">Add Supervisor</button>
             </div>
         </div>
     </div>
+    
 </div>
+
 @endsection
 
 @push('scripts')
 <script>
-    const companyData = {
-        technova: {
-            students: [
-                { name: "John Doe", course: "BSIT", hours: 320, status: "Ongoing", rating: 4.8 },
-                { name: "Jane Smith", course: "BSCS", hours: 480, status: "Completed", rating: 4.9 }
-            ],
-            topIndex: 1
-        },
-        globalit: {
-            students: [
-                { name: "Maria Clara", course: "BSIT", hours: 400, status: "Ongoing", rating: 4.5 },
-                { name: "Juan Dela Cruz", course: "BSIS", hours: 480, status: "Completed", rating: 4.7 }
-            ],
-            topIndex: 1
-        }
-    };
-
-    const TOTAL_OJT_HOURS = 480;
-
-   function addCompany() {
-    const nameInput = document.getElementById('newCompanyName');
-    const idDisplay = document.getElementById('idDisplay');
-    const generatedIdSpan = document.getElementById('generatedId');
-    const generateBtn = document.getElementById('generateBtn'); // add this
-
-    if (generateBtn.disabled) {
-        alert("Company ID has already been generated!");
-        return;
-    }
-
-    if (nameInput.value.trim() === "") {
-        alert("Please enter a company name.");
-        return;
-    }
-
-    fetch("{{ route('company.store') }}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-        },
-        body: JSON.stringify({ name: nameInput.value.trim() })
-    })
-    .then(res => res.json())
-    .then(data => {
-    if (data.success) {
-        generatedIdSpan.innerText = data.company_id;
-        idDisplay.style.display = 'block';
-
-        // Add new company to dropdown instantly
-        const dropdown = document.getElementById('companyDropdown');
-        const option = document.createElement('option');
-        option.value = data.company_id;
-        option.text = nameInput.value.trim();
-        dropdown.add(option);
-
-        // Disable button
-        generateBtn.disabled = true;
-        generateBtn.innerText = "ID Generated ✓";
-        generateBtn.classList.remove('btn-primary');
-        generateBtn.classList.add('btn-success');
-    }
-})
-    .catch(err => console.error(err));
-}
-
-
-
-//add supervisor 
-function addSupervisor() {
-    const nameInput = document.getElementById('supervisorName');
-    const companyInput = document.getElementById('supervisorCompany');
-    const credentials = document.getElementById('supervisorCredentials');
-    const supervisorIdSpan = document.getElementById('generatedSupervisorId');
-    const supervisorPasswordSpan = document.getElementById('generatedSupervisorPassword');
-    const addBtn = document.getElementById('addSupervisorBtn');
-
-    if (addBtn.disabled) {
-        alert("Supervisor has already been added!");
-        return;
-    }
-
-    if (nameInput.value.trim() === "") {
-        alert("Please enter a supervisor name.");
-        return;
-    }
-
-    if (companyInput.value === "") {
-        alert("Please select a company.");
-        return;
-    }
-
-    fetch("{{ route('supervisor.store') }}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-        },
-        body: JSON.stringify({
-            name: nameInput.value.trim(),
-            company_id: companyInput.value
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-    if (data.success) {
-        supervisorIdSpan.innerText = data.supervisor_id;
-        supervisorPasswordSpan.innerText = data.password;
-        credentials.style.display = 'block';
-
-        // Disable button
-        addBtn.disabled = true;
-        addBtn.innerText = "Supervisor Added ✓";
-        addBtn.classList.remove('btn-secondary');
-        addBtn.classList.add('btn-success');
-    } else {
-        alert(data.message);
-    }
-})
-    .catch(err => console.error(err));
-}
-
-// Reset supervisor modal on close
-document.getElementById('addSupervisorModal').addEventListener('hidden.bs.modal', function () {
-    const addBtn = document.getElementById('addSupervisorBtn');
-    addBtn.disabled = false;
-    addBtn.innerText = "Add Supervisor";
-    addBtn.classList.remove('btn-success');
-    addBtn.classList.add('btn-primary');
-    document.getElementById('supervisorName').value = '';
-    document.getElementById('supervisorCompany').value = '';
-    document.getElementById('supervisorCredentials').style.display = 'none';
-});
-
-
-
-//add company lock when already generated
-document.getElementById('addCompanyModal').addEventListener('hidden.bs.modal', function () {
-    const generateBtn = document.getElementById('generateBtn');
-    generateBtn.disabled = false;
-    generateBtn.innerText = "Generate ID";
-    generateBtn.classList.remove('btn-success');
-    generateBtn.classList.add('btn-primary');
-    document.getElementById('newCompanyName').value = '';
-    document.getElementById('idDisplay').style.display = 'none';
-});
-
-
-
-
-
-
-
-
-    function updateDashboard() {
-        const companyKey = document.getElementById('companyDropdown').value;
-        const data = companyData[companyKey];
-        if (!data) return;
-
-        document.getElementById('dashboardContent').style.display = 'flex';
-
-        document.getElementById('studentTableBody').innerHTML = data.students.length > 0 ? 
-            data.students.map(s => {
-                const perc = Math.round((s.hours / TOTAL_OJT_HOURS) * 100);
-                return `
-                    <tr>
-                        <td><h6 class="fw-bold mb-0">${s.name}</h6></td>
-                        <td><p class="text-muted mb-0">${s.course}</p></td>
-                        <td class="pe-5" style="min-width: 250px;">
-                            <div class="d-flex justify-content-between mb-1"><small class="text-muted">${perc}%</small></div>
-                            <div class="progress progress-md"><div class="progress-bar bg-primary" style="width: ${perc}%"></div></div>
-                        </td>
-                        <td><div class="badge badge-opacity-${s.status === 'Completed' ? 'success' : 'primary'}">${s.status}</div></td>
-                    </tr>
-                `;
-            }).join('') : '<tr><td colspan="4" class="text-center py-4 text-muted">No students registered yet.</td></tr>';
-
-        const top = data.students[data.topIndex] || { name: "---", course: "N/A", hours: 0, rating: 0.0 };
-        document.getElementById('topName').innerText = top.name;
-        document.getElementById('topCourse').innerText = top.course;
-        document.getElementById('topHours').innerText = top.hours;
-        document.getElementById('topRating').innerText = top.rating;
-    }
+    let currentResetId = null;
 
     function toggleSearch() {
         const container = document.getElementById('searchContainer');
         const input = document.getElementById('searchInput');
-        if (input.style.width === '0px' || input.style.width === '0') {
-            container.style.width = '240px';
-            container.style.backgroundColor = '#f3f6f9'; 
-            setTimeout(() => { input.style.width = '100%'; input.style.opacity = '1'; input.style.paddingLeft = '10px'; input.focus(); }, 100);
+        if (input.style.width === '0px' || !input.style.width || input.style.width === '0') {
+            container.style.width = '240px'; container.style.backgroundColor = '#f3f6f9'; 
+            setTimeout(() => { input.style.width = '100%'; input.style.opacity = '1'; input.focus(); }, 100);
         } else {
             input.style.width = '0'; input.style.opacity = '0'; container.style.width = '40px'; container.style.backgroundColor = 'transparent';
         }
     }
 
     function filterTable(input) {
-        const filter = input.value.toLowerCase();
-        const rows = document.querySelectorAll('#studentTableBody tr');
-        rows.forEach(row => { row.style.display = row.cells[0]?.innerText.toLowerCase().includes(filter) ? '' : 'none'; });
+        const val = input.value.toLowerCase();
+        const rows = document.querySelectorAll('#supervisorTableBody tr');
+        rows.forEach(r => { r.style.display = r.innerText.toLowerCase().includes(val) ? '' : 'none'; });
     }
 
+    function filterByCompany() {
+        const selected = document.getElementById('companyDropdown').value;
+        const rows = document.querySelectorAll('#supervisorTableBody tr');
+        rows.forEach(r => {
+            if (selected === "all" || r.getAttribute('data-company') === selected) {
+                r.style.display = '';
+            } else {
+                r.style.display = 'none';
+            }
+        });
+    }
 
-    let resetSupervisorId = null;
+    function resetPassword(id) {
+        currentResetId = id;
+        document.getElementById('newCredentials').style.display = 'none';
+        new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
+    }
 
-function resetPassword(supervisorId) {
-    resetSupervisorId = supervisorId;
-    document.getElementById('newCredentials').style.display = 'none';
-    document.getElementById('confirmResetBtn').disabled = false;
-    document.getElementById('confirmResetBtn').innerText = 'Confirm Reset';
-    document.getElementById('confirmResetBtn').classList.remove('btn-success');
-    document.getElementById('confirmResetBtn').classList.add('btn-warning');
-    new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
-}
+    document.getElementById('confirmResetBtn').addEventListener('click', function() {
+        fetch("{{ route('supervisor.reset.password') }}", {
+            method: "POST", headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+            body: JSON.stringify({ supervisor_id: currentResetId })
+        }).then(res => res.json()).then(data => {
+            if (data.success) {
+                document.getElementById('resetSupervisorId').innerText = data.supervisor_id;
+                document.getElementById('resetSupervisorPassword').innerText = data.password;
+                document.getElementById('newCredentials').style.display = 'block';
+                this.disabled = true; this.innerText = 'Done ✓';
+            }
+        });
+    });
 
-document.getElementById('confirmResetBtn').addEventListener('click', function() {
-    fetch("{{ route('supervisor.reset.password') }}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-        },
-        body: JSON.stringify({ supervisor_id: resetSupervisorId })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById('resetSupervisorId').innerText = data.supervisor_id;
-            document.getElementById('resetSupervisorPassword').innerText = data.password;
-            document.getElementById('newCredentials').style.display = 'block';
+    function addCompany() {
+        const name = document.getElementById('newCompanyName').value;
+        if(!name) return alert("Please enter a name");
+        fetch("{{ route('company.store') }}", {
+            method: "POST", headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+            body: JSON.stringify({ name: name })
+        }).then(res => res.json()).then(data => {
+            if(data.success) {
+                document.getElementById('generatedId').innerText = data.company_id;
+                document.getElementById('idDisplay').style.display = 'block';
+            }
+        });
+    }
 
-            // Disable button
-            this.disabled = true;
-            this.innerText = 'Password Reset ✓';
-            this.classList.remove('btn-warning');
-            this.classList.add('btn-success');
-        }
-    })
-    .catch(err => console.error(err));
-});
+    function addSupervisor() {
+        const name = document.getElementById('supervisorName').value;
+        const cid = document.getElementById('supervisorCompany').value;
+        const btn = document.getElementById('addSupBtn');
 
+        if(!name || !cid) return alert("Please fill in all fields.");
+
+        fetch("{{ route('supervisor.store') }}", {
+            method: "POST", 
+            headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+            body: JSON.stringify({ name: name, company_id: cid })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('genSupId').innerText = data.supervisor_id;
+                document.getElementById('genSupPass').innerText = data.password;
+                document.getElementById('supervisorCredentials').style.display = 'block';
+                btn.disabled = true;
+                btn.innerText = "Added Successfully";
+            } else {
+                alert("Error adding supervisor. Please check the data.");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Something went wrong. Please try again.");
+        });
+    }
 </script>
 @endpush

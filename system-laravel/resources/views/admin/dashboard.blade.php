@@ -4,137 +4,110 @@
 
 @push('styles')
   <link rel="stylesheet" href="{{ asset('assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ asset('assets/js/select.dataTables.min.css') }}">
+  <style>
+    /* Custom Green Theme for Dashboard Cards */
+    .stat-card {
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid #f0f0f0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    .icon-box {
+      width: 45px;
+      height: 45px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    .bg-light-green { background-color: rgba(46, 125, 50, 0.1); color: #2E7D32; }
+    .bg-light-blue { background-color: rgba(0, 123, 255, 0.1); color: #007bff; }
+    .bg-light-orange { background-color: rgba(255, 152, 0, 0.1); color: #ff9800; }
+    
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 0; }
+    .stat-label { font-size: 0.85rem; color: #6c757d; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  </style>
 @endpush
 
 @section('content')
 <div class="row">
   <div class="col-sm-12">
     <div class="home-tab">
-      <div class="d-sm-flex align-items-center justify-content-between border-bottom">
-
+      <div class="d-sm-flex align-items-center justify-content-between border-bottom mb-4 pb-3">
+        <h2 class="welcome-text">Overview <span class="text-black fw-bold">Summary</span></h2>
+      </div>
 
       <div class="tab-content tab-content-basic">
-        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
-
-          {{-- Statistics Row --}}
+        <div class="tab-pane fade show active" id="overview">
+          
+          {{-- Modern Statistics Cards --}}
           <div class="row">
-            <div class="col-sm-12">
-              <div class="statistics-details d-flex align-items-center justify-content-between">
-                <div>
-                  <p class="statistics-title">Comany</p>
-                  <h3 class="rate-percentage">3</h3>
-                  <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>-0.5%</span></p>
+            <div class="col-md-3 col-sm-6 mb-4">
+              <div class="stat-card">
+                <div class="icon-box bg-light-green">
+                  <i class="mdi mdi-office-building mdi-24px"></i>
                 </div>
-                <div>
-                  <p class="statistics-title">OJT Student</p>
-                  <h3 class="rate-percentage">3</h3>
-                  <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.1%</span></p>
+                <p class="stat-label">Companies</p>
+                <h3 class="stat-value">3</h3>
+                <p class="text-danger small mt-2 mb-0"><i class="mdi mdi-menu-down"></i> -0.5%</p>
+              </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 mb-4">
+              <div class="stat-card">
+                <div class="icon-box bg-light-blue">
+                  <i class="mdi mdi-account-group mdi-24px"></i>
                 </div>
-                <div>
-                  <p class="statistics-title">Total Sessions</p>
-                  <h3 class="rate-percentage">68.8</h3>
-                  <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>68.8</span></p>
+                <p class="stat-label">OJT Students</p>
+                <h3 class="stat-value">3</h3>
+                <p class="text-success small mt-2 mb-0"><i class="mdi mdi-menu-up"></i> +0.1%</p>
+              </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 mb-4">
+              <div class="stat-card">
+                <div class="icon-box bg-light-orange">
+                  <i class="mdi mdi-clock-outline mdi-24px"></i>
                 </div>
-                <div class="d-none d-md-block">
-                  <p class="statistics-title">Avg. Time on Site</p>
-                  <h3 class="rate-percentage">2m:35s</h3>
-                  <p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>+0.8%</span></p>
+                <p class="stat-label">Total Sessions</p>
+                <h3 class="stat-value">68.8</h3>
+                <p class="text-danger small mt-2 mb-0"><i class="mdi mdi-menu-down"></i> 68.8%</p>
+              </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 mb-4">
+              <div class="stat-card">
+                <div class="icon-box bg-light-green">
+                  <i class="mdi mdi-chart-line mdi-24px"></i>
                 </div>
-                <div class="d-none d-md-block">
-                  <p class="statistics-title">Avg. Time on Site</p>
-                  <h3 class="rate-percentage">2m:35s</h3>
-                  <p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>+0.8%</span></p>
-                </div>
+                <p class="stat-label">Avg. Time</p>
+                <h3 class="stat-value">2m:35s</h3>
+                <p class="text-success small mt-2 mb-0"><i class="mdi mdi-menu-up"></i> +0.8%</p>
               </div>
             </div>
           </div>
 
-          <div class="row gx-4">
-            {{-- Left Column --}}
-            <div class="col-lg-6 d-flex flex-row">
-
-              {{-- student Overview Chart --}}
-              <div class="row flex-grow">
-                <div class="col-11.5 gd-flex flex-column">
-                  <div class="card card-rounded">
-                    <div class="card-body">
-                      <div class="d-sm-flex justify-content-between align-items-start">
-                        <div>
-                          <h4 class="card-title card-title-dash">Student Overview</h4>
-                          <p class="card-subtitle card-subtitle-dash">Track student overall performance</p>
-                        </div>
-                        <div class="d-flex align-items-center">
-                          <h2 class="me-2 fw-bold">3</h2>
-                          <h4 class="text-success">(+1.37%)</h4>
-                        </div>
-                        <div class="me-3">
-                          <div id="marketingOverview-legend"></div>
-                        </div>
-                      </div>
-                      <div class="chartjs-bar-wrapper mt-3">
-                        <canvas id="marketingOverview"></canvas>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              
-            {{-- End Left Column --}}
-
-            {{-- Right Column --}}
+          {{-- Main Content Section (Where charts usually go) --}}
+          <div class="row mt-3">
             <div class="col-lg-12 d-flex flex-column">
-
-
-              {{-- Student Report Chart --}}
-              <div class="row flex-grow">
-                <div class="col-12 grid-margin">
-                  <div class="card card-rounded">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-lg-12">
-                          <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div>
-                              <h4 class="card-title card-title-dash">Student Report</h4>
-                            </div>
-                            <div>
-                              <div class="dropdown">
-                                <button class="btn btn-light dropdown-toggle toggle-dark btn-lg mb-0 me-0" type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Month Wise</button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton3">
-                                  <h6 class="dropdown-header">Week Wise</h6>
-                                  <a class="dropdown-item" href="#">Year Wise</a>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="mt-3">
-                            <canvas id="leaveReport"></canvas>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+               <div class="card card-rounded" style="border-radius: 15px;">
+                 <div class="card-body">
+                   <h4 class="card-title">Overall Performance</h4>
+                   <canvas id="performanceLine"></canvas>
+                 </div>
+               </div>
             </div>
-            {{-- End Right Column --}}
-
           </div>
+
         </div>
-        {{-- End Overview Tab --}}
-
       </div>
-      {{-- End tab-content --}}
-
     </div>
   </div>
 </div>
 @endsection
-
-@push('scripts')
-  <script src="{{ asset('assets/vendors/chart.js/chart.umd.js') }}"></script>
-  <script src="{{ asset('assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
-  <script src="{{ asset('assets/js/dashboard.js') }}"></script>
-@endpush

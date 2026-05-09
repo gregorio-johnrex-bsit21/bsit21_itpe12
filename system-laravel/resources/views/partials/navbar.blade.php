@@ -6,12 +6,12 @@
       </button>
     </div>
     <div>
-      <a class="navbar-brand brand-logo" href="{{ route('admin.dashboard') }}">
-        <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
-      </a>
-      <a class="navbar-brand brand-logo-mini" href="{{ route('admin.dashboard') }}">
-        <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
-      </a>
+<a class="navbar-brand brand-logo" href="{{ route('admin.dashboard') }}" style="text-decoration: none;">
+      <h3 class="fw-bold mb-0" style="color: #2E7D32;">CHMSU<span class="text-dark">Admin</span></h3>
+    </a>
+    <a class="navbar-brand brand-logo-mini" href="{{ route('admin.dashboard') }}" style="text-decoration: none;">
+      <h4 class="fw-bold mb-0" style="color: #2E7D32;">C</h4>
+    </a>
     </div>
   </div>
 

@@ -142,7 +142,7 @@
 </div>
 
 <!-- 3. Log Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 md:gap-6 items-start -mx-4 md:mx-0">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 md:gap-6 items-start -mx-4 md:mx-0 ">
     
     @forelse($logs as $log)
     <div class="flex flex-col bg-white  md:border md:border-slate-200 md:shadow-sm overflow-hidden border-b border-slate-200 last:border-b-0" data-log-card>

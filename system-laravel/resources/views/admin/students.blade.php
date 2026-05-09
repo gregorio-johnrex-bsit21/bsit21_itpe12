@@ -3,20 +3,46 @@
 @section('title', 'Student Attendance Logs')
 
 @section('content')
+<style>
+    /* Custom Green Theme & Circular Initials */
+    .text-forest { color: #2E7D32 !important; }
+    .bg-forest { background-color: #2E7D32 !important; }
+    
+    /* Search Icon Color */
+    .search-wrapper .input-group-text i {
+        color: #2E7D32 !important;
+    }
+
+    /* Badge Overrides for Regular Day */
+    .badge-opacity-success {
+        background-color: #e8f5e9 !important;
+        color: #2E7D32 !important;
+        border: 1px solid #c8e6c9;
+    }
+
+    /* Circle Logo Style */
+    .initials-circle {
+        width: 40px; 
+        height: 40px; 
+        font-size: 0.8rem;
+        border-radius: 50% !important; /* This makes it a circle */
+    }
+</style>
+
 <div class="row">
     <div class="col-sm-12">
         <div class="home-tab">
-            {{-- Modernized Header: Matches the "with-welcome-text" body class --}}
+            {{-- Modernized Header --}}
             <div class="d-sm-flex align-items-center justify-content-between border-bottom mb-3">
                 <div class="py-3">
-                    <h2 class="welcome-text text-black fw-bold">Daily Time <span class="text-black fw-bold">Records</span></h2>
+                    <h2 class="welcome-text text-black fw-bold">Daily Time <span class="text-forest fw-bold">Records</span></h2>
                 </div>
                 
                 {{-- Integrated Search Bar --}}
                 <div class="search-wrapper" style="width: 300px;">
                     <div class="input-group bg-white p-1 shadow-sm card-rounded">
                         <span class="input-group-text border-0 bg-transparent">
-                            <i class="icon-magnifier text-primary"></i>
+                            <i class="icon-magnifier"></i>
                         </span>
                         <input type="text" id="attendanceSearch" class="form-control border-0 ps-0 text-small" 
                                placeholder="Search name, date, or company..." onkeyup="filterAttendance(this)">
@@ -57,8 +83,8 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="bg-primary text-white d-flex align-items-center justify-content-center fw-bold me-3 card-rounded" 
-                                                         style="width: 40px; height: 40px; font-size: 0.8rem;">JD</div>
+                                                    {{-- Initials now use initials-circle class --}}
+                                                    <div class="bg-forest text-white d-flex align-items-center justify-content-center fw-bold me-3 initials-circle">JD</div>
                                                     <div>
                                                         <h6 class="fw-bold mb-0">John Doe</h6>
                                                         <p class="text-muted mb-0 small text-uppercase">Nexus Tech Bacolod</p>
@@ -68,11 +94,9 @@
                                             <td class="text-center">
                                                 <p class="mb-0 fw-bold">Mar 14, 2026</p>
                                             </td>
-                                            {{-- AM Logs --}}
-                                            <td class="text-center"><span class="text-success fw-bold">08:00 AM</span></td>
+                                            <td class="text-center"><span class="text-forest fw-bold">08:00 AM</span></td>
                                             <td class="text-center"><span class="text-muted">12:00 PM</span></td>
-                                            {{-- PM Logs --}}
-                                            <td class="text-center"><span class="text-success fw-bold">01:00 PM</span></td>
+                                            <td class="text-center"><span class="text-forest fw-bold">01:00 PM</span></td>
                                             <td class="text-center"><span class="text-danger fw-bold">05:00 PM</span></td>
                                             
                                             <td class="text-center">
@@ -87,8 +111,7 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="bg-warning text-white d-flex align-items-center justify-content-center fw-bold me-3 card-rounded" 
-                                                         style="width: 40px; height: 40px; font-size: 0.8rem;">JS</div>
+                                                    <div class="bg-warning text-white d-flex align-items-center justify-content-center fw-bold me-3 initials-circle">JS</div>
                                                     <div>
                                                         <h6 class="fw-bold mb-0">Jane Smith</h6>
                                                         <p class="text-muted mb-0 small text-uppercase">Global IT Hub</p>
@@ -98,10 +121,8 @@
                                             <td class="text-center">
                                                 <p class="mb-0 fw-bold">Mar 14, 2026</p>
                                             </td>
-                                            {{-- AM Logs --}}
-                                            <td class="text-center"><span class="text-success fw-bold">08:15 AM</span></td>
+                                            <td class="text-center"><span class="text-forest fw-bold">08:15 AM</span></td>
                                             <td class="text-center"><span class="text-muted">12:00 PM</span></td>
-                                            {{-- PM Logs --}}
                                             <td class="text-center text-muted">--:--</td>
                                             <td class="text-center text-muted">--:--</td>
                                             
@@ -126,9 +147,6 @@
 
 @push('scripts')
 <script>
-    /**
-     * Modern Search Functionality
-     */
     function filterAttendance(input) {
         const filter = input.value.toLowerCase();
         const rows = document.querySelectorAll('#attendanceBody tr');
