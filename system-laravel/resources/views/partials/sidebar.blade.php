@@ -3,6 +3,7 @@
 
     {{-- Dashboard --}}
     <a href="{{ route('students.dashboard') }}"
+       data-tutorial="dashboard"
        class="flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition
        {{ request()->routeIs('students.dashboard') ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600' }}">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -16,6 +17,7 @@
 
     {{-- My Tasks --}}
     <a href="{{ route('students.tasks') }}"
+       data-tutorial="tasks"
        class="flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition
        {{ request()->routeIs('students.tasks') ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600' }}">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -27,7 +29,7 @@
     </a>
 
     {{-- NEW: Floating Plus Button (Diary/Notes) --}}
-    <div class="flex flex-col items-center -mt-8"> {{-- Pulls the button upward slightly --}}
+    <div class="flex flex-col items-center -mt-8">
         <button class="diaryBtn flex items-center justify-center w-14 h-14 bg-emerald-600 text-white rounded-full shadow-lg active:scale-95 transition-transform">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -39,6 +41,7 @@
 
     {{-- My Logs --}}
     <a href="{{ route('students.logs') }}"
+       data-tutorial="logs"
        class="flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition
        {{ request()->routeIs('students.logs') ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600' }}">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -52,6 +55,7 @@
 
     {{-- Profile --}}
     <a href="{{ route('students.profile') }}"
+       data-tutorial="profile"
        class="flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition
        {{ request()->routeIs('students.profile') ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-600' }}">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">

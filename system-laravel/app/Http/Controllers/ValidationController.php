@@ -180,17 +180,20 @@ class ValidationController extends Controller
     }
 
     public function dashboard()
-    {
-        $student = session('student');
+{
+    $student = session('student');
+    if (!$student) return redirect('/landing');
 
-        if (!$student) {
-            return redirect('/landing');
-        }
+    $company = Company::where('company_id', $student->company_id)->first();
+    $profile = \App\Models\StudentProfile::where('student_id', $student->id)->first();
 
-        $company = Company::where('company_id', $student->company_id)->first();
+    session([
+        'profile_complete' => $profile?->is_complete ?? false,
+        'has_seen_tutorial' => $profile?->has_seen_tutorial ?? false,
+    ]);
 
-        return view('students.dashboard', compact('company'));
-    }
+    return view('students.dashboard', compact('company', 'profile'));
+}
 
     public function checkStatus(Request $request)
     {

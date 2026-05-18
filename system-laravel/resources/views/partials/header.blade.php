@@ -32,14 +32,14 @@
         <span id="studentUnreadBadge" class="absolute top-0 right-0 w-4 h-4 lg:w-5 lg:h-5 bg-[#D50000] border-2 border-white rounded-full text-[9px] lg:text-[12px] text-white font-bold items-center justify-center hidden"></span>
     </button>
 
-    {{-- Notifications Button (Always visible) --}}
-    <button id="notifBtn" class="p-1 lg:p-1.5 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="lg:w-6 lg:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
-        <span class="absolute top-0 right-0 w-4 h-4 lg:w-5 lg:h-5 bg-[#D50000] border-2 border-white rounded-full text-[9px] lg:text-[12px] text-white font-bold flex items-center justify-center">1</span>
-    </button>
+    {{-- Notifications Button --}}
+<button id="notifBtn" class="p-1 lg:p-1.5 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" class="lg:w-6 lg:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+    </svg>
+    <span id="notifBadge" class="absolute top-0 right-0 w-4 h-4 lg:w-5 lg:h-5 bg-[#D50000] border-2 border-white rounded-full text-[9px] lg:text-[12px] text-white font-bold flex items-center justify-center hidden">0</span>
+</button>
 
 </div>
 

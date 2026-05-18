@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SupervisorAuthController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\SupervisorDashboardController;
+use App\Http\Controllers\SupervisorController;
+use App\Http\Controllers\TaskController;
 
 
 // Supervisor Login routes
@@ -25,10 +28,17 @@ Route::prefix('supervisor')->group(function () {
     // 🔐 PROTECTED ROUTES
     Route::middleware('supervisor')->group(function () {
 
-    Route::get('/dashboard', [AttendanceController::class, 'showTodayAttendance'])->name('supervisor.dashboard');
-    Route::get('/attendance', [AttendanceController::class, 'showAttendanceLogs'])->name('supervisor.attendance'); // ← fix this
+    Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('supervisor.dashboard');
+    Route::get('/attendance', [AttendanceController::class, 'showAttendanceLogs'])->name('supervisor.attendance'); 
     Route::view('/tasks', 'supervisor.tasks')->name('supervisor.tasks');
-    Route::view('/evaluation', 'supervisor.evaluation')->name('supervisor.evaluation');
+    Route::get('/evaluation', [SupervisorController::class, 'evaluation'])->name('supervisor.evaluation');
+
+    Route::get('/tasks', [TaskController::class, 'index'])->name('supervisor.tasks');
+    Route::post('/tasks', [TaskController::class, 'store'])->name('supervisor.tasks.store');
+    Route::put('/tasks/{id}', [TaskController::class, 'update'])->name('supervisor.tasks.update');
+    Route::delete('/tasks/{id}', [TaskController::class, 'destroy'])->name('supervisor.tasks.destroy');
+    Route::post('/submissions/{id}/review', [TaskController::class, 'reviewSubmission'])->name('supervisor.submissions.review');
+    Route::get('/notifications', [TaskController::class, 'notifications'])->name('supervisor.notifications');
 
 });
 

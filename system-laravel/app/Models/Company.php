@@ -5,6 +5,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\CompanyOjtRequirement;
 
 class Company extends Model
 {
@@ -27,4 +29,14 @@ class Company extends Model
             $company->company_id = $code;
         });
     }
+
+    public function ojtRequirement(): HasOne
+{
+    return $this->hasOne(CompanyOjtRequirement::class);
+}
+
+public function supervisors()
+{
+    return $this->hasMany(Supervisor::class, 'company_id', 'company_id');
+}
 }

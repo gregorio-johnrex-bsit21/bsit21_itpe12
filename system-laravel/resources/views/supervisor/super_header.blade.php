@@ -39,36 +39,30 @@
                 </div>
 
                 {{-- Notifications --}}
-                <div class="relative">
-                    <button @click="notifOpen = !notifOpen; msgOpen = false; profileOpen = false"
-                            class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-500 relative transition-all">
-                        <i class="far fa-bell text-xl"></i>
-                        <span class="absolute top-2 right-2 w-4 h-4 bg-[#D50000] border-2 border-white rounded-full text-[10px] text-white font-bold flex items-center justify-center">3</span>
-                    </button>
+<div class="relative">
+    <button @click="notifOpen = !notifOpen; msgOpen = false; profileOpen = false"
+            class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-500 relative transition-all">
+        <i class="far fa-bell text-xl"></i>
+        <span id="notifBadge" class="absolute top-2 right-2 w-4 h-4 bg-[#D50000] border-2 border-white rounded-full text-[10px] text-white font-bold items-center justify-center hidden"></span>
+    </button>
 
-                    <div x-show="notifOpen" @click.away="notifOpen = false" x-cloak
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-2"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         class="absolute right-0 mt-3 w-80 bg-white rounded-[1.5rem] shadow-xl border border-slate-100 overflow-hidden">
-                        <div class="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-                            <span class="font-black text-slate-800 text-xs uppercase tracking-widest">Notifications</span>
-                            <span class="text-[10px] text-[#2E7D32] font-bold cursor-pointer">Mark all read</span>
-                        </div>
-                        <div class="max-h-72 overflow-y-auto custom-scrollbar">
-                            <template x-for="i in 3">
-                                <div class="p-4 hover:bg-slate-50 border-b border-slate-50 cursor-pointer transition-colors">
-                                    <p class="text-sm font-bold text-slate-800">New Log Submission</p>
-                                    <p class="text-xs text-slate-500 line-clamp-1">Marcus Wright submitted 8 hours for Feb 22.</p>
-                                    <p class="text-[10px] text-slate-400 mt-1 uppercase font-medium">2 mins ago</p>
-                                </div>
-                            </template>
-                        </div>
-                        <div class="p-3 text-center border-t border-slate-50">
-                            <button class="text-xs font-bold text-slate-400 hover:text-[#2E7D32] transition-colors">View All Notifications</button>
-                        </div>
-                    </div>
-                </div>
+    <div x-show="notifOpen" @click.away="notifOpen = false" x-cloak
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         class="absolute right-0 mt-3 w-80 bg-white rounded-[1.5rem] shadow-xl border border-slate-100 overflow-hidden">
+        <div class="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+            <span class="font-black text-slate-800 text-xs uppercase tracking-widest">Notifications</span>
+            <span class="text-[10px] text-[#2E7D32] font-bold" id="notifCount"></span>
+        </div>
+        <div class="max-h-72 overflow-y-auto custom-scrollbar" id="notifList">
+            <p class="text-center text-xs text-slate-400 p-4">Loading...</p>
+        </div>
+        <div class="p-3 text-center border-t border-slate-50">
+            <a href="{{ route('supervisor.tasks') }}" class="text-xs font-bold text-slate-400 hover:text-[#2E7D32] transition-colors">View All Tasks</a>
+        </div>
+    </div>
+</div>
 
                 {{-- Profile --}}
                 <div class="relative flex items-center pl-4 border-l border-slate-200 ml-2">

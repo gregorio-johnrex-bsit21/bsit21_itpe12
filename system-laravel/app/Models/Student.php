@@ -33,5 +33,18 @@ public function getStatusAttribute()
 public function getAvatarAttribute()
 {
     return $this->user->avatar ?? null;
-}        
+} 
+
+public function supervisor()
+{
+    return $this->hasOneThrough(
+        \App\Models\Supervisor::class,
+        \App\Models\Company::class,
+        'company_id',
+        'company_id',
+        'company_id',
+        'company_id'
+    );
+}
+
 }

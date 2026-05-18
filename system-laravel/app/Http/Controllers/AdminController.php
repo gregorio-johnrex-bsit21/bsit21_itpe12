@@ -2,37 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Company;
+use App\Models\Student;
+use App\Models\UserTbl;
+use App\Models\Attendance;
+use Illuminate\Support\Facades\DB;
 
-class DashboardController extends Controller
+class AdminController extends Controller
 {
-    public function index()
+    public function dashboard()
     {
         // Total Companies
         $totalCompanies = Company::count();
 
-        // Total OJT Students
+        // Total OJT Students (users with role = student)
         $totalStudents = UserTbl::where('role', 'student')->count();
 
-        // Total Sessions (attendance records)
+        // Total Sessions = total attendance records
         $totalSessions = Attendance::count();
 
-        // Total hours rendered
+        // Total hours rendered across all students
         $totalHours = Attendance::sum('total_hours') ?? 0;
 
-        // Avg. session time
-        $avgTimeMinutes = Attendance::where('total_hours', '>', 0)->avg('total_hours') * 60;
+        // Avg. Time per session (in minutes)
+        $avgTimeMinutes = Attendance::where('total_hours', '>', 0)
+            ->avg('total_hours') * 60; // convert hours to minutes
+
         $avgMinutes = floor($avgTimeMinutes);
         $avgSeconds = floor(($avgTimeMinutes - $avgMinutes) * 60);
         $avgTime = sprintf('%dm:%02ds', $avgMinutes, $avgSeconds);
 
-        // Task completion rate
-        $totalTasks = Task::count();
-        $completedTasks = Task::where('status', 'completed')->count();
-        $taskCompletionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
+        // Task Completion Rate (if you have Task model)
+        $totalTasks = \App\Models\Task::count();
+        $completedTasks = \App\Models\Task::where('status', 'completed')->count();
+        $taskCompletionRate = $totalTasks > 0
+            ? round(($completedTasks / $totalTasks) * 100)
+            : 0;
 
-        // Student progress
-        $studentProgress = Student::with(['user', 'company.ojtRequirement'])
+        // Recent student progress for the list/chart
+        $studentProgress = Student::with(['user', 'company'])
             ->limit(10)
             ->get()
             ->map(function ($student) {
@@ -59,12 +67,4 @@ class DashboardController extends Controller
             'studentProgress'
         ));
     }
-public function students() { return view('admin.students'); }
-public function supervisors() { return view('admin.supervisors'); }
-public function reports() { return view('admin.reports'); }
-public function forms() { return view('admin.forms'); }
-public function icons() { return view('admin.icons'); }
-public function buttons() { return view('admin.buttons'); }
-public function dropdowns() { return view('admin.dropdowns'); }
-public function typography() { return view('admin.typography'); }
 }

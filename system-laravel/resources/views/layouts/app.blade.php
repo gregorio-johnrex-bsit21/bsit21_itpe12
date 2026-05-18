@@ -205,17 +205,18 @@
 </div>
 
 {{-- Notifications Dropdown --}}
-<div id="notifModal" class="hidden fixed top-16 right-4 w-80 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 z-[999]">
-    <div class="p-4 flex gap-3">
-        <div class="h-10 w-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 flex-shrink-0">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
-        </div>
-        <div class="flex-1">
-            <p class="text-sm text-gray-800 leading-5">Your <strong>Leave Request</strong> has been approved by the supervisor.</p>
-            <p class="text-[10px] text-gray-400 mt-1 font-bold uppercase">Activity • Just now</p>
-        </div>
+<div id="notifModal" class="hidden fixed top-16 right-4 w-80 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 z-[999] overflow-hidden">
+    <div class="px-4 py-3 border-b border-gray-50 flex justify-between items-center bg-white">
+        <h3 class="text-sm font-black text-gray-800 uppercase tracking-tighter">Notifications</h3>
+        <button onclick="markAllNotifsRead()" class="text-[10px] font-semibold text-emerald-600 hover:text-emerald-700">Mark all read</button>
     </div>
-    <button onclick="closeAll()" class="w-full p-3 text-xs font-bold text-gray-500 bg-gray-50 rounded-b-2xl">Dismiss</button>
+    <div id="notifList" class="max-h-[300px] overflow-y-auto">
+        {{-- Notifications loaded here --}}
+        <div class="p-4 text-center text-xs text-gray-400">Loading...</div>
+    </div>
+    <div class="flex border-t border-gray-100 bg-gray-50/50">
+        <button onclick="closeAll()" class="flex-1 p-3 text-xs font-bold text-gray-400 hover:text-gray-600">Close</button>
+    </div>
 </div>
 
 {{-- Profile Edit Modal --}}

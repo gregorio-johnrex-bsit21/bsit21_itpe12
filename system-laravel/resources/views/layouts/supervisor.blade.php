@@ -90,6 +90,7 @@
         {{-- ================== END CHAT WINDOW =================== --}}
 
     </main>
+    
 
    {{-- ===================== CHAT JAVASCRIPT ===================== --}}
 <script>
@@ -317,6 +318,53 @@ fetch('/supervisor/chat/students')
 
     updatePreviews();
     previewInterval = setInterval(updatePreviews, 3000);
+
+function loadNotifications() {
+    fetch('/supervisor/notifications')
+        .then(r => r.json())
+        .then(data => {
+            const badge = document.getElementById('notifBadge');
+            const list  = document.getElementById('notifList');
+            const count = document.getElementById('notifCount');
+
+            // Badge
+            if (data.length > 0) {
+                badge.textContent = data.length > 9 ? '9+' : data.length;
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+                count.textContent = data.length + ' pending';
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+                count.textContent = '';
+            }
+
+            // List
+            if (data.length === 0) {
+                list.innerHTML = '<p class="text-center text-xs text-slate-400 p-6">No pending submissions.</p>';
+                return;
+            }
+
+            list.innerHTML = data.map(n => `
+                <div class="p-4 hover:bg-slate-50 border-b border-slate-50 cursor-pointer transition-colors"
+                     onclick="window.location='{{ route('supervisor.tasks') }}'">
+                    <div class="flex items-start gap-3">
+                        <img src="${n.proof_url}" class="w-10 h-10 rounded-lg object-cover border border-slate-200 flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-bold text-slate-800">${n.student_name}</p>
+                            <p class="text-xs text-slate-500 line-clamp-1">Submitted Step ${n.step_number} for "${n.task_title}"</p>
+                            <p class="text-[10px] text-slate-400 mt-1 uppercase font-medium">${n.created_at}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(() => {});
+}
+
+// Load on page load and poll every 15 seconds
+loadNotifications();
+setInterval(loadNotifications, 15000);    
 </script>
 {{-- ================== END CHAT JAVASCRIPT =================== --}}
 

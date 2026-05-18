@@ -59,9 +59,10 @@ notifBtn.addEventListener('click', (e) => {
     if (isHidden) {
         notifModal.classList.remove('hidden');
         justOpenedModal = true;
+        loadNotifications(); // ← ADD THIS
     }
 });
-
+ 
 // ── Close on outside click/tap ────────────────────────────────
 document.addEventListener('click', (e) => {
     if (justOpenedModal) {
@@ -487,29 +488,48 @@ sendMediaBtn.addEventListener('click', async () => {
     sendMediaBtn.textContent = 'Sending...';
 
     try {
-        const res = await fetch('/upload-media', { method: 'POST', body: formData });
-        const data = await res.json();
-        const url = data.url;
+        // 1. Upload media
+        const uploadRes = await fetch('/upload-media', { method: 'POST', body: formData });
+        if (!uploadRes.ok) {
+            const err = await uploadRes.text();
+            throw new Error(`Upload failed (${uploadRes.status}): ${err}`);
+        }
+        const uploadData = await uploadRes.json();
+        if (!uploadData.url) throw new Error('Server did not return a URL');
+
+        const url = uploadData.url;
         const isVideo = selectedMediaFile.type.startsWith('video/');
         const mediaMessage = isVideo ? `[video]${url}` : `[image]${url}`;
 
-        await fetch('/send-message', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-    },
-    body: JSON.stringify({
-        message: mediaMessage,
-        sender: 'Student',
-        conversation: STUDENT_CONVERSATION
-    })
-});
+        // 2. Send chat message
+        const msgRes = await fetch('/send-message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                message: mediaMessage,
+                sender: 'Student',
+                conversation: STUDENT_CONVERSATION
+            })
+        });
+
+        if (!msgRes.ok) {
+            const err = await msgRes.text();
+            throw new Error(`Message failed (${msgRes.status}): ${err}`);
+        }
+
+        const msgData = await msgRes.json();
+
+        // Optimistically render so user sees it immediately
+        renderedIds.add(msgData.id);
+        appendMessage(msgData.message, msgData.sender, msgData.id);
 
         closePreview();
     } catch (err) {
-        console.error('Full error:', err);
-        alert('Upload failed. Try again.');
+        console.error('Media send error:', err);
+        alert('Failed to send photo. Check console for details.');
     } finally {
         sendMediaBtn.disabled = false;
         sendMediaBtn.textContent = 'Send';
@@ -520,9 +540,120 @@ function closePreview() {
     mediaPreviewModal.classList.add('hidden');
     imagePreview.src = '';
     videoPreview.src = '';
+    imagePreview.classList.add('hidden');
+    videoPreview.classList.add('hidden');
     selectedMediaFile = null;
 }
 
 closeMediaPreview.addEventListener('click', closePreview);
 cancelMediaBtn.addEventListener('click', closePreview);
 mediaPreviewModal.addEventListener('click', (e) => { if (e.target === mediaPreviewModal) closePreview(); });
+
+// ── Notifications ─────────────────────────────────────────────
+const notifBadge = document.getElementById('notifBadge');
+const notifList = document.getElementById('notifList');
+
+let notifPollInterval = null;
+
+function loadNotifications() {
+    fetch('/student/notifications')
+        .then(r => r.json())
+        .then(data => {
+            const { notifications, unread_count } = data;
+
+            // Update badge
+            if (unread_count > 0) {
+                notifBadge.textContent = unread_count > 9 ? '9+' : unread_count;
+                notifBadge.classList.remove('hidden');
+            } else {
+                notifBadge.classList.add('hidden');
+            }
+
+            // Render list
+            if (notifications.length === 0) {
+                notifList.innerHTML = `<div class="p-4 text-center text-xs text-gray-400">No notifications</div>`;
+                return;
+            }
+
+            notifList.innerHTML = notifications.map(n => `
+                <div onclick="handleNotifClick(${n.id}, '${n.url}')" 
+                     class="p-4 flex gap-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 ${n.is_read ? 'opacity-60' : 'bg-emerald-50/30'}">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${getNotifIconBg(n.type)}">
+                        ${getNotifIcon(n.type)}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-gray-800">${n.title}</p>
+                        <p class="text-xs text-gray-500 truncate">${n.message}</p>
+                        <p class="text-[10px] text-gray-400 mt-1">${timeAgo(n.created_at)}</p>
+                    </div>
+                    ${!n.is_read ? `<div class="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0 mt-1"></div>` : ''}
+                </div>
+            `).join('');
+        })
+        .catch(err => console.error('Notif load error:', err));
+}
+
+function getNotifIconBg(type) {
+    const map = {
+        'task_assigned': 'bg-blue-100 text-blue-600',
+        'task_approved': 'bg-emerald-100 text-emerald-600',
+        'task_rejected': 'bg-red-100 text-red-600',
+        'submission_approved': 'bg-emerald-100 text-emerald-600',   // ← green check
+        'submission_rejected': 'bg-red-100 text-red-600',             // ← red X
+    };
+    return map[type] || 'bg-gray-100 text-gray-600';
+}
+
+function getNotifIcon(type) {
+    const icons = {
+        'task_assigned': '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>',
+        'task_approved': '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
+        'task_rejected': '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+        'submission_approved': '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',   // ← green checkmark
+        'submission_rejected': '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>', // ← red X
+    };
+    return icons[type] || '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>';
+}
+
+function timeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    
+    if (seconds < 60) return 'Just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+}
+
+function handleNotifClick(notifId, url) {
+    // Mark as read
+    fetch(`/student/notifications/${notifId}/read`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    }).then(() => {
+        loadNotifications();
+        if (url) window.location.href = url;
+    });
+}
+
+function markAllNotifsRead() {
+    fetch('/student/notifications/read-all', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    }).then(() => loadNotifications());
+}
+
+// Poll every 30 seconds
+loadNotifications();
+notifPollInterval = setInterval(loadNotifications, 30000);
+

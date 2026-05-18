@@ -14,10 +14,15 @@
     monthFilter: false, 
     missedHoursModal: false, 
     missedMonthDropdown: false,
-    selectedMonth: 'February',
+    selectedMonth: 'All',
     missedMonthFilter: 'All',
     months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 }" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+
+{{-- Pass PHP logs data to JS --}}
+<script>
+    const allLogs = @json($logs->values());
+</script>
 
 <!-- Page Title Section -->
 
@@ -117,13 +122,20 @@
                 <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
-                <span class="hidden md:block" x-text="selectedMonth"></span>
+                <span class="hidden md:block" x-text="selectedMonth === 'All' ? 'All Months' : selectedMonth"></span>
             </button>
             <div x-show="monthFilter" @click.away="monthFilter = false" x-cloak class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl z-[70] max-h-60 overflow-y-auto">
-                <template x-for="month in months" :key="month">
-                    <button @click="selectedMonth = month; monthFilter = false" class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 hover:text-emerald-700 transition" x-text="month"></button>
-                </template>
-            </div>
+    <button @click="selectedMonth = 'All'; monthFilter = false; filterLogs('All')" 
+        class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 hover:text-emerald-700 transition font-semibold">
+        All Months
+    </button>
+    <template x-for="month in months" :key="month">
+        <button @click="selectedMonth = month; monthFilter = false; filterLogs(month)" 
+            class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 hover:text-emerald-700 transition" 
+            x-text="month">
+        </button>
+    </template>
+</div>
         </div>
 
         <button @click="missedHoursModal = true" class="p-2.5 bg-white border border-slate-200 rounded-xl shadow-sm text-slate-600 hover:text-emerald-600 transition">
@@ -145,7 +157,9 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 md:gap-6 items-start -mx-4 md:mx-0 ">
     
     @forelse($logs as $log)
-    <div class="flex flex-col bg-white  md:border md:border-slate-200 md:shadow-sm overflow-hidden border-b border-slate-200 last:border-b-0" data-log-card>
+    <div class="flex flex-col bg-white md:border md:border-slate-200 md:shadow-sm overflow-hidden border-b border-slate-200 last:border-b-0" 
+    data-log-card
+    data-month="{{ \Carbon\Carbon::parse($log['date'])->format('F') }}">
         
         <p class="text-[11px] font-bold text-white uppercase tracking-widest py-2 px-4 md:px-6 bg-emerald-600 border-b border-slate-200">
             {{ $log['date'] }}
@@ -294,7 +308,7 @@
         </div>
     </div>
     @empty
-    <div class="col-span-full text-center py-12 text-slate-400">
+    <div id="no-logs-msg" class="col-span-full text-center py-12 text-slate-400">
         <svg class="w-12 h-12 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
@@ -381,13 +395,13 @@
                     class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl z-10 max-h-56 overflow-y-auto"
                 >
                     <button 
-                        @click="missedMonthFilter = 'All'; missedMonthDropdown = false" 
+                        @click="missedMonthFilter = 'All'; missedMonthDropdown = false; renderMissedModal('All')" 
                         class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 hover:text-emerald-700 transition"
                         :class="missedMonthFilter === 'All' ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-slate-700'"
                     >All Months</button>
                     <template x-for="month in months" :key="month">
                         <button 
-                            @click="missedMonthFilter = month; missedMonthDropdown = false" 
+                            @click="missedMonthFilter = month; missedMonthDropdown = false; renderMissedModal(month)" 
                             class="w-full text-left px-4 py-3 text-sm hover:bg-emerald-50 hover:text-emerald-700 transition"
                             :class="missedMonthFilter === month ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-slate-700'"
                             x-text="month"
@@ -396,75 +410,32 @@
                 </div>
             </div>
 
-            <!-- Stats -->
-            <div class="grid grid-cols-3 gap-3">
-                <div class="text-center p-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Days</p>
-                    <p class="text-xl font-bold text-slate-800">24</p>
-                </div>
-                <div class="text-center p-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Late</p>
-                    <p class="text-xl font-bold text-emerald-600">3</p>
-                </div>
-                <div class="text-center p-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Early</p>
-                    <p class="text-xl font-bold text-emerald-600">2</p>
-                </div>
-            </div>
+           <!-- Stats -->
+<div class="grid grid-cols-3 gap-3">
+    <div class="text-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Days</p>
+        <p class="text-xl font-bold text-slate-800" id="mobile-stat-days">0</p>
+    </div>
+    <div class="text-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Late</p>
+        <p class="text-xl font-bold text-rose-500" id="mobile-stat-late">0</p>
+    </div>
+    <div class="text-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Early Out</p>
+        <p class="text-xl font-bold text-orange-500" id="mobile-stat-early">0</p>
+    </div>
+</div>
 
-            <!-- List -->
-            <div class="space-y-2.5">
-                <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700">Feb 25, 2026</p>
-                            <p class="text-[10px] text-slate-400">Late + Early out</p>
-                        </div>
-                    </div>
-                    <span class="text-sm font-bold text-emerald-600">25m</span>
-                </div>
+<!-- List -->
+<div class="space-y-2.5" id="mobile-missed-list">
+    {{-- Filled by JS --}}
+</div>
 
-                <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700">Feb 20, 2026</p>
-                            <p class="text-[10px] text-slate-400">Early departure</p>
-                        </div>
-                    </div>
-                    <span class="text-sm font-bold text-emerald-600">15m</span>
-                </div>
-
-                <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700">Feb 18, 2026</p>
-                            <p class="text-[10px] text-slate-400">Late arrival</p>
-                        </div>
-                    </div>
-                    <span class="text-sm font-bold text-emerald-600">10m</span>
-                </div>
-            </div>
-
-            <!-- Total -->
-            <div class="pt-3 border-t border-slate-200 flex justify-between items-center">
-                <span class="text-xs text-slate-500 font-medium">Total missed</span>
-                <span class="text-sm font-bold text-emerald-600">50m</span>
-            </div>
+<!-- Total -->
+<div class="pt-3 border-t border-slate-200 flex justify-between items-center">
+    <span class="text-xs text-slate-500 font-medium">Total missed</span>
+    <span class="text-sm font-bold text-rose-500" id="mobile-stat-total">0m</span>
+</div>
         </div>
     </div>
 </div>
@@ -541,13 +512,13 @@
                     class="absolute left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-lg shadow-xl z-10 max-h-48 overflow-y-auto"
                 >
                     <button 
-                        @click="missedMonthFilter = 'All'; missedMonthDropdown = false" 
+                        @click="missedMonthFilter = 'All'; missedMonthDropdown = false; renderMissedModal('All')" 
                         class="w-full text-left px-3 py-2.5 text-xs hover:bg-emerald-50 hover:text-emerald-700 transition"
                         :class="missedMonthFilter === 'All' ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-slate-700'"
                     >All Months</button>
                     <template x-for="month in months" :key="month">
                         <button 
-                            @click="missedMonthFilter = month; missedMonthDropdown = false" 
+                            @click="missedMonthFilter = month; missedMonthDropdown = false; renderMissedModal(month)" 
                             class="w-full text-left px-3 py-2.5 text-xs hover:bg-emerald-50 hover:text-emerald-700 transition"
                             :class="missedMonthFilter === month ? 'bg-emerald-50 text-emerald-700 font-semibold' : 'text-slate-700'"
                             x-text="month"
@@ -557,74 +528,31 @@
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-3 gap-2.5">
-                <div class="text-center p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Days</p>
-                    <p class="text-lg font-bold text-slate-800">24</p>
-                </div>
-                <div class="text-center p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Late</p>
-                    <p class="text-lg font-bold text-emerald-600">3</p>
-                </div>
-                <div class="text-center p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Early</p>
-                    <p class="text-lg font-bold text-emerald-600">2</p>
-                </div>
-            </div>
+<div class="grid grid-cols-3 gap-2.5">
+    <div class="text-center p-3 bg-slate-50 rounded-lg border border-slate-100">
+        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Days</p>
+        <p class="text-lg font-bold text-slate-800" id="desktop-stat-days">0</p>
+    </div>
+    <div class="text-center p-3 bg-slate-50 rounded-lg border border-slate-100">
+        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Late</p>
+        <p class="text-lg font-bold text-rose-500" id="desktop-stat-late">0</p>
+    </div>
+    <div class="text-center p-3 bg-slate-50 rounded-lg border border-slate-100">
+        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Early Out</p>
+        <p class="text-lg font-bold text-orange-500" id="desktop-stat-early">0</p>
+    </div>
+</div>
 
-            <!-- List -->
-            <div class="space-y-2">
-                <div class="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:border-emerald-200 transition">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-md bg-emerald-100 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-semibold text-slate-700">Feb 25, 2026</p>
-                            <p class="text-[10px] text-slate-400">Late + Early out</p>
-                        </div>
-                    </div>
-                    <span class="text-sm font-bold text-emerald-600">25m</span>
-                </div>
+<!-- List -->
+<div class="space-y-2" id="desktop-missed-list">
+    {{-- Filled by JS --}}
+</div>
 
-                <div class="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:border-emerald-200 transition">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-md bg-slate-100 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-semibold text-slate-700">Feb 20, 2026</p>
-                            <p class="text-[10px] text-slate-400">Early departure</p>
-                        </div>
-                    </div>
-                    <span class="text-sm font-bold text-emerald-600">15m</span>
-                </div>
-
-                <div class="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:border-emerald-200 transition">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-md bg-emerald-100 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-semibold text-slate-700">Feb 18, 2026</p>
-                            <p class="text-[10px] text-slate-400">Late arrival</p>
-                        </div>
-                    </div>
-                    <span class="text-sm font-bold text-emerald-600">10m</span>
-                </div>
-            </div>
-
-            <!-- Total -->
-            <div class="pt-3 border-t border-slate-200 flex justify-between items-center">
-                <span class="text-xs text-slate-500 font-medium">Total missed</span>
-                <span class="text-base font-bold text-emerald-600">50m</span>
-            </div>
+<!-- Total -->
+<div class="pt-3 border-t border-slate-200 flex justify-between items-center">
+    <span class="text-xs text-slate-500 font-medium">Total missed</span>
+    <span class="text-base font-bold text-rose-500" id="desktop-stat-total">0m</span>
+</div>
         </div>
     </div>
 </div>
@@ -636,71 +564,179 @@
 
 
 <script>
-    document.querySelectorAll('[data-log-card]').forEach(card => {
-        const btn = card.querySelector('.toggle-details');
-        const content = card.querySelector('.details-content');
-        const icon = btn.querySelector('svg');
-        const label = btn.querySelector('span');
-        
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isOpen = btn.getAttribute('aria-expanded') === 'true';
-            
-            if (isOpen) {
-                content.classList.remove('grid-rows-[1fr]');
-                content.classList.add('grid-rows-[0fr]');
-                icon.style.transform = 'rotate(0deg)';
-                label.textContent = 'View Details';
-                btn.setAttribute('aria-expanded', 'false');
-            } else {
-                content.classList.remove('grid-rows-[0fr]');
-                content.classList.add('grid-rows-[1fr]');
-                icon.style.transform = 'rotate(180deg)';
-                label.textContent = 'Hide Details';
-                btn.setAttribute('aria-expanded', 'true');
-            }
-        });
+// ── Log card toggle ──────────────────────────────────────────
+document.querySelectorAll('[data-log-card]').forEach(card => {
+    const btn     = card.querySelector('.toggle-details');
+    const content = card.querySelector('.details-content');
+    const icon    = btn.querySelector('svg');
+    const label   = btn.querySelector('span');
+
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = btn.getAttribute('aria-expanded') === 'true';
+        if (isOpen) {
+            content.classList.remove('grid-rows-[1fr]');
+            content.classList.add('grid-rows-[0fr]');
+            icon.style.transform = 'rotate(0deg)';
+            label.textContent = 'View Details';
+            btn.setAttribute('aria-expanded', 'false');
+        } else {
+            content.classList.remove('grid-rows-[0fr]');
+            content.classList.add('grid-rows-[1fr]');
+            icon.style.transform = 'rotate(180deg)';
+            label.textContent = 'Hide Details';
+            btn.setAttribute('aria-expanded', 'true');
+        }
+    });
+});
+
+// ── Month filter ─────────────────────────────────────────────
+function filterLogs(month) {
+    const cards    = document.querySelectorAll('[data-log-card]');
+    const emptyMsg = document.getElementById('no-logs-msg');
+    let visible    = 0;
+
+    cards.forEach(card => {
+        const cardMonth = card.getAttribute('data-month');
+        const show      = month === 'All' || cardMonth === month;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
     });
 
+    if (emptyMsg) emptyMsg.style.display = visible === 0 ? '' : 'none';
 
+    // Update missed modal for the selected month too
+    renderMissedModal(month);
+}
 
-//time js
+// ── Missed hours modal ────────────────────────────────────────
+function renderMissedModal(month) {
+    const filtered = month === 'All'
+        ? allLogs
+        : allLogs.filter(log => {
+            const d = new Date(log.date);
+            return d.toLocaleString('default', { month: 'long' }) === month;
+        });
 
+    // Stats
+    let days     = filtered.length;
+    let lateCount = 0;
+    let earlyCount = 0;
+    let totalMissed = 0;
+    let listItems = [];
 
+    filtered.forEach(log => {
+        if (log.missed_minutes > 0) {
+            totalMissed += log.missed_minutes;
+
+            // Determine late/early type for label
+            let reasons = [];
+            if (log.am_in_status === 'late')   { lateCount++;  reasons.push('Late arrival'); }
+            if (log.am_out_status === 'early')  { earlyCount++; reasons.push('Early AM out'); }
+            if (log.pm_in_status === 'late')    { lateCount++;  reasons.push('Late PM in'); }
+            if (log.pm_out_status === 'early')  { earlyCount++; reasons.push('Early departure'); }
+
+            listItems.push({
+                date:    log.date,
+                reason:  reasons.join(' + ') || 'Time deduction',
+                minutes: log.missed_minutes,
+            });
+        }
+    });
+
+    // Format total
+    const totalH = Math.floor(totalMissed / 60);
+    const totalM = totalMissed % 60;
+    const totalStr = totalH > 0 ? `${totalH}h ${totalM}m` : `${totalM}m`;
+
+    // Update stats — both mobile and desktop
+    ['mobile', 'desktop'].forEach(prefix => {
+        const daysEl  = document.getElementById(`${prefix}-stat-days`);
+        const lateEl  = document.getElementById(`${prefix}-stat-late`);
+        const earlyEl = document.getElementById(`${prefix}-stat-early`);
+        const totalEl = document.getElementById(`${prefix}-stat-total`);
+        const listEl  = document.getElementById(`${prefix}-missed-list`);
+
+        if (daysEl)  daysEl.textContent  = days;
+        if (lateEl)  lateEl.textContent  = lateCount;
+        if (earlyEl) earlyEl.textContent = earlyCount;
+        if (totalEl) totalEl.textContent = totalMissed === 0 ? '0m' : totalStr;
+
+        if (listEl) {
+            if (listItems.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-6 text-slate-400">
+                        <svg class="w-8 h-8 mx-auto mb-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <p class="text-xs font-medium">No missed hours — great work!</p>
+                    </div>`;
+            } else {
+                listEl.innerHTML = listItems.map(item => `
+                    <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl hover:border-rose-200 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-700">${item.date}</p>
+                                <p class="text-[10px] text-slate-400">${item.reason}</p>
+                            </div>
+                        </div>
+                        <span class="text-sm font-bold text-rose-500">${item.minutes}m</span>
+                    </div>`
+                ).join('');
+            }
+        }
+    });
+}
+
+// Init modal with all data on page load
+renderMissedModal('All');
+
+// Re-render when missed modal opens (sync with current month filter)
+document.querySelector('[\\@click="missedHoursModal = true"]')?.addEventListener('click', () => {
+    const currentMonth = document.querySelector('[x-data]')?.__x?.$data?.selectedMonth ?? 'All';
+    renderMissedModal(currentMonth);
+});
+
+// ── Clock ────────────────────────────────────────────────────
 function updateClock() {
-    const now = new Date();
-    const hours = now.getHours();
+    const now     = new Date();
+    const hours   = now.getHours();
     const minutes = now.getMinutes();
     const seconds = now.getSeconds();
-    
-    const displayHours = (hours % 12 || 12).toString().padStart(2, '0');
+
+    const displayHours   = (hours % 12 || 12).toString().padStart(2, '0');
     const displayMinutes = minutes.toString().padStart(2, '0');
     const displaySeconds = seconds.toString().padStart(2, '0');
-    const period = hours >= 12 ? 'pm' : 'am';
-    
-    const hoursEl = document.getElementById('clockHours');
+    const period         = hours >= 12 ? 'pm' : 'am';
+
+    const hoursEl   = document.getElementById('clockHours');
     const minutesEl = document.getElementById('clockMinutes');
     const secondsEl = document.getElementById('clockSeconds');
-    const periodEl = document.getElementById('clockPeriod');
-    
-    if (hoursEl.textContent !== displayHours) hoursEl.textContent = displayHours;
-    if (minutesEl.textContent !== displayMinutes) minutesEl.textContent = displayMinutes;
-    if (secondsEl.textContent !== displaySeconds) secondsEl.textContent = displaySeconds;
-    if (periodEl.textContent !== period) periodEl.textContent = period;
-    
-    const hourDeg = (hours % 12) * 30 + minutes * 0.5;
+    const periodEl  = document.getElementById('clockPeriod');
+
+    if (hoursEl.textContent   !== displayHours)   hoursEl.textContent   = displayHours;
+    if (minutesEl.textContent !== displayMinutes)  minutesEl.textContent = displayMinutes;
+    if (secondsEl.textContent !== displaySeconds)  secondsEl.textContent = displaySeconds;
+    if (periodEl.textContent  !== period)          periodEl.textContent  = period;
+
+    const hourDeg   = (hours % 12) * 30 + minutes * 0.5;
     const minuteDeg = minutes * 6 + seconds * 0.1;
     const secondDeg = seconds * 6;
-    
-    document.getElementById('hourHand').setAttribute('transform', `rotate(${hourDeg} 50 50)`);
+
+    document.getElementById('hourHand').setAttribute('transform',   `rotate(${hourDeg} 50 50)`);
     document.getElementById('minuteHand').setAttribute('transform', `rotate(${minuteDeg} 50 50)`);
     document.getElementById('secondHand').setAttribute('transform', `rotate(${secondDeg} 50 50)`);
 }
 
 updateClock();
 setInterval(updateClock, 1000);
-
-
 </script>
+
+
 
 @endsection

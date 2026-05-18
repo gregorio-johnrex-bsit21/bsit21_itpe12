@@ -1,26 +1,46 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Models;
 
-return new class extends Migration
+use Illuminate\Database\Eloquent\Model;
+
+class StudentProfile extends Model
 {
-    public function up(): void
+    protected $table = 'student_profiles';
+
+    protected $fillable = [
+    'student_id', 'course', 'section', 'year_level',
+    'school_name', 'school_address', 'home_address',
+    'contact_number', 'emergency_contact',
+    'is_complete', 'has_seen_tutorial',
+    ];
+
+    protected $casts = [
+    'is_complete' => 'boolean',
+    'has_seen_tutorial' => 'boolean',
+    ];
+
+    public function student()
     {
-        Schema::create('student_profiles', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
-            $table->string('school');
-            $table->string('school_address');
-            $table->string('home_address');
-            $table->string('contact_number');
-            $table->timestamps();
-        });
+        return $this->belongsTo(Student::class, 'student_id');
     }
 
-    public function down(): void
+    /**
+     * All required fields must be filled for profile to be complete.
+     */
+    public function checkIsComplete(): bool
     {
-        Schema::dropIfExists('student_profiles');
+        return !empty($this->course)
+            && !empty($this->section)
+            && !empty($this->year_level)
+            && !empty($this->school_name)
+            && !empty($this->school_address)
+            && !empty($this->home_address)
+            && !empty($this->contact_number)
+            && !empty($this->emergency_contact);
     }
-};
+    public function profile()
+{
+    return $this->hasOne(StudentProfile::class, 'student_id');
+}
+}

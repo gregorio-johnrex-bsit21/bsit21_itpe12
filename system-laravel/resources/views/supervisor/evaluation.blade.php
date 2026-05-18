@@ -4,101 +4,115 @@
 @section('page_title', 'Evaluation')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6" x-data="{ evalFilter: 'all' }">
 
-    <div class="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-slate-100 pb-6">
+    {{-- Header --}}
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-6">
         <div>
             <h3 class="font-black text-2xl text-slate-800 tracking-tight">Student Performance</h3>
-            <p class="text-sm text-slate-500">Overview of OJT hour completion and earned milestones.</p>
+            <p class="text-sm text-slate-500 mt-1">Overview of OJT hour completion and earned milestones.</p>
         </div>
-        <div class="flex gap-2 bg-slate-100 p-1 rounded-xl">
-            <button @click="evalFilter = 'all'" :class="evalFilter === 'all' ? 'bg-white shadow-sm text-[#2E7D32]' : 'text-slate-500'" class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">All Students</button>
-            <button @click="evalFilter = 'behind'" :class="evalFilter === 'behind' ? 'bg-white shadow-sm text-[#D50000]' : 'text-slate-500'" class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Attention Needed</button>
+        <div class="flex gap-1 bg-slate-100 p-1 rounded-xl">
+            <button @click="evalFilter = 'all'"
+                :class="evalFilter === 'all' ? 'bg-white shadow-sm text-emerald-700' : 'text-slate-500 hover:text-slate-700'"
+                class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all">
+                All Students
+            </button>
+            <button @click="evalFilter = 'behind'"
+                :class="evalFilter === 'behind' ? 'bg-white shadow-sm text-red-600' : 'text-slate-500 hover:text-slate-700'"
+                class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all">
+                Attention Needed
+            </button>
         </div>
     </div>
 
-    <div class="flex flex-wrap gap-8 justify-start">
+    @if($studentData->isEmpty())
+        <div class="text-center py-20">
+            <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+            </div>
+            <p class="text-slate-400 text-sm font-medium">No students enrolled yet.</p>
+        </div>
+    @else
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 
-        <div x-show="evalFilter === 'all'" class="w-full md:w-[22rem] bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300">
-            <div class="p-6">
-                <div class="flex items-center gap-4 mb-6">
-                    <img src="https://ui-avatars.com/api/?name=Marcus+Wright&background=2E7D32&color=fff" class="w-14 h-14 rounded-2xl shadow-inner">
-                    <div>
-                        <h2 class="font-black text-slate-800 text-lg">Marcus Wright</h2>
-                        <span class="px-2 py-0.5 bg-green-50 text-[#2E7D32] text-[8px] font-black uppercase rounded border border-green-100">On Track</span>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-end">
-                        <p class="text-[10px] font-black text-slate-400 uppercase">600 Total Hours Required</p>
-                        <p class="text-xl font-black text-slate-800">420.0 <span class="text-[10px] text-slate-400">Hrs</span></p>
-                    </div>
-                    <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-[#2E7D32] rounded-full" style="width: 70%"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase">Missed</p>
-                            <p class="font-black text-slate-700 text-sm">0.0</p>
-                        </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase">Remaining</p>
-                            <p class="font-black text-[#2E7D32] text-sm">180.0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-6 space-y-2">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Achievement History</p>
-                    <div class="flex items-center gap-3 p-2 bg-green-50/50 rounded-xl border border-green-100/50">
-                        <i class="fas fa-award text-[#2E7D32]"></i>
-                        <span class="text-[11px] font-bold text-slate-700">Early Submission Milestone</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-2 bg-amber-50/50 rounded-xl border border-amber-100/50">
-                        <i class="fas fa-star text-[#FF8C00]"></i>
-                        <span class="text-[11px] font-bold text-slate-700">Excellent Work Badge</span>
+        @foreach($studentData as $s)
+        @php
+            $isBehind   = in_array($s['status'], ['behind', 'at_risk', 'incomplete']);
+            $color      = $isBehind ? '#D50000' : '#2E7D32';
+            $bgBadge    = $isBehind ? 'bg-red-50 text-red-600 border-red-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100';
+            $label      = $isBehind ? 'Behind Schedule' : 'On Track';
+            $barColor   = $isBehind ? 'bg-red-600' : 'bg-emerald-700';
+            $missedBg   = $s['missed'] > 0 ? 'bg-red-50 border-red-100' : 'bg-slate-50 border-slate-100';
+            $missedText = $s['missed'] > 0 ? 'text-red-600' : 'text-slate-700';
+            $missedLabel = $s['missed'] > 0 ? 'text-red-400' : 'text-slate-400';
+            $avatarBg   = $isBehind ? 'D50000' : '2E7D32';
+        @endphp
+
+        <div
+            x-show="evalFilter === 'all' || (evalFilter === 'behind' && {{ $isBehind ? 'true' : 'false' }})"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            class="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+
+            {{-- Card Header with subtle accent --}}
+            <div class="px-6 pt-6 pb-4">
+                <div class="flex items-center gap-4">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode($s['name']) }}&background={{ $avatarBg }}&color=fff"
+                         class="w-12 h-12 rounded-xl shadow-sm">
+                    <div class="min-w-0">
+                        <h2 class="font-bold text-slate-800 text-base truncate">{{ $s['name'] }}</h2>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border {{ $bgBadge }}">
+                            {{ $label }}
+                        </span>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div x-show="evalFilter === 'all' || evalFilter === 'behind'" class="w-full md:w-[22rem] bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300">
-            <div class="p-6">
-                <div class="flex items-center gap-4 mb-6">
-                    <img src="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=D50000&color=fff" class="w-14 h-14 rounded-2xl shadow-inner">
-                    <div>
-                        <h2 class="font-black text-slate-800 text-lg">Sarah Jenkins</h2>
-                        <span class="px-2 py-0.5 bg-red-50 text-[#D50000] text-[8px] font-black uppercase rounded border border-red-100">Behind Schedule</span>
+            {{-- Progress Section --}}
+            <div class="px-6 pb-6 space-y-5">
+
+                {{-- Hours Row --}}
+                <div class="flex justify-between items-baseline">
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">{{ $s['required'] }} hrs required</span>
+                    <div class="text-right">
+                        <span class="text-2xl font-black" style="color: {{ $color }};">{{ $s['accumulated'] }}</span>
+                        <span class="text-xs font-medium text-slate-400 ml-0.5">hrs</span>
                     </div>
                 </div>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-end">
-                        <p class="text-[10px] font-black text-slate-400 uppercase">600 Total Hours Required</p>
-                        <p class="text-xl font-black text-[#D50000]">120.0 <span class="text-[10px] text-slate-400">Hrs</span></p>
+
+                {{-- Progress Bar --}}
+                <div class="space-y-1.5">
+                    <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full rounded-full {{ $barColor }} transition-all duration-500" style="width: {{ $s['progress'] }}%"></div>
                     </div>
-                    <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
-                        <div class="h-full bg-[#D50000] rounded-full" style="width: 20%"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="p-3 bg-red-50 rounded-2xl border border-red-100 text-center">
-                            <p class="text-[9px] font-bold text-red-400 uppercase">Missed</p>
-                            <p class="font-black text-[#D50000] text-sm">24.0</p>
-                        </div>
-                        <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase">Remaining</p>
-                            <p class="font-black text-slate-700 text-sm">480.0</p>
-                        </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-semibold text-slate-400 uppercase">Completion</span>
+                        <span class="text-sm font-bold" style="color: {{ $color }};">{{ $s['progress'] }}%</span>
                     </div>
                 </div>
-                <div class="mt-6">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Achievement History</p>
-                    <div class="p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-center">
-                        <p class="text-[10px] font-bold text-slate-400 italic">No achievements earned yet.</p>
+
+                {{-- Stats Grid --}}
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="p-3 rounded-xl border {{ $missedBg }}">
+                        <p class="text-[10px] font-bold uppercase {{ $missedLabel }} mb-1">Missed</p>
+                        <p class="text-lg font-black {{ $missedText }}">{{ $s['missed'] }}</p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Remaining</p>
+                        <p class="text-lg font-black" style="color: {{ $color }};">{{ $s['remaining'] }}</p>
                     </div>
                 </div>
+
             </div>
         </div>
+        @endforeach
 
     </div>
+    @endif
 
 </div>
 @endsection

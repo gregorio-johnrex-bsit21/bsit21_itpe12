@@ -4,6 +4,33 @@
 
 @section('content')
 
+@if(session('success'))
+<div id="successToast" class="fixed top-4 right-4 z-[300] bg-emerald-500 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-semibold flex items-center gap-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    {{ session('success') }}
+</div>
+<script>
+    setTimeout(() => document.getElementById('successToast')?.remove(), 3000);
+</script>
+@endif
+
+@php
+    $student      = session('student');
+    $studentModel = \App\Models\Student::with([
+        'company.ojtRequirement',
+        'company.supervisors.user',
+    ])->find($student->id);
+
+    $ojt            = $studentModel?->company?->ojtRequirement;
+    $supervisorName = $studentModel?->company?->supervisors?->first()?->user?->name ?? 'Not assigned';
+    $startDate      = $ojt?->start_date
+        ? \Carbon\Carbon::parse($ojt->start_date)->format('M d, Y') : 'Not set';
+    $endDate        = $ojt?->end_date
+        ? \Carbon\Carbon::parse($ojt->end_date)->format('M d, Y') : 'Not set';
+@endphp
+
 {{-- Profile Page - Desktop & Mobile Responsive --}}
 <div class="min-h-screen bg-gray-50 pb-8 lg:pb-12">
 
@@ -48,7 +75,7 @@
                         <svg class="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                         </svg>
-                        BSIT - 4A · OJT Trainee
+                        {{ $profile?->course ?? 'N/A' }} - {{ $profile?->section ?? 'N/A' }} · OJT Trainee
                     </p>
                 </div>
 
@@ -59,6 +86,43 @@
                     </svg>
                     Edit Profile
                 </button>
+            </div>
+
+             {{-- Quick Actions Card --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-5 py-4 border-b border-gray-50">
+                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Quick Actions</h3>
+                </div>
+                <div class="p-3 space-y-1">
+                    @if($profile?->is_complete)
+    <div class="w-full flex items-center gap-3 px-4 py-3 bg-gray-50 text-gray-400 rounded-xl text-sm font-semibold cursor-not-allowed select-none">
+        <div class="p-1.5 bg-gray-100 rounded-lg">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <span class="flex-1 text-left">Complete Profile</span>
+        <span class="text-xs bg-gray-200 text-gray-400 px-2 py-0.5 rounded-full">Done ✓</span>
+    </div>
+@else
+    <button id="openProfileModal2" class="w-full group flex items-center gap-3 px-4 py-3 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-semibold hover:bg-emerald-100 transition active:scale-[0.98]">
+        <div class="p-1.5 bg-emerald-200/50 rounded-lg">
+            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        </div>
+        <span class="flex-1 text-left">Complete Profile</span>
+        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+    </button>
+@endif
+
+                    <button class="w-full group flex items-center gap-3 px-4 py-3 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 transition active:scale-[0.98]">
+                        <div class="p-1.5 bg-gray-100 rounded-lg group-hover:bg-gray-200 transition">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        </div>
+                        Change Password
+                    </button>
+                </div>
             </div>
 
             {{-- Student Details Card: ID & Class (top), Contact (middle), Emergency (bottom) --}}
@@ -74,21 +138,21 @@
                     </div>
                     <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
                         <p class="text-xs text-gray-500 font-medium">Class</p>
-                        <p class="text-sm font-semibold text-gray-900 mt-0.5">BSIT - 4A</p>
+                        <p class="text-sm font-semibold text-gray-900 mt-0.5">{{ $profile?->course ? $profile->course . ' - ' . $profile->section : 'Not set' }}</p>
                     </div>
                 </div>
                 {{-- Middle: Contact --}}
                 <div class="px-5 pt-3">
                     <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
                         <p class="text-xs text-gray-500 font-medium">Contact</p>
-                        <p class="text-sm font-semibold text-gray-900 mt-0.5">0912 345 6789</p>
+                        <p class="text-sm font-semibold text-gray-900 mt-0.5">+63 {{ $profile?->contact_number ?? 'Not set' }}</p>
                     </div>
                 </div>
                 {{-- Bottom: Emergency --}}
                 <div class="px-5 py-4">
                     <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
                         <p class="text-xs text-gray-500 font-medium">Emergency</p>
-                        <p class="text-sm font-semibold text-red-600 mt-0.5">Required</p>
+                        <p class="text-sm font-semibold mt-0.5 {{ $profile?->emergency_contact ? 'text-gray-900' : 'text-red-600' }}">+63 {{ $profile?->emergency_contact ?? 'Required' }}</p>
                     </div>
                 </div>
             </div>
@@ -117,7 +181,7 @@
                         </div>
                         <div class="flex-1">
                             <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Start Date</p>
-                            <p class="text-sm font-semibold text-gray-900 mt-1">Jan 15, 2026</p>
+                            <p class="text-sm font-semibold text-gray-900 mt-1">{{ $startDate }}</p>
                         </div>
                     </div>
                 </div>
@@ -130,7 +194,7 @@
                         </div>
                         <div class="flex-1">
                             <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">End Date</p>
-                            <p class="text-sm font-semibold text-gray-900 mt-1">Apr 30, 2026</p>
+                            <p class="text-sm font-semibold text-gray-900 mt-1">{{ $endDate }}</p>
                         </div>
                     </div>
                 </div>
@@ -143,7 +207,7 @@
                         </div>
                         <div class="flex-1">
                             <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Supervisor</p>
-                            <p class="text-sm font-semibold text-emerald-600 mt-1">Sarah Miller</p>
+                            <p class="text-sm font-semibold text-emerald-600 mt-1">{{ $supervisorName }}</p>
                         </div>
                     </div>
                 </div>
@@ -169,14 +233,14 @@
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                             <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">School</p>
                         </div>
-                        <p class="text-sm font-semibold text-gray-900">Tokyo, Japan</p>
+                        <p class="text-sm font-semibold text-gray-900">{{ $profile?->school_address ?? 'Not set' }}</p>
                     </div>
                     <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
                         <div class="flex items-center gap-2 mb-2">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                             <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Home</p>
                         </div>
-                        <p class="text-sm font-semibold text-gray-900">Hidden Leaf Village</p>
+                        <p class="text-sm font-semibold text-gray-900">{{ $profile?->home_address ?? 'Not set' }}</p>
                     </div>
                 </div>
             </div>
@@ -186,30 +250,7 @@
         {{-- RIGHT COLUMN: Quick Actions + Partner (Mobile: full width, Desktop: 4 cols) --}}
         <div class="lg:col-span-4 space-y-4">
 
-            {{-- Quick Actions Card --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-5 py-4 border-b border-gray-50">
-                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Quick Actions</h3>
-                </div>
-                <div class="p-3 space-y-1">
-                    <button id="openProfileModal2" class="w-full group flex items-center gap-3 px-4 py-3 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-semibold hover:bg-emerald-100 transition active:scale-[0.98]">
-                        <div class="p-1.5 bg-emerald-200/50 rounded-lg">
-                            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </div>
-                        <span class="flex-1 text-left">Complete Profile</span>
-                        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    </button>
-
-                    <button class="w-full group flex items-center gap-3 px-4 py-3 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 transition active:scale-[0.98]">
-                        <div class="p-1.5 bg-gray-100 rounded-lg group-hover:bg-gray-200 transition">
-                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                        </div>
-                        Change Password
-                    </button>
-                </div>
-            </div>
+           
 
             {{-- Partner University Card --}}
             <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 p-5">
@@ -223,7 +264,7 @@
                         <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wide">Partner University</p>
                     </div>
                 </div>
-                <p class="text-lg font-bold text-gray-900">Harvard University</p>
+                <p class="text-lg font-bold text-gray-900">Carlos Hilado Memorial State University</p>
                 <p class="text-xs text-gray-500 mt-1">Official OJT partner institution</p>
             </div>
 
@@ -231,15 +272,14 @@
 
     </div>
 </div>
-
 {{-- Profile Modal --}}
-{{-- Mobile: Full screen (h-screen, rounded-none) --}}
-{{-- Desktop: Centered modal (sm:max-w-lg, sm:rounded-2xl, sm:h-auto) --}}
 <div id="profileModal" class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 ease-out">
 
     <div id="profileBackdrop" class="absolute inset-0 bg-black/40 sm:backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
 
-    <div id="profileContent" class="relative bg-white w-full sm:max-w-lg h-[100dvh] sm:h-auto sm:max-h-[85vh] overflow-hidden flex flex-col shadow-2xl sm:rounded-2xl transform translate-y-full sm:translate-y-0 sm:scale-95 transition-transform duration-300 ease-out">
+    {{-- Mobile: Full screen (no max-width, no margin, full rounded-t only) --}}
+    {{-- Desktop: Centered modal with max-width --}}
+    <div id="profileContent" class="relative bg-white w-full sm:max-w-lg h-[100dvh] sm:h-auto sm:max-h-[85vh] overflow-hidden flex flex-col shadow-2xl rounded-t-2xl sm:rounded-2xl transform translate-y-full sm:translate-y-0 sm:scale-95 transition-transform duration-300 ease-out">
 
         {{-- Modal Handle (Mobile only) --}}
         <div class="flex justify-center pt-3 pb-1 sm:hidden">
@@ -259,7 +299,8 @@
 
         <!-- BODY -->
         <div class="flex-1 overflow-y-auto px-6 py-2 space-y-6">
-            <form id="profileForm" class="space-y-6">
+            <form id="profileForm" method="POST" action="{{ route('students.profile.save') }}" class="space-y-6">
+                @csrf
 
                 <!-- PROFILE PHOTO -->
                 <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
@@ -282,23 +323,27 @@
                     </h4>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">School Name</label>
-                        <input type="text" placeholder="Enter school name" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition">
+                        <input type="text" name="school_name" value="{{ old('school_name', $profile?->school_name) }}" placeholder="Enter school name"
+                            class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition">
                     </div>
                     <div class="grid grid-cols-3 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Course</label>
-                            <input type="text" placeholder="BSIT" class="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition">
+                            <input type="text" name="course" value="{{ old('course', $profile?->course) }}" placeholder="BSIT"
+                                class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Year</label>
-                            <select class="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition">
-                                <option>3rd Year</option>
-                                <option>4th Year</option>
+                            <select name="year_level"
+                                class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition appearance-none">
+                                <option value="3rd Year" {{ old('year_level', $profile?->year_level) == '3rd Year' ? 'selected' : '' }}>3rd Year</option>
+                                <option value="4th Year" {{ old('year_level', $profile?->year_level) == '4th Year' ? 'selected' : '' }}>4th Year</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Section</label>
-                            <input type="text" placeholder="4A" class="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition">
+                            <input type="text" name="section" value="{{ old('section', $profile?->section) }}" placeholder="4A"
+                                class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition">
                         </div>
                     </div>
                 </div>
@@ -311,11 +356,13 @@
                     </h4>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">School Address</label>
-                        <textarea rows="2" placeholder="Enter school address" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition resize-none"></textarea>
+                        <textarea name="school_address" rows="2" placeholder="Enter school address"
+                            class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition resize-none">{{ old('school_address', $profile?->school_address) }}</textarea>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Home Address</label>
-                        <textarea rows="2" placeholder="Enter home address" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition resize-none"></textarea>
+                        <textarea name="home_address" rows="2" placeholder="Enter home address"
+                            class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition resize-none">{{ old('home_address', $profile?->home_address) }}</textarea>
                     </div>
                 </div>
 
@@ -329,14 +376,16 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Primary Contact</label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">+63</span>
-                            <input type="tel" placeholder="912 345 6789" class="w-full pl-14 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition">
+                            <input type="tel" name="contact_number" value="{{ old('contact_number', $profile?->contact_number) }}" placeholder="9123456789"
+                                class="w-full pl-12 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition">
                         </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-red-600 mb-1.5">Emergency Contact <span class="text-red-400 font-normal">(Required)</span></label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">+63</span>
-                            <input type="tel" placeholder="912 345 6789" class="w-full pl-14 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 focus:bg-white transition">
+                            <input type="tel" name="emergency_contact" value="{{ old('emergency_contact', $profile?->emergency_contact) }}" placeholder="9123456789"
+                                class="w-full pl-12 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition">
                         </div>
                     </div>
                 </div>
@@ -349,7 +398,7 @@
             <button id="closeProfileBtn2" class="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 active:scale-95 transition">
                 Cancel
             </button>
-            <button class="flex-[2] py-3 px-4 bg-emerald-500 text-white rounded-xl text-sm font-semibold hover:bg-emerald-600 shadow-lg shadow-emerald-200 active:scale-95 transition">
+            <button type="submit" form="profileForm" class="flex-[2] py-3 px-4 bg-emerald-500 text-white rounded-xl text-sm font-semibold hover:bg-emerald-600 shadow-lg shadow-emerald-200 active:scale-95 transition">
                 Save Profile
             </button>
         </div>
@@ -419,4 +468,4 @@
 </script>
 @endpush
 
-@endsection
+@endsection 

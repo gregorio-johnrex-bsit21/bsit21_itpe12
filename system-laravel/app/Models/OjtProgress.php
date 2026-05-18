@@ -1,26 +1,23 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Models;
 
-return new class extends Migration
+use Illuminate\Database\Eloquent\Model;
+
+class OjtProgress extends Model
 {
-    public function up(): void
-    {
-        Schema::create('ojt_progress', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
-            $table->integer('required_hours')->default(486);
-            $table->integer('accumulated_hours')->default(0);
-            $table->integer('remaining_hours')->default(486);
-            $table->string('status')->default('in_progress');
-            $table->timestamps();
-        });
-    }
+    protected $table = 'ojt_progress';
 
-    public function down(): void
+    protected $fillable = [
+        'student_id',
+        'required_hours',
+        'accumulated_hours',
+        'remaining_hours',
+        'status',
+    ];
+
+    public function student()
     {
-        Schema::dropIfExists('ojt_progress');
+        return $this->belongsTo(Student::class);
     }
-};
+}

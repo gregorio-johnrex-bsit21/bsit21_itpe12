@@ -7,7 +7,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ValidationController;
 use App\Http\Controllers\AttendanceController;
-
+use App\Http\Controllers\StudentDashboardController;
 
 
 
@@ -154,4 +154,5 @@ Route::get('/attendance/today', [AttendanceController::class, 'getTodayAttendanc
 
 Route::get('/student/logs', [AttendanceController::class, 'getStudentLogs'])->name('students.logs');
 
-
+Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])
+    ->name('student.dashboard');

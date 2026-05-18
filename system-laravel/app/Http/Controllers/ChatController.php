@@ -62,11 +62,23 @@ class ChatController extends Controller
     
 
     public function uploadMedia(Request $request)
-    {
-         $request->validate(['file' => 'required|file|mimes:jpeg,png,gif,mp4,webm,ogg|max:20480']);
-         $path = $request->file('file')->store('chat-media', 'public');
-         return response()->json(['url' => Storage::url($path)]);
+{
+    $request->validate([
+        'file' => 'required|file|mimes:jpeg,png,gif,mp4,webm,ogg|max:20480'
+    ]);
+
+    try {
+        $path = $request->file('file')->store('chat-media', 'public');
+        
+        // Ensure we return an absolute URL that works from browser
+        $url = asset(Storage::url($path));
+        
+        return response()->json(['url' => $url]);
+    } catch (\Exception $e) {
+        \Log::error('Chat media upload failed: ' . $e->getMessage());
+        return response()->json(['error' => 'Upload failed: ' . $e->getMessage()], 500);
     }
+}
 
 
 
