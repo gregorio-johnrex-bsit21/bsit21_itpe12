@@ -10,11 +10,11 @@
             <div class="d-sm-flex align-items-center justify-content-between border-bottom mb-3 pb-3">
                 <h2 class="text-dark fw-bold mb-0" style="font-size: 1.5rem;">Company Management</h2>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-lg text-white mb-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#addSupervisorModal" style="background-color: #2E7D32; border-color: #2E7D32;">
-                        <i class="mdi mdi-account-plus-outline"></i> Add Supervisor
-                    </button>
                     <button class="btn btn-lg text-white mb-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#addCompanyModal" style="background-color: #2E7D32; border-color: #2E7D32;">
                         <i class="mdi mdi-plus-circle-outline"></i> Add New Company
+                    </button>
+                    <button class="btn btn-lg text-white mb-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#addSupervisorModal" style="background-color: #2E7D32; border-color: #2E7D32;">
+                        <i class="mdi mdi-account-plus-outline"></i> Add Supervisor
                     </button>
                     <button class="btn btn-lg text-white mb-0 shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#setHoursModal" style="background-color: #2E7D32; border-color: #2E7D32;">
                         <i class="mdi mdi-clock-outline"></i> OJT Requirements
@@ -165,34 +165,36 @@
                 <h4 class="card-title card-title-dash mb-4">Supervisor List</h4>
                 <div class="table-responsive">
                     <table class="table select-table" id="supervisorTable">
-                        <thead>
-                            <tr>
-                                <th>Supervisor Name</th>
-                                <th>Supervisor ID</th>
-                                <th>Company</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="supervisorTableBody">
-                            @forelse($supervisors as $supervisor)
-                            <tr data-company="{{ $supervisor->company->name ?? '' }}">
-                                <td><h6 class="fw-bold mb-0">{{ $supervisor->user->name ?? 'N/A' }}</h6></td>
-                                <td><p class="text-muted mb-0">{{ $supervisor->supervisor_id }}</p></td>
-                                <td><p class="text-muted mb-0">{{ $supervisor->company->name ?? 'N/A' }}</p></td>
-                                <td>
-                                    <button onclick="resetPassword('{{ $supervisor->supervisor_id }}')"
-                                        class="btn btn-warning btn-sm text-white">
-                                        <i class="mdi mdi-lock-reset"></i> Reset Password
-                                    </button>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">No supervisors yet.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+    <thead>
+        <tr>
+            <th>Supervisor Name</th>
+            <th>Supervisor ID</th>
+            <th>Company</th>
+            <th>Company ID</th>  
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="supervisorTableBody">
+        @forelse($supervisors as $supervisor)
+        <tr data-company="{{ $supervisor->company->name ?? '' }}">
+            <td><h6 class="fw-bold mb-0">{{ $supervisor->user->name ?? 'N/A' }}</h6></td>
+            <td><p class="text-muted mb-0">{{ $supervisor->supervisor_id }}</p></td>
+            <td><p class="text-muted mb-0">{{ $supervisor->company->name ?? 'N/A' }}</p></td>
+             <td><p class="text-muted mb-0">{{ $supervisor->company_id ?? 'N/A' }}</p></td> 
+            <td>
+                <button onclick="resetPassword('{{ $supervisor->supervisor_id }}')"
+                    class="btn btn-warning btn-sm text-white">
+                    <i class="mdi mdi-lock-reset"></i> Reset Password
+                </button>
+            </td>
+        </tr>
+        @empty
+        <tr>
+            <td colspan="5" class="text-center py-4 text-muted">No supervisors yet.</td>  <!-- update colspan to 5 -->
+        </tr>
+        @endforelse
+    </tbody>
+</table>
                 </div>
             </div>
         </div>
@@ -349,46 +351,129 @@
     });
 
     function addCompany() {
-        const name = document.getElementById('newCompanyName').value;
-        if (!name) return alert('Please enter a name');
-        fetch("{{ route('company.store') }}", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-            body: JSON.stringify({ name: name })
-        }).then(res => res.json()).then(data => {
-            if (data.success) {
-                document.getElementById('generatedId').innerText = data.company_id;
-                document.getElementById('idDisplay').style.display = 'block';
-            }
-        });
-    }
+    const name = document.getElementById('newCompanyName').value;
+    const btn = document.querySelector('#addCompanyModal .modal-footer button'); // target the Generate ID button
+    
+    if (!name) return alert('Please enter a name');
+    
+    // Disable button and show loading state
+    btn.disabled = true;
+    btn.innerText = 'Generating...';
+    btn.style.opacity = '0.6';
+    btn.style.cursor = 'not-allowed';
+
+    fetch("{{ route('company.store') }}", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ name: name })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('generatedId').innerText = data.company_id;
+            document.getElementById('idDisplay').style.display = 'block';
+            
+            // Change button to "Generated" state — permanently disabled
+            btn.innerText = 'Generated ✓';
+            btn.style.backgroundColor = '#6c757d'; // gray out
+            btn.style.borderColor = '#6c757d';
+        } else {
+            // Re-enable on error so they can retry
+            btn.disabled = false;
+            btn.innerText = 'Generate ID';
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            alert(data.message || 'Failed to create company.');
+        }
+    })
+    .catch(err => {
+        // Re-enable on network error
+        btn.disabled = false;
+        btn.innerText = 'Generate ID';
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        console.error(err);
+        alert('Something went wrong. Please try again.');
+    });
+}
 
     function addSupervisor() {
-        const name = document.getElementById('supervisorName').value;
-        const cid  = document.getElementById('supervisorCompany').value;
-        const btn  = document.getElementById('addSupBtn');
+    const name = document.getElementById('supervisorName').value;
+    const cid  = document.getElementById('supervisorCompany').value;
+    const btn  = document.getElementById('addSupBtn');
 
-        if (!name || !cid) return alert('Please fill in all fields.');
+    if (!name || !cid) return alert('Please fill in all fields.');
 
-        fetch("{{ route('supervisor.store') }}", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-            body: JSON.stringify({ name: name, company_id: cid })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById('genSupId').innerText = data.supervisor_id;
-                document.getElementById('genSupPass').innerText = data.password;
-                document.getElementById('supervisorCredentials').style.display = 'block';
-                btn.disabled = true;
-                btn.innerText = 'Added Successfully';
-            } else {
-                alert('Error adding supervisor. Please check the data.');
-            }
-        })
-        .catch(err => { console.error(err); alert('Something went wrong. Please try again.'); });
-    }
+    // Disable button and show loading state
+    btn.disabled = true;
+    btn.innerText = 'Adding...';
+    btn.style.opacity = '0.6';
+    btn.style.cursor = 'not-allowed';
+
+    fetch("{{ route('supervisor.store') }}", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ name: name, company_id: cid })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('genSupId').innerText = data.supervisor_id;
+            document.getElementById('genSupPass').innerText = data.password;
+            document.getElementById('supervisorCredentials').style.display = 'block';
+            
+            // Permanent success state
+            btn.innerText = 'Added Successfully ✓';
+            btn.style.opacity = '1';
+            btn.style.backgroundColor = '#6c757d'; // gray out
+            btn.style.borderColor = '#6c757d';
+            btn.style.cursor = 'default';
+            
+            // Also disable inputs
+            document.getElementById('supervisorName').disabled = true;
+            document.getElementById('supervisorName').style.backgroundColor = '#e9ecef';
+            document.getElementById('supervisorCompany').disabled = true;
+            document.getElementById('supervisorCompany').style.backgroundColor = '#e9ecef';
+        } else {
+            // Re-enable on error
+            btn.disabled = false;
+            btn.innerText = 'Add Supervisor';
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            alert(data.message || 'Error adding supervisor. Please check the data.');
+        }
+    })
+    .catch(err => {
+        // Re-enable on network error
+        btn.disabled = false;
+        btn.innerText = 'Add Supervisor';
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        console.error(err);
+        alert('Something went wrong. Please try again.');
+    });
+}
+
+
+document.getElementById('addSupervisorModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('supervisorName').value = '';
+    document.getElementById('supervisorName').disabled = false;
+    document.getElementById('supervisorName').style.backgroundColor = '';
+    
+    document.getElementById('supervisorCompany').value = '';
+    document.getElementById('supervisorCompany').disabled = false;
+    document.getElementById('supervisorCompany').style.backgroundColor = '';
+    
+    document.getElementById('supervisorCredentials').style.display = 'none';
+    
+    const btn = document.getElementById('addSupBtn');
+    btn.disabled = false;
+    btn.innerText = 'Add Supervisor';
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+    btn.style.backgroundColor = '#2E7D32';
+    btn.style.borderColor = '#2E7D32';
+});
 
     // Load existing OJT requirements when a company is selected
     function loadOjtRequirements(companyId) {

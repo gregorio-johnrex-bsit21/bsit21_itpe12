@@ -3,7 +3,7 @@
     <div class="flex items-center">
         {{-- Mobile-only branding (hidden on lg and above) --}}
         <div class="flex items-center gap-2 lg:hidden">
-            <img src="{{ asset('images/logo.png') }}" alt="CHMSU Logo" class="h-9 w-9 object-contain">
+            <img src="{{ asset('images/logo_2.0.png') }}" alt="CHMSU Logo" class="h-12 w-12 object-contain">
             <div class="leading-tight">
                 <p class="text-sm font-black text-gray-800 tracking-wide">CHMSU</p>
                 <p class="text-[10px] font-semibold text-emerald-600 uppercase tracking-widest">
@@ -98,14 +98,17 @@
             <!-- Divider + Help label -->
             <div class="border-t border-gray-50 pt-1">
                 <p class="px-4 pt-2 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Help</p>
-                <a href="#" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Support & FAQ
-                </a>
-                <a href="#" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    About
-                </a>
+                <!-- Support & FAQ -->
+<a href="#" onclick="openSupportPage(); return false;" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
+    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    Support & FAQ
+</a>
+
+<!-- About -->
+<a href="#" onclick="openAboutPage(); return false;" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
+    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    About
+</a>
             </div>
 
             <!-- Divider + Logout -->
@@ -123,30 +126,42 @@
     </template>
 
     <template x-if="view === 'settings'">
-        <div>
-            <div class="px-3 py-3 flex items-center border-b border-gray-50">
-                <button @click="view = 'main'" class="p-1 text-gray-400 hover:text-emerald-600 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                </button>
-                <span class="text-sm font-black text-gray-800 ml-2">Settings</span>
-            </div>
-            <div class="py-1">
-                <p class="px-4 pt-2 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Options</p>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-                    Preferences
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                    Notifications
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                    Privacy & Security
-                </a>
-            </div>
+    <div>
+        <div class="px-3 py-3 flex items-center border-b border-gray-50">
+            <button @click="view = 'main'" class="p-1 text-gray-400 hover:text-emerald-600 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <span class="text-sm font-black text-gray-800 ml-2">Settings</span>
         </div>
-    </template>
+        <div class="py-1">
+            <p class="px-4 pt-2 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Options</p>
+
+            {{-- Dark Mode Toggle --}}
+            <div class="flex items-center justify-between px-4 py-2">
+                <div class="flex items-center gap-3">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/>
+                    </svg>
+                    <span class="text-sm text-gray-600">Dark Mode</span>
+                </div>
+                <button id="darkToggleDesktop" class="dark-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode"></button>
+            </div>
+
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                Preferences
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                Notifications
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                Privacy & Security
+            </a>
+        </div>
+    </div>
+</template>
 
 </div>
 
@@ -212,14 +227,17 @@
             <p class="px-5 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Help</p>
 
             <a href="#" class="flex items-center gap-4 px-5 py-3.5 text-sm text-gray-700 font-medium hover:bg-gray-50 transition">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                Support & FAQ
-            </a>
+            <!-- Support & FAQ -->
+<a href="#" onclick="openSupportPage(); return false;" class="flex items-center gap-4 px-5 py-3.5 text-sm text-gray-700 font-medium hover:bg-gray-50 transition">
+    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    Support & FAQ
+</a>
 
-            <a href="#" class="flex items-center gap-4 px-5 py-3.5 text-sm text-gray-700 font-medium hover:bg-gray-50 transition">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                About
-            </a>
+<!-- About -->
+<a href="#" onclick="openAboutPage(); return false;" class="flex items-center gap-4 px-5 py-3.5 text-sm text-gray-700 font-medium hover:bg-gray-50 transition">
+    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    About
+</a>
 
             <div class="h-px bg-gray-100 my-1 mx-5"></div>
 
@@ -241,13 +259,15 @@
         </div>
         <div class="flex-1 overflow-y-auto py-2">
             <p class="px-5 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Options</p>
-            <a href="#" class="flex items-center justify-between px-5 py-3.5 text-sm text-gray-700 font-medium hover:bg-gray-50 transition">
-                <div class="flex items-center gap-4">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-                    Preferences
-                </div>
-                <svg class="w-3.5 h-3.5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-            </a>
+           <div class="flex items-center justify-between px-5 py-3.5">
+    <div class="flex items-center gap-4">
+        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/>
+        </svg>
+        <span class="text-sm text-gray-700 font-medium">Dark Mode</span>
+    </div>
+    <button id="darkToggleMobile" class="dark-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode"></button>
+</div>
             <a href="#" class="flex items-center justify-between px-5 py-3.5 text-sm text-gray-700 font-medium hover:bg-gray-50 transition">
                 <div class="flex items-center gap-4">
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
@@ -425,4 +445,216 @@
         });
     }
 </script>
+
+<script>
+    function toggleDarkMode() {
+        const html = document.documentElement;
+        const isDark = html.classList.contains('dark');
+        html.classList.toggle('dark', !isDark);
+        html.classList.toggle('light', isDark);
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        syncDarkToggles();
+    }
+
+    function syncDarkToggles() {
+        const isDark = document.documentElement.classList.contains('dark');
+        document.querySelectorAll('#darkToggleDesktop, #darkToggleMobile').forEach(btn => {
+            btn.classList.toggle('active', isDark);
+        });
+    }
+
+    // Sync toggle state on load
+    document.addEventListener('DOMContentLoaded', syncDarkToggles);
+
+
+
+
+    // ── Support & FAQ page ──
+function openSupportPage() {
+    document.getElementById('supportPage').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    closeMobileDrawer();
+}
+
+function closeSupportPage() {
+    document.getElementById('supportPage').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+// ── About page ──
+function openAboutPage() {
+    document.getElementById('aboutPage').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    closeMobileDrawer();
+}
+
+function closeAboutPage() {
+    document.getElementById('aboutPage').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+</script>
 </header>
+
+<!-- ═══════════════════════════════════════════════════════
+     SUPPORT & FAQ PAGE (full-screen overlay)
+     ═══════════════════════════════════════════════════════ -->
+<div id="supportPage" class="hidden fixed inset-0 z-[70] bg-white flex flex-col">
+    <!-- Header -->
+    <div class="h-16 flex items-center px-4 border-b border-gray-100 shrink-0">
+        <button onclick="closeSupportPage()" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <h1 class="ml-3 text-lg font-bold text-gray-800">Support & FAQ</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-y-auto px-5 py-6">
+        <!-- System Info -->
+        <div class="mb-8">
+            <h2 class="text-sm font-bold text-emerald-600 uppercase tracking-widest mb-3">About the System</h2>
+            <p class="text-gray-600 text-sm leading-relaxed mb-3">
+                The <strong>OJT Manager Portal</strong> is a comprehensive web-based platform designed to streamline the On-the-Job Training (OJT) process for students, supervisors, and administrators at Carlos Hilado Memorial State University (CHMSU).
+            </p>
+            <p class="text-gray-600 text-sm leading-relaxed">
+                It handles student registration, daily time logging, diary entries, document submissions, supervisor evaluations, and real-time status tracking — all in one place.
+            </p>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="mb-8">
+            <h2 class="text-sm font-bold text-emerald-600 uppercase tracking-widest mb-4">Frequently Asked Questions</h2>
+
+            <div class="space-y-3">
+                <details class="group bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden">
+                    <summary class="flex items-center justify-between px-4 py-4 cursor-pointer list-none">
+                        <span class="text-sm font-semibold text-gray-700">How do I register?</span>
+                        <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="px-4 pb-4 text-sm text-gray-500 leading-relaxed">
+                        Tap "Get Started" on the landing page to go directly to Sign Up. If you're already on the login screen, tap "Sign Up" to create your account. Fill in your Student ID, full name, Company ID, and password. Your supervisor must approve your registration before you can log in.
+                    </div>
+                </details>
+
+                <details class="group bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden">
+                    <summary class="flex items-center justify-between px-4 py-4 cursor-pointer list-none">
+                        <span class="text-sm font-semibold text-gray-700">Why is my account pending?</span>
+                        <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="px-4 pb-4 text-sm text-gray-500 leading-relaxed">
+                        New registrations require supervisor approval for security. You'll see a "Pending Approval" screen until your supervisor activates your account.
+                    </div>
+                </details>
+
+                <details class="group bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden">
+                    <summary class="flex items-center justify-between px-4 py-4 cursor-pointer list-none">
+                        <span class="text-sm font-semibold text-gray-700">How do I log my OJT hours?</span>
+                        <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="px-4 pb-4 text-sm text-gray-500 leading-relaxed">
+                        You need to go to your supervisor's desk to time in and time out. Your supervisor will log your attendance manually in the system.
+                    </div>
+                </details>
+
+                <details class="group bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden">
+                    <summary class="flex items-center justify-between px-4 py-4 cursor-pointer list-none">
+                        <span class="text-sm font-semibold text-gray-700">What if I forgot my password?</span>
+                        <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="px-4 pb-4 text-sm text-gray-500 leading-relaxed">
+                        Contact your OJT supervisor or the system administrator to reset your password. Password resets are handled manually for security reasons.
+                    </div>
+                </details>
+
+                <details class="group bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden">
+                    <summary class="flex items-center justify-between px-4 py-4 cursor-pointer list-none">
+                        <span class="text-sm font-semibold text-gray-700">Who can see my diary entries?</span>
+                        <svg class="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="px-4 pb-4 text-sm text-gray-500 leading-relaxed">
+                        Only you can view your diary entries. Your notes are private and for your personal use only.
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="bg-emerald-50 rounded-2xl p-5 border border-emerald-100">
+            <h3 class="text-sm font-bold text-emerald-700 mb-2">Still need help?</h3>
+            <p class="text-sm text-emerald-600 mb-3">Reach out to your OJT coordinator or IT support.</p>
+            <div class="flex items-center gap-2 text-sm text-emerald-700 font-medium">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                support@chmsu.edu.ph
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     ABOUT PAGE (full-screen overlay)
+     ═══════════════════════════════════════════════════════ -->
+<div id="aboutPage" class="hidden fixed inset-0 z-[70] bg-white flex flex-col">
+    <!-- Header -->
+    <div class="h-16 flex items-center px-4 border-b border-gray-100 shrink-0">
+        <button onclick="closeAboutPage()" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <h1 class="ml-3 text-lg font-bold text-gray-800">About</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-y-auto px-5 py-8 text-center">
+        <!-- Logo -->
+        <div class="w-20 h-20 rounded-2xl bg-emerald-500 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-emerald-200">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+        </div>
+
+        <h2 class="text-xl font-black text-gray-800 mb-1">OJT Manager Portal</h2>
+        <p class="text-sm text-gray-400 mb-6">Version 1.0.0</p>
+
+        <p class="text-sm text-gray-600 leading-relaxed max-w-sm mx-auto mb-6">
+            A dedicated platform for managing On-the-Job Training programs at <strong>Carlos Hilado Memorial State University</strong>. Built to simplify student tracking, documentation, and evaluation.
+        </p>
+
+        <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100 max-w-sm mx-auto text-left mb-6">
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Key Features</h3>
+           <ul class="space-y-3">
+    <li class="flex items-start gap-3 text-sm text-gray-600">
+        <svg class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        <span><strong>Smart Dashboard</strong> — Track your OJT journey at a glance: accumulated hours, remaining targets, missed logs, and real-time progress visualization.</span>
+    </li>
+    <li class="flex items-start gap-3 text-sm text-gray-600">
+        <svg class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        <span><strong>Personal Diary</strong> — Capture daily experiences, reflections, and learnings in your private notes space.</span>
+    </li>
+    <li class="flex items-start gap-3 text-sm text-gray-600">
+        <svg class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        <span><strong>Seamless Communication</strong> — Stay connected with your supervisor through rich messaging — send text, photos, and videos instantly.</span>
+    </li>
+    <li class="flex items-start gap-3 text-sm text-gray-600">
+        <svg class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        <span><strong>Intelligent Notifications</strong> — Never miss a beat. Get alerts for new task assignments, request approvals, rejections, and important updates.</span>
+    </li>
+    <li class="flex items-start gap-3 text-sm text-gray-600">
+        <svg class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        <span><strong>Attendance Logs</strong> — Access your complete daily time-in and time-out history with detailed records.</span>
+    </li>
+    <li class="flex items-start gap-3 text-sm text-gray-600">
+        <svg class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        <span><strong>Customizable Profile</strong> — Manage and update your personal information, preferences, and account settings effortlessly.</span>
+    </li>
+    <li class="flex items-start gap-3 text-sm text-gray-600">
+        <svg class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        <span><strong>Task Management</strong> — View assigned tasks, upload completion proof, and monitor your task progress from start to finish.</span>
+    </li>
+</ul>
+        </div>
+
+        <div class="text-xs text-gray-400">
+            <p>© 2026 CHMSU OJT Manager.</p>
+            <p>All rights reserved.</p>
+        </div>
+    </div>
+</div>

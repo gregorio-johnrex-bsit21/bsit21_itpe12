@@ -362,6 +362,8 @@ function loadNotifications() {
         .catch(() => {});
 }
 
+
+
 // Load on page load and poll every 15 seconds
 loadNotifications();
 setInterval(loadNotifications, 15000);    

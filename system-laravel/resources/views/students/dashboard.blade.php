@@ -4,6 +4,28 @@
 
 @section('content')
 
+<style>
+    html.dark .scard {
+        background: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+    }
+    html.dark .scard-num { color: var(--text-primary) !important; }
+    html.dark .scard-foot { border-color: var(--border-color) !important; }
+    html.dark .scard-sub { color: var(--text-tertiary) !important; }
+    html.dark .progress-card {
+        background: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+    }
+    html.dark #profileWarningModal .bg-white {
+        background-color: var(--bg-card) !important;
+    }
+    html.dark #profileWarningModal h3 { color: var(--text-primary) !important; }
+    html.dark #profileWarningModal p { color: var(--text-secondary) !important; }
+    /* Weather widget text */
+    html.dark .text-slate-800 { color: var(--text-primary) !important; }
+    html.dark .text-slate-500 { color: var(--text-tertiary) !important; }
+</style>
+
 @php
     $student      = session('student');
     $studentModel = \App\Models\Student::with([

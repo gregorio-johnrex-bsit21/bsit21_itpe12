@@ -18,9 +18,44 @@
         display: flex; align-items: center; justify-content: center;
     }
     @media print {
-        .no-print { display: none !important; }
-        .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+    .no-print { display: none !important; }
+    .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+    
+    /* Hide sidebar and header, show only content */
+    .sidebar,
+    aside,
+    nav,
+    header,
+    .navbar,
+    .topbar,
+    .app-header,
+    .main-header,
+    .page-header,
+    .breadcrumb,
+    .footer,
+    .app-footer { 
+        display: none !important; 
     }
+    
+    /* Expand content to full width */
+    .main-panel,
+    .content-wrapper,
+    .page-content,
+    main,
+    .container-fluid,
+    .content { 
+        width: 100% !important; 
+        margin: 0 !important; 
+        padding: 0 !important; 
+        max-width: 100% !important;
+    }
+    
+    /* Remove any left margin that was for sidebar */
+    body {
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+    }
+}
 </style>
 
 <div class="row">

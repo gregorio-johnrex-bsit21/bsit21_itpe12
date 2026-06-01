@@ -47,4 +47,10 @@ public function supervisor()
     );
 }
 
+public function profile()
+{
+    return $this->hasOne(StudentProfile::class, 'student_id');
+}
+
+
 }

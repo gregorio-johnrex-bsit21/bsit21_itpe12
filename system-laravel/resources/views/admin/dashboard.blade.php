@@ -32,11 +32,24 @@
 
     .stat-value { font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 0; }
     .stat-label { font-size: 0.85rem; color: #6c757d; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .chart-card {
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid #f0f0f0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+    }
   </style>
 @endpush
 
 @section('content')
-
 
 <div class="row">
   <div class="col-sm-12">
@@ -50,7 +63,6 @@
 
           {{-- Stats Cards --}}
           <div class="row">
-            {{-- Companies --}}
             <div class="col-md-3 col-sm-6 mb-4">
               <div class="stat-card">
                 <div class="icon-box bg-light-green">
@@ -64,7 +76,6 @@
               </div>
             </div>
 
-            {{-- OJT Students --}}
             <div class="col-md-3 col-sm-6 mb-4">
               <div class="stat-card">
                 <div class="icon-box bg-light-blue">
@@ -78,7 +89,6 @@
               </div>
             </div>
 
-            {{-- Total Hours --}}
             <div class="col-md-3 col-sm-6 mb-4">
               <div class="stat-card">
                 <div class="icon-box bg-light-orange">
@@ -92,7 +102,6 @@
               </div>
             </div>
 
-            {{-- Avg. Session Time --}}
             <div class="col-md-3 col-sm-6 mb-4">
               <div class="stat-card">
                 <div class="icon-box bg-light-purple">
@@ -107,8 +116,43 @@
             </div>
           </div>
 
+          {{-- Charts Row --}}
+          <div class="row mt-2 mb-4">
+            {{-- Pie Chart: Students per Company --}}
+            <div class="col-lg-5 mb-4">
+              <div class="chart-card h-100">
+                <h5 class="chart-title">
+                  <i class="mdi mdi-chart-pie text-success me-2"></i>
+                  Students by Company
+                </h5>
+                <div style="position: relative; height: 280px;">
+                  <canvas id="companyStudentChart"></canvas>
+                </div>
+                <p class="text-muted small mt-2 mb-0 text-center">
+                  Distribution of OJT students across companies
+                </p>
+              </div>
+            </div>
+
+            {{-- Line Chart: Daily Hours --}}
+            <div class="col-lg-7 mb-4">
+              <div class="chart-card h-100">
+                <h5 class="chart-title">
+                  <i class="mdi mdi-chart-line text-primary me-2"></i>
+                  Daily Hours Logged
+                </h5>
+                <div style="position: relative; height: 280px;">
+                  <canvas id="hoursLineChart"></canvas>
+                </div>
+                <p class="text-muted small mt-2 mb-0 text-center">
+                  Total hours recorded per day (last 7 days)
+                </p>
+              </div>
+            </div>
+          </div>
+
           {{-- Student Progress Table --}}
-          <div class="row mt-4">
+          <div class="row mt-2">
             <div class="col-lg-8">
               <div class="card card-rounded" style="border-radius: 15px;">
                 <div class="card-body">
@@ -153,11 +197,11 @@
               </div>
             </div>
 
-            {{-- Task Completion Rate --}}
+            {{-- Overall Task Completion --}}
             <div class="col-lg-4">
               <div class="card card-rounded" style="border-radius: 15px;">
                 <div class="card-body text-center py-5">
-                  <h4 class="card-title mb-4">Task Completion</h4>
+                  <h4 class="card-title mb-4">Overall Task Completion</h4>
                   <div class="position-relative d-inline-block">
                     <canvas id="taskChart" width="180" height="180"></canvas>
                     <div class="position-absolute top-50 start-50 translate-middle">
@@ -176,11 +220,12 @@
   </div>
 </div>
 
+@endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Simple doughnut chart for task completion
+  // 1. Doughnut chart for overall task completion
   const ctx = document.getElementById('taskChart').getContext('2d');
   new Chart(ctx, {
     type: 'doughnut',
@@ -199,7 +244,68 @@
       plugins: { legend: { display: false } }
     }
   });
+
+  // 2. Pie chart: Students per company
+  const companyCtx = document.getElementById('companyStudentChart').getContext('2d');
+  new Chart(companyCtx, {
+    type: 'pie',
+    data: {
+      labels: @json($companyStudentData->pluck('name')),
+      datasets: [{
+        data: @json($companyStudentData->pluck('count')),
+        backgroundColor: ['#2E7D32', '#007bff', '#ff9800', '#7B1FA2', '#dc3545', '#17a2b8'],
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 15 } },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const total = @json($companyStudentData->sum('count'));
+              const pct = ((context.raw / total) * 100).toFixed(1);
+              return context.label + ': ' + context.raw + ' students (' + pct + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // 3. Line chart: Daily hours trend
+  const hoursCtx = document.getElementById('hoursLineChart').getContext('2d');
+  new Chart(hoursCtx, {
+    type: 'line',
+    data: {
+      labels: @json($attendanceTrend['labels']),
+      datasets: [{
+        label: 'Hours Logged',
+        data: @json($attendanceTrend['hours']),
+        borderColor: '#2E7D32',
+        backgroundColor: 'rgba(46, 125, 50, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+        pointBackgroundColor: '#2E7D32',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+        x: { grid: { display: false } }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
 </script>
 @endpush
-
-@endsection

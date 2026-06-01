@@ -77,6 +77,7 @@
             vertical-align: middle;
             margin-right: 0.4rem;
         }
+        #user-id { text-transform: uppercase; }
     </style>
 </head>
 <body class="min-h-screen bg-white sm:flex sm:items-center sm:justify-center sm:p-6">
@@ -122,10 +123,10 @@
 
                 {{-- User ID --}}
                 <div class="input-group bg-gray-50 flex items-center rounded-2xl border border-gray-100 focus-within:border-emerald-500 transition-colors">
-                    <i class="fa fa-id-card text-gray-400 ml-4 mt-2 w-4"></i>
+                  <i class="fa fa-id-card text-gray-400 ml-4 mt-2 w-4"></i>
                     <input type="text" id="user-id" name="user_id" placeholder=" "
-                           class="floating-input bg-transparent px-3 outline-none text-sm w-full">
-                    <label id="id-label" class="floating-label">User ID</label>
+                        class="floating-input bg-transparent px-3 outline-none text-sm w-full uppercase" oninput="this.value = this.value.toUpperCase()" autocomplete="off">
+                  <label id="id-label" class="floating-label">User ID</label>
                 </div>
 
                 {{-- Company --}}
@@ -157,6 +158,8 @@
                         <i class="fa fa-eye-slash"></i>
                     </span>
                 </div>
+
+                <input type="hidden" id="approved-id" value="">
 
                 <button type="submit" id="main-btn"
                         class="w-full bg-emerald-500 text-white rounded-2xl py-4 font-bold mt-4 sm:mt-2 sm:shadow-lg sm:shadow-emerald-100 active:scale-95 flex items-center justify-center gap-2">
@@ -214,7 +217,7 @@
 
                 <button id="loginNowBtn"
                         class="hidden w-full bg-emerald-500 text-white rounded-2xl py-4 font-bold hover:bg-emerald-600 transition-all shadow-lg active:scale-95"
-                        onclick="showLoginForm()">
+                        onclick="showLoginForm(false)">
                     Login Now
                 </button>
 
@@ -222,215 +225,227 @@
         </div>
     </div>
 
-    <script>
-        // ── DOM refs ──────────────────────────────────────────────────────────
-        const mainBox      = document.getElementById('main-box');
-        const pendingWrapper = document.getElementById('pendingWrapper');
-        const formTitle    = document.getElementById('form-title');
-        const formSubtitle = document.getElementById('form-subtitle');
-        const mainBtn      = document.getElementById('main-btn');
-        const promptText   = document.getElementById('prompt-text');
-        const toggleBtn    = document.getElementById('toggle-btn');
-        const idLabel      = document.getElementById('id-label');
-        const errorMsg     = document.getElementById('error-msg');
-        const successMsg   = document.getElementById('success-msg');
+   <script>
+    // ── DOM refs ──────────────────────────────────────────────────────────
+    const mainBox        = document.getElementById('main-box');
+    const pendingWrapper = document.getElementById('pendingWrapper');
+    const formTitle      = document.getElementById('form-title');
+    const formSubtitle   = document.getElementById('form-subtitle');
+    const mainBtn        = document.getElementById('main-btn');
+    const promptText     = document.getElementById('prompt-text');
+    const toggleBtn      = document.getElementById('toggle-btn');
+    const idLabel        = document.getElementById('id-label');
+    const errorMsg       = document.getElementById('error-msg');
+    const successMsg     = document.getElementById('success-msg');
 
-        const registerFields = {
-            name:    document.getElementById('name-field'),
-            company: document.getElementById('company-field'),
-            confirm: document.getElementById('confirm-field'),
-        };
+    const registerFields = {
+        name:    document.getElementById('name-field'),
+        company: document.getElementById('company-field'),
+        confirm: document.getElementById('confirm-field'),
+    };
 
-        // ── State ─────────────────────────────────────────────────────────────
-        const urlParams = new URLSearchParams(window.location.search);
-        let isLogin = urlParams.get('mode') !== 'register';
+    // ── State ─────────────────────────────────────────────────────────────
+    const urlParams = new URLSearchParams(window.location.search);
+    let isLogin = urlParams.get('mode') !== 'register';
+    let statusPollInterval = null;
 
-        // ── Boot ──────────────────────────────────────────────────────────────
-        applyMode();
-        mainBox.classList.remove('opacity-0');
-        mainBox.classList.add('box-animate-in');
+    // ── Boot ──────────────────────────────────────────────────────────────
+    applyMode();
+    mainBox.classList.remove('opacity-0');
+    mainBox.classList.add('box-animate-in');
 
-        // ── Helpers ───────────────────────────────────────────────────────────
-        function applyMode() {
+    // ── Helpers ───────────────────────────────────────────────────────────
+    function applyMode() {
+        if (isLogin) {
+            formTitle.innerText    = 'Welcome Back';
+            formSubtitle.innerText = 'Enter your credentials to continue.';
+            mainBtn.innerText      = 'Login';
+            promptText.innerText   = "Don't have an account?";
+            toggleBtn.innerText    = 'Sign Up';
+            idLabel.innerText      = 'User ID';
+            Object.values(registerFields).forEach(f => f.classList.add('hidden'));
+        } else {
+            formTitle.innerText    = 'Create Account';
+            formSubtitle.innerText = 'Register for your student account.';
+            mainBtn.innerText      = 'Register';
+            promptText.innerText   = 'Already a member?';
+            toggleBtn.innerText    = 'Sign In';
+            idLabel.innerText      = 'Student ID';
+            Object.values(registerFields).forEach(f => f.classList.remove('hidden'));
+        }
+    }
+
+    function showError(msg) {
+        errorMsg.innerText = msg;
+        errorMsg.classList.remove('hidden');
+        successMsg.classList.add('hidden');
+    }
+
+    function showSuccess(msg) {
+        successMsg.innerText = msg;
+        successMsg.classList.remove('hidden');
+        errorMsg.classList.add('hidden');
+    }
+
+    function clearAlerts() {
+        errorMsg.classList.add('hidden');
+        successMsg.classList.add('hidden');
+    }
+
+    function setLoading(loading) {
+        if (loading) {
+            mainBtn.disabled = true;
+            mainBtn.innerHTML = '<span class="spinner"></span> Please wait…';
+        } else {
+            mainBtn.disabled = false;
+            mainBtn.innerText = isLogin ? 'Login' : 'Register';
+        }
+    }
+
+    function togglePw(inputId, icon) {
+        const input = document.getElementById(inputId);
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        icon.innerHTML = isHidden
+            ? '<i class="fa fa-eye"></i>'
+            : '<i class="fa fa-eye-slash"></i>';
+    }
+
+    // ── Toggle login ↔ register ───────────────────────────────────────────
+    toggleBtn.addEventListener('click', () => {
+        clearAlerts();
+        mainBox.classList.remove('box-animate-in');
+        mainBox.classList.add('box-animate-out');
+
+        setTimeout(() => {
+            isLogin = !isLogin;
+            applyMode();
+            mainBox.classList.remove('box-animate-out');
+            void mainBox.offsetWidth;
+            mainBox.classList.add('box-animate-in');
+        }, 350);
+    });
+
+    // ── Submit ────────────────────────────────────────────────────────────
+    async function handleSubmit(event) {
+        event.preventDefault();
+        clearAlerts();
+
+        const userId   = document.getElementById('user-id').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        if (!userId || !password) {
+            showError('Please fill in all required fields.');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
             if (isLogin) {
-                formTitle.innerText    = 'Welcome Back';
-                formSubtitle.innerText = 'Enter your credentials to continue.';
-                mainBtn.innerText      = 'Login';
-                promptText.innerText   = "Don't have an account?";
-                toggleBtn.innerText    = 'Sign Up';
-                idLabel.innerText      = 'User ID';
-                Object.values(registerFields).forEach(f => f.classList.add('hidden'));
-            } else {
-                formTitle.innerText    = 'Create Account';
-                formSubtitle.innerText = 'Register for your student account.';
-                mainBtn.innerText      = 'Register';
-                promptText.innerText   = 'Already a member?';
-                toggleBtn.innerText    = 'Sign In';
-                idLabel.innerText      = 'Student ID';
-                Object.values(registerFields).forEach(f => f.classList.remove('hidden'));
-            }
-        }
+                const res = await fetch("{{ route('login.post') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ user_id: userId, password })
+                });
 
-        function showError(msg) {
-            errorMsg.innerText = msg;
-            errorMsg.classList.remove('hidden');
-            successMsg.classList.add('hidden');
-        }
+                const data = await res.json();
 
-        function showSuccess(msg) {
-            successMsg.innerText = msg;
-            successMsg.classList.remove('hidden');
-            errorMsg.classList.add('hidden');
-        }
-
-        function clearAlerts() {
-            errorMsg.classList.add('hidden');
-            successMsg.classList.add('hidden');
-        }
-
-        function setLoading(loading) {
-            if (loading) {
-                mainBtn.disabled = true;
-                mainBtn.innerHTML = '<span class="spinner"></span> Please wait…';
-            } else {
-                mainBtn.disabled = false;
-                mainBtn.innerText = isLogin ? 'Login' : 'Register';
-            }
-        }
-
-        function togglePw(inputId, icon) {
-            const input = document.getElementById(inputId);
-            const isHidden = input.type === 'password';
-            input.type = isHidden ? 'text' : 'password';
-            icon.innerHTML = isHidden
-                ? '<i class="fa fa-eye"></i>'
-                : '<i class="fa fa-eye-slash"></i>';
-        }
-
-        // ── Toggle login ↔ register ───────────────────────────────────────────
-        toggleBtn.addEventListener('click', () => {
-            clearAlerts();
-            mainBox.classList.remove('box-animate-in');
-            mainBox.classList.add('box-animate-out');
-
-            setTimeout(() => {
-                isLogin = !isLogin;
-                applyMode();
-                mainBox.classList.remove('box-animate-out');
-                void mainBox.offsetWidth; // reflow
-                mainBox.classList.add('box-animate-in');
-            }, 350);
-        });
-
-        // ── Submit ────────────────────────────────────────────────────────────
-        async function handleSubmit(event) {
-            event.preventDefault();
-            clearAlerts();
-
-            const userId   = document.getElementById('user-id').value.trim();
-            const password = document.getElementById('password').value.trim();
-
-            if (!userId || !password) {
-                showError('Please fill in all required fields.');
-                return;
-            }
-
-            setLoading(true);
-
-            try {
-                if (isLogin) {
-                    // ── Unified login ─────────────────────────────────────────
-                    const res = await fetch("{{ route('login.post') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ user_id: userId, password })
-                    });
-
-                    const data = await res.json();
-
-                    if (data.success) {
-                        window.location.href = data.redirect;
-                    } else {
-                        showError(data.message);
-                    }
-
+                if (data.success) {
+                    window.location.href = data.redirect;
                 } else {
-                    // ── Student register ──────────────────────────────────────
-                    const name                = document.getElementById('name').value.trim();
-                    const companyId           = document.getElementById('company-id').value.trim();
-                    const passwordConfirm     = document.getElementById('password_confirmation').value.trim();
-
-                    const res = await fetch("{{ route('students.register') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            name,
-                            student_id: userId,
-                            company_id: companyId,
-                            password,
-                            password_confirmation: passwordConfirm
-                        })
-                    });
-
-                    const data = await res.json();
-
-                    if (data.success) {
-                        mainBox.classList.add('hidden');
-                        pendingWrapper.classList.remove('hidden');
-                        startPollingStatus(userId);
-                    } else {
-                        showError(data.message ?? 'Something went wrong.');
-                    }
+                    showError(data.message);
                 }
-            } catch (e) {
-                showError('Network error. Please try again.');
-            } finally {
-                setLoading(false);
-            }
-        }
 
-        // ── Pending status polling ────────────────────────────────────────────
-        let statusPollInterval = null;
+            } else {
+                const name            = document.getElementById('name').value.trim();
+                const companyId       = document.getElementById('company-id').value.trim();
+                const passwordConfirm = document.getElementById('password_confirmation').value.trim();
 
-        function startPollingStatus(studentId) {
-            statusPollInterval = setInterval(() => {
-                fetch(`/validation/status?student_id=${studentId}`)
-                    .then(r => r.json())
-                    .then(data => {
-                        // Backend uses 'Active' for approved, deletes record for rejected
-                        if (data.status === 'Active') {
-                            clearInterval(statusPollInterval);
-                            showApproved();
-                        } else if (data.status === 'rejected' || data.status === null || data.status === undefined) {
-                            clearInterval(statusPollInterval);
-                            showRejected();
-                        }
-                        // 'Inactive' = still pending, keep polling
+                const res = await fetch("{{ route('students.register') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        student_id: userId,
+                        company_id: companyId,
+                        password,
+                        password_confirmation: passwordConfirm
                     })
-                    .catch(() => {
-                        // Student record deleted = rejected
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    clearInterval(statusPollInterval);
+                    mainBox.classList.add('hidden');
+                    pendingWrapper.classList.remove('hidden');
+                    startPollingStatus(userId);
+                } else {
+                    showError(data.message ?? 'Something went wrong.');
+                }
+            }
+        } catch (e) {
+            showError('Network error. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // ── Pending status polling ────────────────────────────────────────────
+    function startPollingStatus(studentId) {
+        clearInterval(statusPollInterval);
+
+        statusPollInterval = setInterval(() => {
+            fetch(`/validation/status?student_id=${studentId}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'Active') {
+                    clearInterval(statusPollInterval);
+                    document.getElementById('approved-id').value = studentId;
+                    showApproved();
+                    } else if (data.status === 'Rejected') {
                         clearInterval(statusPollInterval);
                         showRejected();
-                    });
-            }, 5000);
-        }
+                    }
+                    // 'Inactive' = still pending, keep polling
+                })
+                .catch(() => {
+                    clearInterval(statusPollInterval);
+                    showRejected();
+                });
+        }, 5000);
+    }
 
-        function showApproved() {
-            document.getElementById('pendingIcon').classList.add('hidden');
-            document.getElementById('approvedIcon').classList.remove('hidden');
-            document.getElementById('statusTitle').innerText   = 'Request Approved!';
-            document.getElementById('statusMessage').innerText = 'Your registration has been approved. You can now login!';
-            document.getElementById('loginNowBtn').classList.remove('hidden');
-        }
+    function showApproved() {
+        document.getElementById('pendingIcon').classList.add('hidden');
+        document.getElementById('approvedIcon').classList.remove('hidden');
+        document.getElementById('statusTitle').innerText   = 'Request Approved!';
+        document.getElementById('statusMessage').innerText = 'Your registration has been approved. You can now login!';
 
-        function showRejected() {
-            document.getElementById('pendingIcon').innerHTML = `
+        const loginBtn = document.getElementById('loginNowBtn');
+        loginBtn.innerText = 'Login Now';
+        loginBtn.style.background = '';
+        loginBtn.style.boxShadow  = '';
+        loginBtn.classList.remove('hidden');
+        loginBtn.onclick = () => showLoginForm(true);
+    }
+
+    function showRejected() {
+        document.getElementById('pendingIcon').classList.add('hidden');
+        document.getElementById('approvedIcon').classList.add('hidden');
+
+        // Avoid duplicate rejected icons
+        if (!document.querySelector('.rejected-icon')) {
+            const rejectedIcon = document.createElement('div');
+            rejectedIcon.className = 'rejected-icon flex items-center justify-center mb-6';
+            rejectedIcon.innerHTML = `
                 <div class="w-24 h-24 rounded-full bg-red-50 flex items-center justify-center">
                     <svg class="w-12 h-12 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none"
                          viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -438,18 +453,66 @@
                               d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>`;
-            document.getElementById('statusTitle').innerText   = 'Request Rejected';
-            document.getElementById('statusMessage').innerText = 'Your registration has been rejected. Please contact your supervisor.';
+            document.getElementById('statusTitle').parentNode.insertBefore(
+                rejectedIcon,
+                document.getElementById('statusTitle')
+            );
         }
 
-        function showLoginForm() {
-            clearInterval(statusPollInterval);
-            pendingWrapper.classList.add('hidden');
-            mainBox.classList.remove('hidden');
-            mainBox.classList.add('box-animate-in');
-            isLogin = true;
-            applyMode();
-        }
-    </script>
+        document.getElementById('statusTitle').innerText   = 'Request Rejected';
+        document.getElementById('statusMessage').innerText = 'Your registration has been rejected. Please contact your supervisor.';
+
+        const loginBtn = document.getElementById('loginNowBtn');
+        loginBtn.innerText = 'Register Again';
+        loginBtn.classList.remove('hidden');
+        loginBtn.style.background = '#ef4444';
+        loginBtn.style.boxShadow  = '0 4px 14px rgba(239,68,68,0.3)';
+    }
+
+    function showLoginForm(fromApproval = false) {
+        clearInterval(statusPollInterval);
+
+        // Clean up rejected icon so it doesn't duplicate
+        const rejectedIcon = document.querySelector('.rejected-icon');
+        if (rejectedIcon) rejectedIcon.remove();
+
+        // Reset pending modal back to original state
+        document.getElementById('pendingIcon').classList.remove('hidden');
+        document.getElementById('approvedIcon').classList.add('hidden');
+        document.getElementById('statusTitle').innerText   = 'Pending Approval';
+        document.getElementById('statusMessage').innerText = 'Your registration is being reviewed by your supervisor. Please wait.';
+
+        const loginBtn = document.getElementById('loginNowBtn');
+        loginBtn.classList.add('hidden');
+        loginBtn.style.background = '';
+        loginBtn.style.boxShadow  = '';
+
+        pendingWrapper.classList.add('hidden');
+        mainBox.classList.remove('hidden');
+        mainBox.classList.add('box-animate-in');
+
+        // Clear all fields
+        document.getElementById('name').value                  = '';
+        document.getElementById('user-id').value               = '';
+        document.getElementById('company-id').value            = '';
+        document.getElementById('password').value              = '';
+        document.getElementById('password_confirmation').value = '';
+        clearAlerts();
+
+        // Always go to register after rejection
+    if (fromApproval) {
+    isLogin = true;
+    applyMode();
+    const approvedId = document.getElementById('approved-id').value;
+    if (approvedId) {
+        document.getElementById('user-id').value = approvedId;
+        setTimeout(() => document.getElementById('password').focus(), 400);
+    }
+    } else {
+    isLogin = false;
+    applyMode();
+    }
+           }
+</script>
 </body>
 </html>

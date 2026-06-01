@@ -156,3 +156,5 @@ Route::get('/student/logs', [AttendanceController::class, 'getStudentLogs'])->na
 
 Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])
     ->name('student.dashboard');
+
+Route::post('/supervisor/notifications/{notification}/read', [NotificationController::class, 'markSupervisorRead']);

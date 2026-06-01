@@ -1,4 +1,27 @@
 {{-- MOBILE BOTTOM BAR (lg:hidden) --}}
+<style>
+    /* Sidebar dark mode */
+    html.dark aside {
+        background-color: var(--sidebar-bg) !important;
+        border-color: var(--border-color) !important;
+    }
+    html.dark aside a.text-gray-500 { color: var(--text-tertiary) !important; }
+    html.dark aside a:hover { background-color: var(--bg-secondary) !important; }
+    html.dark aside .bg-slate-900,
+    html.dark aside [class*="bg-slate-9"] { background-color: #0f172a !important; }
+
+    /* Bottom nav dark mode */
+    html.dark nav.fixed.bottom-0 {
+        background-color: var(--header-bg) !important;
+        border-color: var(--border-color) !important;
+    }
+    html.dark nav.fixed.bottom-0 a { color: var(--text-tertiary) !important; }
+    html.dark nav.fixed.bottom-0 a.text-emerald-600 { color: #10b981 !important; }
+
+    /* Company card at bottom of sidebar */
+    html.dark aside .bg-gradient-to-br { background: var(--bg-secondary) !important; }
+</style>
+
 <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-gray-200 flex items-center justify-around px-2 py-2 lg:hidden">
 
     {{-- Dashboard --}}

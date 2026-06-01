@@ -4,6 +4,61 @@
 
 @section('content')
 
+<style>
+    html.dark .min-h-screen { background-color: var(--bg-tertiary) !important; }
+
+    /* All white cards */
+    html.dark .bg-white.rounded-3xl,
+    html.dark .bg-white.rounded-2xl {
+        background-color: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+    }
+
+    /* Stat tiles inside cards */
+    html.dark .bg-gray-50.rounded-xl { background-color: var(--bg-secondary) !important; border-color: var(--border-color) !important; }
+    html.dark .bg-emerald-50.rounded-lg { background-color: rgba(6, 78, 59, 0.25) !important; }
+
+    /* Partner university card */
+    html.dark .bg-gradient-to-br.from-emerald-50 {
+        background: var(--bg-secondary) !important;
+        border-color: var(--border-color) !important;
+    }
+
+    /* Profile edit modal */
+    html.dark #profileContent {
+        background-color: var(--bg-card) !important;
+    }
+    html.dark #profileContent input,
+    html.dark #profileContent textarea,
+    html.dark #profileContent select {
+        background-color: var(--bg-input) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-primary) !important;
+    }
+    html.dark #profileContent .bg-gray-50.rounded-2xl {
+        background-color: var(--bg-secondary) !important;
+        border-color: var(--border-color) !important;
+    }
+    html.dark #profileContent .border-b.border-gray-100 { border-color: var(--border-color) !important; }
+    html.dark #profileContent .border-t.border-gray-100 { border-color: var(--border-color) !important; }
+    html.dark #profileContent .bg-gray-100.hover\:bg-gray-200 { background-color: var(--bg-secondary) !important; }
+
+    /* Quick actions card */
+    html.dark .bg-gray-50.text-gray-400.cursor-not-allowed { background-color: var(--bg-secondary) !important; }
+    html.dark .bg-emerald-50.text-emerald-700 { background-color: rgba(6, 78, 59, 0.25) !important; }
+
+    /* Active training card icons */
+    html.dark .bg-emerald-50.rounded-lg.flex-shrink-0 { background-color: rgba(6, 78, 59, 0.25) !important; }
+
+    /* Addresses card */
+    html.dark .bg-blue-50.rounded-lg { background-color: rgba(7, 68, 124, 0.2) !important; }
+
+    /* Toast */
+    html.dark #successToast { background-color: #065f46 !important; }
+
+    
+</style>
+
 @if(session('success'))
 <div id="successToast" class="fixed top-4 right-4 z-[300] bg-emerald-500 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-semibold flex items-center gap-2">
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
@@ -32,7 +87,7 @@
 @endphp
 
 {{-- Profile Page - Desktop & Mobile Responsive --}}
-<div class="min-h-screen bg-gray-50 pb-8 lg:pb-12">
+
 
     {{-- Simple Header --}}
     <div class="max-w-lg lg:max-w-6xl mx-auto px-0 lg:px-8 pt-6 pb-2">
@@ -48,7 +103,7 @@
             {{-- Profile Card --}}
             <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 text-center relative overflow-hidden lg:text-left lg:flex lg:items-center lg:gap-6 lg:p-8">
                 {{-- Subtle emerald gradient decoration --}}
-                <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-emerald-50/50 to-transparent pointer-events-none lg:hidden"></div>
+                <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-emerald-50/50 to-transparent pointer-events-none lg:hidden dark:hidden"></div>
 
                 {{-- Avatar --}}
                 <div class="relative inline-block mb-4 lg:mb-0 lg:flex-shrink-0">
@@ -157,61 +212,94 @@
                 </div>
             </div>
 
-            {{-- Active Training Summary Card: 3 Layers --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-5 py-4 border-b border-gray-50">
-                    <div class="flex items-center gap-2">
-                        <div class="p-1.5 bg-emerald-50 rounded-lg">
-                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-bold text-gray-900">Active Training Summary</h3>
-                            <p class="text-xs text-gray-500">Current OJT period details</p>
-                        </div>
-                    </div>
-                </div>
+            {{-- Active Training Summary Card --}}
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="px-5 py-4 border-b border-gray-50">
+        <div class="flex items-center gap-2">
+            <div class="p-1.5 bg-emerald-50 rounded-lg">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-gray-900">Active Training Summary</h3>
+                <p class="text-xs text-gray-500">Current OJT period details</p>
+            </div>
+        </div>
+    </div>
 
-                {{-- Layer 1: Start Date (Top) --}}
-                <div class="px-5 py-4 border-b border-gray-50">
-                    <div class="flex items-start gap-3">
-                        <div class="p-2 bg-emerald-50 rounded-lg flex-shrink-0">
-                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Start Date</p>
-                            <p class="text-sm font-semibold text-gray-900 mt-1">{{ $startDate }}</p>
-                        </div>
-                    </div>
-                </div>
+    {{-- Slate Box: All schedule info in one clean container --}}
+    <div class="px-5 py-4">
+        <div class="bg-slate-50 rounded-2xl border border-slate-100 p-4 space-y-3">
 
-                {{-- Layer 2: End Date (Middle) --}}
-                <div class="px-5 py-4 border-b border-gray-50">
-                    <div class="flex items-start gap-3">
-                        <div class="p-2 bg-emerald-50 rounded-lg flex-shrink-0">
-                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">End Date</p>
-                            <p class="text-sm font-semibold text-gray-900 mt-1">{{ $endDate }}</p>
-                        </div>
-                    </div>
+            {{-- Row 1: Start & End Date --}}
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Start Date</p>
+                    <p class="text-sm font-bold text-slate-700">{{ $startDate }}</p>
                 </div>
-
-                {{-- Layer 3: Supervisor (Bottom) --}}
-                <div class="px-5 py-4">
-                    <div class="flex items-start gap-3">
-                        <div class="p-2 bg-emerald-50 rounded-lg flex-shrink-0">
-                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Supervisor</p>
-                            <p class="text-sm font-semibold text-emerald-600 mt-1">{{ $supervisorName }}</p>
-                        </div>
-                    </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">End Date</p>
+                    <p class="text-sm font-bold text-slate-700">{{ $endDate }}</p>
                 </div>
             </div>
+
+            {{-- Divider --}}
+            <div class="h-px bg-slate-200"></div>
+
+            {{-- Row 2: AM Schedule --}}
+            <div class="flex items-center gap-3">
+                <div class="p-1.5 bg-amber-50 rounded-lg">
+                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">AM Schedule</p>
+                    <p class="text-sm font-bold text-slate-700">
+                        {{ $ojt?->am_start_time ? \Carbon\Carbon::parse($ojt->am_start_time)->format('h:i A') : '--:--' }}
+                        <span class="text-slate-300 mx-1">→</span>
+                        {{ $ojt?->am_end_time ? \Carbon\Carbon::parse($ojt->am_end_time)->format('h:i A') : '--:--' }}
+                    </p>
+                </div>
+            </div>
+
+            {{-- Row 3: PM Schedule --}}
+            <div class="flex items-center gap-3">
+                <div class="p-1.5 bg-indigo-50 rounded-lg">
+                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">PM Schedule</p>
+                    <p class="text-sm font-bold text-slate-700">
+                        {{ $ojt?->pm_start_time ? \Carbon\Carbon::parse($ojt->pm_start_time)->format('h:i A') : '--:--' }}
+                        <span class="text-slate-300 mx-1">→</span>
+                        {{ $ojt?->pm_end_time ? \Carbon\Carbon::parse($ojt->pm_end_time)->format('h:i A') : '--:--' }}
+                    </p>
+                </div>
+            </div>
+
+            {{-- Divider --}}
+            <div class="h-px bg-slate-200"></div>
+
+            {{-- Row 4: Supervisor --}}
+            <div class="flex items-center gap-3">
+                <div class="p-1.5 bg-emerald-50 rounded-lg">
+                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Supervisor</p>
+                    <p class="text-sm font-bold text-emerald-600">{{ $supervisorName }}</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
             {{-- Addresses Card --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -398,13 +486,13 @@
             <button id="closeProfileBtn2" class="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 active:scale-95 transition">
                 Cancel
             </button>
-            <button type="submit" form="profileForm" class="flex-[2] py-3 px-4 bg-emerald-500 text-white rounded-xl text-sm font-semibold hover:bg-emerald-600 shadow-lg shadow-emerald-200 active:scale-95 transition">
+            <button type="submit" form="profileForm" class="flex-[2] py-3 px-4 bg-emerald-500 text-white rounded-xl text-sm font-semibold hover:bg-emerald-600  active:scale-95 transition">
                 Save Profile
             </button>
         </div>
 
     </div>
-</div>
+
 
 @push('scripts')
 <script>

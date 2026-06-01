@@ -6,6 +6,35 @@
 @section('content')
 
 <style>
+    html.dark [data-log-card] {
+        background-color: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+    }
+    html.dark [data-log-card] p.text-white { color: #ffffff !important; }
+    html.dark .bg-slate-50\/80 { background-color: var(--bg-secondary) !important; }
+    html.dark .bg-slate-50 { background-color: var(--bg-secondary) !important; }
+    html.dark .border-slate-200 { border-color: var(--border-color) !important; }
+    html.dark .text-slate-700, html.dark .text-slate-800 { color: var(--text-secondary) !important; }
+    html.dark .text-slate-400, html.dark .text-slate-500 { color: var(--text-muted) !important; }
+
+    /* Clock widget */
+    html.dark .bg-white.border-slate-200\/60 {
+        background-color: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+    }
+    html.dark .bg-slate-50.rounded-xl { background-color: var(--bg-secondary) !important; }
+    html.dark .bg-emerald-50 { background-color: rgba(6, 78, 59, 0.3) !important; }
+
+    /* Missed hours modals */
+    html.dark .bg-white.rounded-2xl,
+    html.dark .bg-white.rounded-t-3xl {
+        background-color: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+    }
+    html.dark .bg-slate-50.rounded-xl.border { background-color: var(--bg-secondary) !important; border-color: var(--border-color) !important; }
+</style>
+
+<style>
     :root {
         --color-brand: #059669;
         --color-brand-light: #ecfdf5;

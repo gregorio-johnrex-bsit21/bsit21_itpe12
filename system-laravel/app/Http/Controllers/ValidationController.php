@@ -19,70 +19,85 @@ class ValidationController extends Controller
     }
 
     public function register(Request $request)
-    {
-        // Check if student_id exists and is approved (Active)
-        $existingStudent = Student::where('student_id', $request->student_id)
-            ->whereHas('user', function ($q) {
-                $q->where('status', 'Active');
-            })
-            ->first();
+{
+    // Check if student_id exists and is approved (Active)
+    $existingStudent = Student::where('student_id', $request->student_id)
+        ->whereHas('user', function ($q) {
+            $q->where('status', 'Active');
+        })
+        ->first();
 
-        if ($existingStudent) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This Student ID is already registered and approved.'
-            ]);
-        }
-
-        // Delete old rejected/pending records (Inactive) so they can re-register
-        $oldStudents = Student::where('student_id', $request->student_id)
-            ->whereHas('user', function ($q) {
-                $q->where('status', 'Inactive');
-            })
-            ->with('user')
-            ->get();
-
-        foreach ($oldStudents as $old) {
-            if ($old->user) {
-                $old->user->delete();
-            }
-            $old->delete();
-        }
-
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'student_id' => 'required|string|unique:students,student_id',
-            'company_id' => 'required|string|exists:company_tbl,company_id',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors()->first()
-            ]);
-        }
-
-        DB::transaction(function () use ($request) {
-            $user = UserTbl::create([
-                'name' => $request->name,
-                'password' => Hash::make($request->password),
-                'role' => 'student',
-                'status' => 'Inactive',
-            ]);
-
-            Student::create([
-                'user_id' => $user->id,
-                'student_id' => $request->student_id,
-                'company_id' => $request->company_id,
-            ]);
-        });
-
+    if ($existingStudent) {
         return response()->json([
-            'success' => true,
-            'message' => 'Registration submitted! Please wait for supervisor approval.'
+            'success' => false,
+            'message' => 'This Student ID is already registered and approved.'
         ]);
     }
+
+    // Check if student_id is rejected
+    $rejectedStudent = Student::where('student_id', $request->student_id)
+    ->where('company_id', $request->company_id)
+    ->whereHas('user', function ($q) {
+        $q->where('status', 'Rejected');
+    })
+    ->first();
+
+if ($rejectedStudent) {
+    return response()->json([
+        'success' => false,
+        'message' => 'This Student ID has been rejected by this company. Please try a different company.'
+    ]);
+}
+
+    // Delete old pending records (Inactive) so they can re-register
+    $oldStudents = Student::where('student_id', $request->student_id)
+        ->whereHas('user', function ($q) {
+            $q->where('status', 'Inactive');
+        })
+        ->with('user')
+        ->get();
+
+    foreach ($oldStudents as $old) {
+        if ($old->user) {
+            $old->user->delete();
+        }
+        $old->delete();
+    }
+
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'student_id' => 'required|string|unique:students,student_id',
+        'company_id' => 'required|string|exists:company_tbl,company_id',
+        'password' => 'required|string|min:6|confirmed',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => $validator->errors()->first()
+        ]);
+    }
+
+    DB::transaction(function () use ($request) {
+        $user = UserTbl::create([
+            'name' => $request->name,
+            'password' => Hash::make($request->password),
+            'role' => 'student',
+            'status' => 'Inactive',
+        ]);
+
+        Student::create([
+            'user_id' => $user->id,
+            'student_id' => $request->student_id,
+            'company_id' => $request->company_id,
+        ]);
+    });
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Registration submitted! Please wait for supervisor approval.'
+    ]);
+}
 
     public function login(Request $request)
     {
@@ -112,11 +127,18 @@ class ValidationController extends Controller
         }
 
         if ($user->status === 'Inactive') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Your account is still pending approval.'
-            ]);
-        }
+    return response()->json([
+        'success' => false,
+        'message' => 'Your account is still pending approval.'
+    ]);
+}
+
+if ($user->status === 'Rejected') {
+    return response()->json([
+        'success' => false,
+        'message' => 'Your account has been rejected. Please contact your supervisor.'
+    ]);
+}
 
         session(['student' => $student]);
 

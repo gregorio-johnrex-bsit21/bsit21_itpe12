@@ -61,14 +61,14 @@ class SupervisorAuthController extends Controller
             ->whereHas('user', function ($q) {
                 $q->where('status', 'Inactive');
             })
-            ->with('user')
+            ->with('user', 'profile')
             ->get();
 
         $active = Student::where('company_id', $supervisor->company_id)
             ->whereHas('user', function ($q) {
                 $q->where('status', 'Active');
             })
-            ->with('user')
+            ->with('user', 'profile', 'company.ojtRequirement')
             ->get();
 
         return view('supervisor.students', compact('pending', 'active'));
@@ -90,21 +90,19 @@ class SupervisorAuthController extends Controller
     }
 
     public function rejectStudent(Request $request)
-    {
-        $student = Student::where('student_id', $request->student_id)
-            ->with('user')
-            ->first();
+{
+    $student = Student::where('student_id', $request->student_id)
+        ->with('user')
+        ->first();
 
-        if (!$student || !$student->user) {
-            return response()->json(['success' => false, 'message' => 'Student not found.']);
-        }
-
-        // Delete the student record first (child), then the user (parent)
-        $student->delete();
-        $student->user->delete();
-
-        return response()->json(['success' => true]);
+    if (!$student || !$student->user) {
+        return response()->json(['success' => false, 'message' => 'Student not found.']);
     }
+
+    $student->user->update(['status' => 'Rejected']);
+
+    return response()->json(['success' => true]);
+}
 
     public function logout()
     {

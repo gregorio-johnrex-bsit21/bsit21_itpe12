@@ -62,19 +62,19 @@ class AuthController extends Controller
                 ]);
             }
 
-            if ($user->status === 'pending') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Your account is still pending approval.',
-                ]);
-            }
+            if ($user->status === 'Inactive') {
+    return response()->json([
+        'success' => false,
+        'message' => 'Your account is still pending approval.',
+    ]);
+}
 
-            if ($user->status === 'rejected') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Your account has been rejected. Please contact your supervisor.',
-                ]);
-            }
+if ($user->status === 'Rejected') {
+    return response()->json([
+        'success' => false,
+        'message' => 'Your account has been rejected. Please contact your supervisor.',
+    ]);
+}
 
             session(['student' => $student]);
 

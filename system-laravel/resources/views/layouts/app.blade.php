@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,7 +86,670 @@
 } 
 
 </style>
-</head>
+
+<script>
+    (function() {
+        const saved = localStorage.getItem('theme') || 'light';
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(saved);
+    })();
+</script>
+
+<style>
+    /* ── Dark Mode Variables ─────────────────────────── */
+    :root {
+        --bg-primary: #ffffff;
+        --bg-secondary: #f9fafb;
+        --bg-tertiary: #f3f4f6;
+        --bg-card: #ffffff;
+        --bg-input: #ffffff;
+
+        --text-primary: #111827;
+        --text-secondary: #374151;
+        --text-tertiary: #6b7280;
+        --text-muted: #9ca3af;
+
+        --border-color: #e5e7eb;
+        --border-light: #f3f4f6;
+
+        --brand: #059669;
+        --brand-light: #ecfdf5;
+        --brand-dark: #047857;
+
+        --sidebar-bg: #ffffff;
+        --header-bg: #ffffff;
+        --header-border: #d1d5db;
+
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+    }
+
+    html.dark {
+        --bg-primary: #0c0e12;
+        --bg-secondary: #151821;
+        --bg-tertiary: #0c0e12;
+        --bg-card: #151821;
+        --bg-input: #1e212e;
+
+        --text-primary: #e2e4e9;
+        --text-secondary: #9ca0b0;
+        --text-tertiary: #6b7080;
+        --text-muted: #4a4f5c;
+
+        --border-color: #252a38;
+        --border-light: #1a1e2a;
+
+        --btn-primary: #2d4a52;
+        --btn-primary-hover: #3d5a62;
+        --btn-text: #8ab4c0;
+
+        --sidebar-bg: #151821;
+        --header-bg: #151821;
+        --header-border: #252a38;
+
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    /* ── Clean Modern Forest Green (dark mode only) ───── */
+    /* Not neon, not swamp — crisp muted green with good contrast */
+    html.dark {
+        --accent-green: #4ade80;       /* clean bright green — modern, not neon */
+        --accent-green-soft: #6ee7b7;  /* soft mint for hover */
+        --accent-green-dim: #34d399;   /* slightly dimmed */
+        --accent-green-bg: #064e3b;    /* deep forest for backgrounds */
+        --accent-green-deep: #065f46;  /* deep emerald */
+    }
+
+    html.dark .text-emerald-600 { color: var(--accent-green-dim) !important; }
+    html.dark .text-emerald-500 { color: var(--accent-green) !important; }
+    html.dark .text-emerald-400 { color: var(--accent-green-soft) !important; }
+    html.dark .text-emerald-700 { color: var(--accent-green-bg) !important; }
+    html.dark .text-emerald-300 { color: var(--accent-green-soft) !important; }
+
+    html.dark .bg-emerald-600 { background-color: var(--accent-green-deep) !important; }
+    html.dark .bg-emerald-500 { background-color: var(--accent-green-bg) !important; }
+    html.dark .bg-emerald-100 { background-color: rgba(6, 78, 59, 0.35) !important; }
+    html.dark .bg-emerald-50  { background-color: rgba(6, 78, 59, 0.2) !important; }
+
+    html.dark .from-emerald-400 { --tw-gradient-from: var(--accent-green-bg) !important; }
+    html.dark .to-emerald-600   { --tw-gradient-to: #022c22 !important; }
+    html.dark .from-emerald-50  { --tw-gradient-from: rgba(6, 78, 59, 0.25) !important; }
+    html.dark .to-teal-50       { --tw-gradient-to: rgba(6, 95, 70, 0.12) !important; }
+
+    html.dark .border-emerald-500 { border-color: var(--accent-green-bg) !important; }
+    html.dark .border-emerald-100 { border-color: rgba(6, 78, 59, 0.3) !important; }
+    html.dark .ring-emerald-500   { --tw-ring-color: var(--accent-green-bg) !important; }
+
+    html.dark .shadow-emerald-200 { --tw-shadow-color: rgba(6, 78, 59, 0.4) !important; }
+    html.dark .shadow-emerald-100 { --tw-shadow-color: rgba(6, 78, 59, 0.2) !important; }
+
+    html.dark .hover\:bg-emerald-600:hover { background-color: #047857 !important; }
+    html.dark .hover\:bg-emerald-100:hover { background-color: rgba(6, 78, 59, 0.45) !important; }
+    html.dark .hover\:bg-emerald-50:hover  { background-color: rgba(6, 78, 59, 0.3) !important; }
+
+    html.dark .hover\:text-emerald-600:hover { color: var(--accent-green-soft) !important; }
+    html.dark .hover\:text-emerald-700:hover { color: var(--accent-green-dim) !important; }
+
+    html.dark .active\:bg-emerald-100:active { background-color: rgba(6, 78, 59, 0.5) !important; }
+
+    /* ── BOTTOM NAV: original emerald green ───────────── */
+    /* Active nav text — bright emerald */
+    html.dark nav.fixed.bottom-0 .text-emerald-500,
+    html.dark nav.fixed.bottom-0 .text-emerald-600,
+    html.dark nav.fixed.bottom-0 [class*="text-emerald"] {
+        color: #10b981 !important;
+    }
+    html.dark nav.fixed.bottom-0 .text-green-500,
+    html.dark nav.fixed.bottom-0 .text-green-600,
+    html.dark nav.fixed.bottom-0 [class*="text-green-"] {
+        color: #10b981 !important;
+    }
+    /* Inactive nav items — gray */
+    html.dark nav.fixed.bottom-0 .text-gray-400,
+    html.dark nav.fixed.bottom-0 .text-gray-500 {
+        color: #6b7280 !important;
+    }
+    /* Active highlight bar — bright emerald, NO GLOW */
+    html.dark nav.fixed.bottom-0 .bg-emerald-500,
+    html.dark nav.fixed.bottom-0 .bg-green-500,
+    html.dark nav.fixed.bottom-0 [class*="bg-emerald"],
+    html.dark nav.fixed.bottom-0 [class*="bg-green-"] {
+        background-color: #10b981 !important;
+        box-shadow: none !important;
+    }
+
+    /* ── HEADER ICONS: chat & notification SVGs — lighter stroke only ── */
+    html.dark header svg,
+    html.dark header [class*="icon"] svg,
+    html.dark header button svg {
+        color: #9ca0b0 !important;
+        stroke: #9ca0b0 !important;
+        fill: none !important;
+    }
+    html.dark header svg:hover,
+    html.dark header button:hover svg,
+    html.dark header [class*="icon"]:hover svg {
+        color: var(--accent-green-soft) !important;
+        stroke: var(--accent-green-soft) !important;
+        fill: none !important;
+    }
+
+    /* ── ADD NOTE FAB: .diaryBtn + icon + text ────────── */
+    /* The circular button background — original emerald, NO GLOW */
+    html.dark nav.fixed.bottom-0 .diaryBtn,
+    html.dark nav.fixed.bottom-0 .diaryBtn.bg-emerald-600,
+    html.dark nav.fixed.bottom-0 .diaryBtn[class*="bg-emerald"] {
+        background-color: #059669 !important;  /* Tailwind emerald-600 */
+        background: #059669 !important;
+        border-color: #10b981 !important;
+        box-shadow: none !important;
+    }
+    /* The + icon — white */
+    html.dark nav.fixed.bottom-0 .diaryBtn svg,
+    html.dark nav.fixed.bottom-0 .diaryBtn svg line,
+    html.dark nav.fixed.bottom-0 .diaryBtn svg [stroke] {
+        stroke: #ffffff !important;
+        color: #ffffff !important;
+    }
+    /* The "Add Note" label — bright emerald */
+    html.dark nav.fixed.bottom-0 .flex:has(.diaryBtn) span,
+    html.dark nav.fixed.bottom-0 .diaryBtn + span,
+    html.dark nav.fixed.bottom-0 span.text-emerald-600,
+    html.dark nav.fixed.bottom-0 [class*="text-emerald-600"] {
+        color: #10b981 !important;  /* Tailwind emerald-500 */
+    }
+    /* Hover: slightly lighter */
+    html.dark nav.fixed.bottom-0 .diaryBtn:hover,
+    html.dark nav.fixed.bottom-0 .diaryBtn:active {
+        background-color: #047857 !important;
+        background: #047857 !important;
+    }
+    html.dark nav.fixed.bottom-0 .diaryBtn:hover svg,
+    html.dark nav.fixed.bottom-0 .diaryBtn:hover svg line {
+        stroke: #ffffff !important;
+        color: #ffffff !important;
+    }
+    html.dark nav.fixed.bottom-0 .diaryBtn:hover + span,
+    html.dark nav.fixed.bottom-0 .flex:has(.diaryBtn):hover span {
+        color: #34d399 !important;  /* lighter emerald */
+    }
+
+        /* ── HEADER AVATAR: emerald, NO GLOW ──────────────── */
+    html.dark header button[class*="bg-emerald"],
+    html.dark header .bg-emerald-500,
+    html.dark header .bg-emerald-600 {
+        background-color: #059669 !important;
+        box-shadow: none !important;
+    }
+
+        /* ── Apply variables globally ─────────────────────── */
+    body {
+        background-color: var(--bg-tertiary) !important;
+        color: var(--text-primary) !important;
+        transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Cards & surfaces */
+    .bg-white { background-color: var(--bg-card) !important; }
+    .bg-gray-50 { background-color: var(--bg-secondary) !important; }
+    .bg-gray-100 { background-color: var(--bg-tertiary) !important; }
+
+    /* Text — LIGHT MODE (default) */
+    .text-gray-900, .text-slate-900 { color: #111827 !important; }
+    .text-gray-800, .text-slate-800 { color: #1f2937 !important; }
+    .text-gray-700, .text-slate-700 { color: #374151 !important; }
+    .text-gray-600, .text-slate-600 { color: #4b5563 !important; }
+    .text-gray-500, .text-slate-500 { color: #6b7280 !important; }
+    .text-gray-400, .text-slate-400 { color: #9ca3af !important; }
+
+    /* Text — DARK MODE */
+    html.dark .text-gray-900,
+    html.dark .text-slate-900 { color: #f9fafb !important; }
+    html.dark .text-gray-800,
+    html.dark .text-slate-800 { color: #e2e4e9 !important; }
+    html.dark .text-gray-700,
+    html.dark .text-slate-700 { color: #9ca0b0 !important; }
+    html.dark .text-gray-600,
+    html.dark .text-slate-600 { color: #6b7080 !important; }
+    html.dark .text-gray-500,
+    html.dark .text-slate-500 { color: #4a4f5c !important; }
+    html.dark .text-gray-400,
+    html.dark .text-slate-400 { color: #4a4f5c !important; }
+
+    /* Borders */
+    .border-gray-100, .border-gray-200, .border-slate-100, .border-slate-200 {
+        border-color: var(--border-color) !important;
+    }
+    .border-gray-50, .border-slate-50 { border-color: var(--border-light) !important; }
+
+    /* Inputs */
+    input, textarea, select {
+        background-color: var(--bg-input) !important;
+        color: var(--text-primary) !important;
+        border-color: var(--border-color) !important;
+    }
+    input::placeholder, textarea::placeholder { color: var(--text-muted) !important; }
+
+    /* Sidebar & header */
+    aside { background-color: var(--sidebar-bg) !important; border-color: var(--border-color) !important; }
+    header { background-color: var(--header-bg) !important; border-color: var(--header-border) !important; }
+    /* Force header bg to stay dark even if other rules try to override */
+    html.dark header { background-color: #151821 !important; }
+
+    /* Bottom nav */
+    nav.fixed.bottom-0 {
+        background-color: var(--header-bg) !important;
+        border-color: var(--header-border) !important;
+    }
+
+    /* Modals */
+    #inboxModal > div,
+    #composeModal > div,
+    #msgModal,
+    #notifModal,
+    #chatBox,
+    #mediaPreviewModal > div { background-color: var(--bg-card) !important; border-color: var(--border-color) !important; }
+
+    /* Hover states — LIGHT MODE */
+    .hover\:bg-gray-50:hover,
+    .hover\:bg-slate-50:hover { background-color: #f9fafb !important; }
+    .hover\:bg-gray-100:hover { background-color: #f3f4f6 !important; }
+
+    /* Hover states — DARK MODE */
+    html.dark .hover\:bg-gray-50:hover,
+    html.dark .hover\:bg-slate-50:hover { background-color: #151821 !important; }
+    html.dark .hover\:bg-gray-100:hover { background-color: #0c0e12 !important; }
+
+    /* Slate-50 used as card backgrounds */
+    .bg-slate-50 { background-color: var(--bg-secondary) !important; }
+
+    /* Dividers */
+    .divide-gray-100 > * + *, .divide-gray-200 > * + * { border-color: var(--border-color) !important; }
+
+    /* Dropdown menus */
+    html.dark [x-show] { border-color: var(--border-color) !important; }
+
+    /* Transition everything smoothly */
+    *, *::before, *::after {
+        transition-property: background-color, border-color, color;
+        transition-duration: 0.2s;
+        transition-timing-function: ease;
+    }
+
+    /* ── OJT PROGRESS CIRCLE: dark mode overrides ─────── */
+    /* EMPTY TRACK (background arc) — dark blue */
+    html.dark .progress-card svg circle[stroke="#f1f5f9"],
+    html.dark .progress-card svg circle:first-child,
+    html.dark .progress-card svg circle:not([stroke-linecap="round"]) {
+        stroke: #1e3a5f !important;  /* dark navy blue for empty portion */
+    }
+    /* FILLED PROGRESS stroke — keep it visible, light gray/white */
+    html.dark #ojtProgressCircle,
+    html.dark .progress-card circle[id*="Progress"],
+    html.dark .progress-card svg circle[stroke-linecap="round"] {
+        stroke: #e2e4e9 !important;  /* light gray/white for filled portion */
+    }
+    /* "ACHIEVED" text — white/light gray */
+    html.dark .progress-card .text-black,
+    html.dark .progress-card [class*="Achieved"],
+    html.dark #ojtPercentText + div,
+    html.dark #ojtPercentText ~ div,
+    html.dark .progress-card .absolute div[class*="text-"] {
+        color: #e2e4e9 !important;
+    }
+    /* Percentage number */
+    html.dark #ojtPercentText,
+    html.dark .progress-card .text-3xl {
+        color: #f9fafb !important;
+    }
+    /* Hours text below */
+    html.dark .progress-card .text-slate-400,
+    html.dark .progress-card .text-\[11px\] {
+        color: #9ca0b0 !important;
+    }
+    /* Status badge */
+    html.dark .progress-card span[class*="rounded-full"],
+    html.dark .progress-card .inline-flex {
+        background-color: #1e3a5f !important;
+        color: #e2e4e9 !important;
+    }
+
+        /* ── CHAT MODAL: dark mode fixes ──────────────────── */
+    /* Chat modal background — match dark card bg, NOT black */
+    html.dark #chatBox,
+    html.dark #msgModal,
+    html.dark .chat-modal,
+    html.dark .message-modal,
+    html.dark [id*="chat"] > div,
+    html.dark [id*="msg"] > div {
+        background-color: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-primary) !important;
+    }
+    /* Chat header — dark */
+    html.dark #chatBox header,
+    html.dark #msgModal header,
+    html.dark .chat-modal header {
+        background-color: var(--header-bg) !important;
+        border-color: var(--header-border) !important;
+    }
+    /* Chat header text */
+    html.dark #chatBox header h3,
+    html.dark #chatBox header p,
+    html.dark #msgModal header h3,
+    html.dark #msgModal header p,
+    html.dark .chat-modal header h3,
+    html.dark .chat-modal header p {
+        color: var(--text-primary) !important;
+    }
+    /* "ACTIVE NOW" status dot — bright emerald */
+    html.dark #chatBox header .text-green-500,
+    html.dark #chatBox header [class*="text-green"],
+    html.dark #chatBox header .bg-green-500,
+    html.dark #chatBox header [class*="bg-green"],
+    html.dark #msgModal header .text-green-500,
+    html.dark #msgModal header .bg-green-500,
+    html.dark .chat-modal header .text-green-500,
+    html.dark .chat-modal header .bg-green-500 {
+        color: #10b981 !important;
+        background-color: #10b981 !important;
+    }
+    /* Close button (X) — light gray */
+    html.dark #chatBox header button,
+    html.dark #msgModal header button,
+    html.dark .chat-modal header button {
+        color: var(--text-secondary) !important;
+    }
+    /* Message bubbles — RECEIVED (left side, dark gray) */
+    html.dark #chatBox .bg-gray-100,
+    html.dark #chatBox .bg-gray-200,
+    html.dark #chatBox .bg-slate-100,
+    html.dark #chatBox .bg-slate-200,
+    html.dark #msgModal .bg-gray-100,
+    html.dark #msgModal .bg-gray-200,
+    html.dark .chat-modal .bg-gray-100,
+    html.dark .chat-modal .bg-gray-200 {
+        background-color: #1e212e !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-color) !important;
+    }
+    /* Message bubbles — SENT (right side, original emerald, white text, NO GLOW) */
+    html.dark #chatBox .bg-emerald-500,
+    html.dark #chatBox .bg-green-500,
+    html.dark #chatBox .bg-emerald-600,
+    html.dark #chatBox .bg-green-600,
+    html.dark #msgModal .bg-emerald-500,
+    html.dark #msgModal .bg-green-500,
+    html.dark .chat-modal .bg-emerald-500,
+    html.dark .chat-modal .bg-green-500 {
+        background-color: #059669 !important;  /* Tailwind emerald-600 */
+        color: #ffffff !important;  /* WHITE text */
+        border: 1px solid #047857 !important;
+        box-shadow: none !important;
+    }
+    /* Chat input area — dark */
+    html.dark #chatBox input,
+    html.dark #chatBox textarea,
+    html.dark #msgModal input,
+    html.dark #msgModal textarea,
+    html.dark .chat-modal input,
+    html.dark .chat-modal textarea {
+        background-color: var(--bg-input) !important;
+        color: var(--text-primary) !important;
+        border-color: var(--border-color) !important;
+    }
+    /* Chat input placeholder */
+    html.dark #chatBox input::placeholder,
+    html.dark #msgModal input::placeholder,
+    html.dark .chat-modal input::placeholder {
+        color: var(--text-muted) !important;
+    }
+    /* Send button — green */
+    html.dark #chatBox button[type="submit"],
+    html.dark #chatBox .send-btn,
+    html.dark #msgModal button[type="submit"],
+    html.dark .chat-modal button[type="submit"] {
+        color: var(--accent-green) !important;
+    }
+    /* Scrollbar area — match card bg */
+    html.dark #chatBox .overflow-y-auto,
+    html.dark #msgModal .overflow-y-auto,
+    html.dark .chat-modal .overflow-y-auto {
+        background-color: var(--bg-card) !important;
+    }
+    /* Image preview in chat — dark border */
+    html.dark #chatBox img,
+    html.dark #msgModal img,
+    html.dark .chat-modal img {
+        border-color: var(--border-color) !important;
+    }
+
+    /* ── NOTIFICATION MODAL: match dark bg ───────────── */
+    html.dark #notifModal,
+    html.dark .notif-modal,
+    html.dark [id*="notif"] > div {
+        background-color: var(--bg-card) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-primary) !important;
+    }
+    /* Notification "Close" button — match dark bg, not gray */
+    html.dark #notifModal button,
+    html.dark .notif-modal button,
+    html.dark #notifModal [onclick*="close"],
+    html.dark .notif-modal [onclick*="close"],
+    html.dark #notifModal .close-btn,
+    html.dark .notif-modal .close-btn {
+        background-color: var(--bg-input) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-color) !important;
+    }
+    html.dark #notifModal button:hover,
+    html.dark .notif-modal button:hover {
+        background-color: var(--border-color) !important;
+        color: var(--text-primary) !important;
+    }
+    /* Notification items */
+    html.dark #notifModal .bg-white,
+    html.dark .notif-modal .bg-white,
+    html.dark #notifModal [class*="bg-white"] {
+        background-color: var(--bg-card) !important;
+    }
+    html.dark #notifModal .text-gray-800,
+    html.dark .notif-modal .text-gray-800,
+    html.dark #notifModal .text-gray-900,
+    html.dark .notif-modal .text-gray-900 {
+        color: var(--text-primary) !important;
+    }
+    html.dark #notifModal .text-gray-500,
+    html.dark .notif-modal .text-gray-500,
+    html.dark #notifModal .text-gray-400,
+    html.dark .notif-modal .text-gray-400 {
+        color: var(--text-secondary) !important;
+    }
+
+        /* ── ALL EMERALD/GREEN BUTTONS: flat, no glow ───── */
+    /* Catch-all for any button with emerald/green bg */
+    html.dark button[class*="bg-emerald"],
+    html.dark button[class*="bg-green"],
+    html.dark a[class*="bg-emerald"],
+    html.dark a[class*="bg-green"],
+    html.dark .btn-emerald,
+    html.dark .btn-green,
+    html.dark [class*="btn"][class*="emerald"],
+    html.dark [class*="btn"][class*="green"],
+    html.dark input[type="submit"][class*="bg-emerald"],
+    html.dark input[type="submit"][class*="bg-green"] {
+        background-color: #059669 !important;
+        background: #059669 !important;
+        color: #ffffff !important;
+        border-color: #047857 !important;
+        box-shadow: none !important;
+    }
+    html.dark button[class*="bg-emerald"]:hover,
+    html.dark button[class*="bg-green"]:hover,
+    html.dark a[class*="bg-emerald"]:hover,
+    html.dark a[class*="bg-green"]:hover {
+        background-color: #047857 !important;
+        background: #047857 !important;
+    }
+    /* Floating help button (?) — if it has specific classes */
+    html.dark .help-btn,
+    html.dark .fab-help,
+    html.dark [class*="help"][class*="btn"],
+    html.dark [class*="fab"][class*="help"],
+    html.dark button[title*="help"],
+    html.dark button[aria-label*="help"] {
+        background-color: #059669 !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+    }
+    /* Form submit buttons that might use different patterns */
+    html.dark form button[type="submit"],
+    html.dark form input[type="submit"],
+    html.dark .form-btn,
+    html.dark .submit-btn {
+        background-color: #059669 !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+    }
+    /* Profile action buttons (Save, Edit, Update, etc) */
+    html.dark [class*="save"][class*="btn"],
+    html.dark [class*="edit"][class*="btn"],
+    html.dark [class*="update"][class*="btn"],
+    html.dark [class*="profile"][class*="btn"],
+    html.dark button[class*="save"],
+    html.dark button[class*="edit"],
+    html.dark button[class*="update"] {
+        background-color: #059669 !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+    }
+
+        /* ── ONLINE STATUS DOT: bright emerald, PRECISE ───── */
+    /* Only target small dots positioned on avatars/profile pics */
+    html.dark .online-dot,
+    html.dark .status-dot,
+    html.dark .avatar-dot,
+    html.dark .profile-dot {
+        background-color: #10b981 !important;
+        border: 2px solid var(--bg-card) !important;
+        box-shadow: none !important;
+    }
+    /* Target small circular elements positioned absolute on rounded images */
+    html.dark img.rounded-full ~ .absolute,
+    html.dark .rounded-full ~ .absolute,
+    html.dark .avatar ~ .absolute,
+    html.dark .profile-pic ~ .absolute,
+    html.dark [class*="avatar"] > .absolute:last-child,
+    html.dark [class*="profile"] > .absolute:last-child,
+    html.dark div[class*="relative"] > img + div[class*="absolute"] {
+        background-color: #10b981 !important;
+        border: 2px solid var(--bg-card) !important;
+        box-shadow: none !important;
+    }
+
+        /* ── GREETING SECTION: ocean theme in dark mode ───── */
+    /* Hide the forest image completely in dark mode */
+    html.dark .bg-emerald-900 img,
+    html.dark div[class*="bg-emerald-900"] img,
+    html.dark div[class*="rounded-2xl"] > div > img {
+        display: none !important;
+    }
+    /* Set ocean background on the container */
+    html.dark .bg-emerald-900,
+    html.dark div[class*="bg-emerald-900"] {
+        background-color: #0a1628 !important;
+        background-image: url('https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&q=80&w=2000') !important;
+        background-size: cover !important;
+        background-position: center !important;
+    }
+    /* The overlay div that holds the gradient — force blue gradient */
+    html.dark .bg-emerald-900 > div[class*="absolute"],
+    html.dark div[class*="bg-emerald-900"] > div[class*="absolute"],
+    html.dark .bg-emerald-900 .bg-gradient-to-br,
+    html.dark div[class*="bg-emerald-900"] [class*="bg-gradient"] {
+    }
+    /* Decorative blur circle — reduced/subtle or removed */
+    html.dark .bg-emerald-900 [class*="bg-emerald-400"],
+    html.dark div[class*="bg-emerald-900"] [class*="bg-emerald-400"] {
+        background-color: rgba(59, 130, 246, 0.08) !important;  /* much more subtle */
+        /* OR to completely remove: display: none !important; */
+    }
+    /* Text readability */
+    html.dark .bg-emerald-900 h1,
+    html.dark .bg-emerald-900 h2,
+    html.dark [class*="bg-emerald-900"] h1,
+    html.dark [class*="bg-emerald-900"] h2 {
+        color: #ffffff !important;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+    }
+    html.dark .bg-emerald-900 .text-white\/80,
+    html.dark .bg-emerald-900 .text-white\/90,
+    html.dark [class*="bg-emerald-900"] [class*="text-white"] {
+        color: rgba(255, 255, 255, 0.9) !important;
+    }
+    /* Weather icon — light blue */
+    html.dark .bg-emerald-900 svg,
+    html.dark [class*="bg-emerald-900"] svg {
+        color: #ffffff !important;
+    }
+
+        /* ── SIDEBAR DRAWER: header background in dark mode */
+    /* The mobile drawer background — dark card color */
+    html.dark #mobileDrawer,
+    html.dark .mobile-drawer,
+    html.dark [id*="drawer"] {
+        background-color: var(--bg-card) !important;
+    }
+    /* The drawer HEADER specifically — the green nature header section */
+    html.dark #mobileDrawer div[style*="background-image"],
+    html.dark #drawerMain div[style*="background-image"],
+    html.dark #mobileDrawer div[class*="bg-emerald-900\/50"],
+    html.dark #drawerMain div[class*="bg-emerald-900"],
+    html.dark #mobileDrawer div[class*="overflow-hidden"]:not([id]):not([class*="flex-1"]),
+    html.dark #drawerMain > div:first-child > div:first-child {
+        background-image: url('https://images.unsplash.com/photo-1742023299694-0b81944dca5a?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') !important;
+        background-size: cover !important;
+        background-position: center !important;
+    }
+    /* Hide the original forest image inside the header */
+    html.dark #mobileDrawer div[style*="background-image"] > div[style*="background-image"],
+    html.dark #drawerMain div[style*="background-image"] > div[style*="background-image"] {
+        display: none !important;
+    }
+    /* The overlay on the drawer header */
+    html.dark #mobileDrawer div[class*="bg-emerald-900\/50"],
+    html.dark #drawerMain div[class*="bg-emerald-900\/50"] {
+        background: linear-gradient(to bottom, rgba(10, 15, 30, 0.6), rgba(15, 25, 50, 0.4)) !important;
+    }
+
+        /* ── Dark mode toggle switch ─────────────────────── */
+    .dark-toggle {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        width: 44px;
+        height: 24px;
+        background: var(--border-color);
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: background 0.25s;
+        flex-shrink: 0;
+    }
+    .dark-toggle.active { background: var(--brand); }
+    .dark-toggle::after {
+        content: '';
+        position: absolute;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        background: white;
+        border-radius: 50%;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .dark-toggle.active::after { transform: translateX(20px); }
+</style>
 
 <body class="bg-gray-50" x-data="{ activeTab: 'dashboard', taskModal: false }">
 
