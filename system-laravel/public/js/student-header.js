@@ -27,7 +27,7 @@ function closeAll() {
     notifModal.classList.add('hidden');
 }
 
-//function openChat() {   chat comment
+function openChat() {
     msgModal.classList.add('hidden');
     chatBox.classList.remove('hidden');
     startChatPolling();
@@ -205,7 +205,7 @@ function updateStudentPreview() {
 }
 // ── Send message ──────────────────────────────────────────────
 function sendStudentMessage() {
-    const message = msgInput.value.trim();
+    //const message = msgInput.value.trim();  chat comment
     if (!message) return;
     const tempId = 'temp_' + Date.now();
     appendMessage(message, 'Student', tempId); // ← temp id for optimistic bubble

@@ -442,14 +442,14 @@
                         <span class="w-1 h-4 bg-emerald-500 rounded-full"></span>
                         Location
                     </h4>
-                    <div>
+                    <div> <!-- disabled addresses -->
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">School Address</label>
-                        <textarea name="school_address" rows="2" placeholder="Enter school address"
+                        <textarea disabled name="school_address" rows="2" placeholder="Enter school address"
                             class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition resize-none">{{ old('school_address', $profile?->school_address) }}</textarea>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Home Address</label>
-                        <textarea name="home_address" rows="2" placeholder="Enter home address"
+                        <textarea disabled name="home_address" rows="2" placeholder="Enter home address"
                             class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition resize-none">{{ old('home_address', $profile?->home_address) }}</textarea>
                     </div>
                 </div>
@@ -496,7 +496,7 @@
 
 @push('scripts')
 <script>
-    //const openProfileModalBtns = document.querySelectorAll('#openProfileModal, #openProfileModal2'); edit comment
+    const openProfileModalBtns = document.querySelectorAll('#openProfileModal, #openProfileModal2');
     const profileModal     = document.getElementById('profileModal');
     const profileBackdrop  = document.getElementById('profileBackdrop');
     const profileContent   = document.getElementById('profileContent');
