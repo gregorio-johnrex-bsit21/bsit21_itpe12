@@ -27,7 +27,7 @@ function closeAll() {
     notifModal.classList.add('hidden');
 }
 
-function openChat() {
+//function openChat() {   chat comment
     msgModal.classList.add('hidden');
     chatBox.classList.remove('hidden');
     startChatPolling();

@@ -496,7 +496,7 @@
 
 @push('scripts')
 <script>
-    const openProfileModalBtns = document.querySelectorAll('#openProfileModal, #openProfileModal2');
+    //const openProfileModalBtns = document.querySelectorAll('#openProfileModal, #openProfileModal2'); edit comment
     const profileModal     = document.getElementById('profileModal');
     const profileBackdrop  = document.getElementById('profileBackdrop');
     const profileContent   = document.getElementById('profileContent');
