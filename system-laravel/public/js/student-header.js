@@ -205,7 +205,7 @@ function updateStudentPreview() {
 }
 // ── Send message ──────────────────────────────────────────────
 function sendStudentMessage() {
-    //const message = msgInput.value.trim();  chat comment
+    const message = msgInput.value.trim();  
     if (!message) return;
     const tempId = 'temp_' + Date.now();
     appendMessage(message, 'Student', tempId); // ← temp id for optimistic bubble
