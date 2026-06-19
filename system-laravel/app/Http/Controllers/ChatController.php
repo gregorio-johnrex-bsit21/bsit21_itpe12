@@ -6,9 +6,12 @@ use App\Models\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\FiltersProfanity;
 
 class ChatController extends Controller
 {
+     use FiltersProfanity;
+
     /**
      * GET /get-messages
      *
@@ -100,6 +103,12 @@ class ChatController extends Controller
             'sender'       => 'required|string|max:50',
             'message'      => 'required|string|max:5000',
         ]);
+
+        if ($this->containsProfanity($validated['message'])) {
+            return response()->json([
+                'error' => 'Your message contains inappropriate language and was not sent.',
+            ], 422);
+        }
 
         $msg = Message::create([
             'conversation' => $validated['conversation'],

@@ -203,14 +203,14 @@ function updateStudentPreview() {
         })
         .catch(() => {});
 }
-// ── Send message ──────────────────────────────────────────────
-/* 
+
 function sendStudentMessage() {
-    const message = msgInput.value.trim();  
+    const message = msgInput.value.trim();
     if (!message) return;
     const tempId = 'temp_' + Date.now();
-    appendMessage(message, 'Student', tempId); // ← temp id for optimistic bubble
+    appendMessage(message, 'Student', tempId);
     msgInput.value = '';
+
     fetch('/send-message', {
         method: 'POST',
         headers: {
@@ -218,10 +218,21 @@ function sendStudentMessage() {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify({ message, sender: 'Student', conversation: STUDENT_CONVERSATION })
-    }).then(r => r.json()).then(data => {
-        // Replace temp id with real id so poller skips it
+    })
+    .then(async (r) => {
+        const data = await r.json();
+        if (!r.ok) {
+            renderedIds.delete(tempId);
+            const bubbles = messageList.querySelectorAll('.flex');
+            if (bubbles.length) bubbles[bubbles.length - 1].remove();
+            alert(data.error || 'Message could not be sent.');
+            return;
+        }
         renderedIds.delete(tempId);
         renderedIds.add(data.id);
+    })
+    .catch(() => {
+        alert('Network error — message may not have been sent.');
     });
 }
 
@@ -231,8 +242,7 @@ sendBtn.addEventListener('click', (e) => {
 });
 
 msgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendStudentMessage(); });
-*/ 
-//chat function
+
 
 
 // ── Notes / Diary ─────────────────────────────────────────────

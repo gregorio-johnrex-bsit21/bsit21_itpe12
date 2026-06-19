@@ -140,7 +140,8 @@ Route::post('/clear-messages', function (Request $request) {
 
 
 Route::get('/get-messages',  [ChatController::class, 'getMessages']);
-Route::post('/send-message', [ChatController::class, 'sendMessage']);
+Route::post('/send-message', [ChatController::class, 'sendMessage'])
+    ->middleware('throttle:chat-send');
 Route::post('/mark-read',    [ChatController::class, 'markRead']);
 Route::get('/get-conversations', [ChatController::class, 'getConversations']);
 
