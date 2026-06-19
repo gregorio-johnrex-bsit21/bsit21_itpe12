@@ -936,7 +936,7 @@
     <div id="messageList" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-gray-50/50"></div>
     <div class="p-4 border-t border-gray-100 bg-white pb-8 sm:pb-4 shrink-0">
     <div class="flex items-center gap-2">
-        <input disabled id="msgInput" type="text" placeholder="Type a message..." class="flex-1 min-w-0 bg-gray-100 border-none rounded-full px-4 py-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none"> <!--message comment-->
+        <input id="msgInput" type="text" placeholder="Type a message..." class="flex-1 min-w-0 bg-gray-100 border-none rounded-full px-4 py-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none"> 
         
         <button id="imageBtn" class="text-gray-500 hover:text-emerald-500 p-1 active:scale-90 transition-transform shrink-0">
             <input type="file" id="mediaInput" accept="image/jpeg,image/png,image/gif,video/mp4,video/webm,video/ogg" class="hidden">

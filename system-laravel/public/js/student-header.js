@@ -204,6 +204,7 @@ function updateStudentPreview() {
         .catch(() => {});
 }
 // ── Send message ──────────────────────────────────────────────
+/* 
 function sendStudentMessage() {
     const message = msgInput.value.trim();  
     if (!message) return;
@@ -230,6 +231,8 @@ sendBtn.addEventListener('click', (e) => {
 });
 
 msgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendStudentMessage(); });
+*/ 
+//chat function
 
 
 // ── Notes / Diary ─────────────────────────────────────────────
