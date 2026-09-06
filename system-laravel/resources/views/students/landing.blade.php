@@ -18,7 +18,6 @@
         .delay-200 { animation-delay: 0.2s; }
         .delay-300 { animation-delay: 0.3s; }
 
-        /* Scroll indicator pulse */
         @keyframes scrollPulse {
         0%, 100% { opacity: 0.5; transform: translateY(0); }
         50% { opacity: 1; transform: translateY(6px); }
@@ -26,9 +25,71 @@
         .scroll-pulse {
         animation: scrollPulse 2.5s ease-in-out infinite;
         }
+
+        /* === Wake-up overlay styles (added) === */
+        #wake-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #020617; /* slate-950 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #wake-overlay.hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .wake-spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid rgba(16, 185, 129, 0.2); /* emerald-500/20 */
+            border-top-color: #10b981; /* emerald-500 */
+            border-radius: 50%;
+            animation: wakeSpin 0.8s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes wakeSpin {
+            to { transform: rotate(360deg); }
+        }
+        /* === end wake-up overlay styles === */
     </style>
 </head>
 <body class="bg-white text-slate-900">
+
+    <!-- === Wake-up overlay (added) === -->
+    <div id="wake-overlay">
+        <div class="wake-spinner"></div>
+        <p class="text-white text-base sm:text-lg font-semibold mb-2">Waking up server...</p>
+        <p class="text-slate-400 text-sm max-w-xs sm:max-w-sm leading-relaxed">
+            Render free sleeps after 15 mins, please wait 20-40 seconds
+        </p>
+    </div>
+    <script>
+        (function () {
+            function hideOverlay() {
+                var overlay = document.getElementById('wake-overlay');
+                if (overlay) {
+                    overlay.classList.add('hide');
+                    setTimeout(function () { overlay.remove(); }, 600);
+                }
+            }
+            // Hide once the page (and its assets) has fully loaded
+            if (document.readyState === 'complete') {
+                hideOverlay();
+            } else {
+                window.addEventListener('load', hideOverlay);
+            }
+            // Safety net: never leave the overlay stuck forever
+            setTimeout(hideOverlay, 60000);
+        })();
+    </script>
+    <!-- === end wake-up overlay === -->
 
   <!-- Hero -->
 <section class="relative min-h-[100dvh] md:min-h-screen w-full flex flex-col items-center overflow-hidden">
